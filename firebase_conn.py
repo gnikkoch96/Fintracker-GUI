@@ -26,10 +26,10 @@ def authenticate_user_login(email, password):
         print("[ERROR] Login Failed")
         return False
 
+
 def create_user_account(email, password):
     try:
         firebase_auth.create_user_with_email_and_password(email, password)
         return True
     except:
         return False
-

@@ -11,7 +11,7 @@ from .util import _bslash, _flatten, _escape_regex_range_chars
 # global helpers
 #
 def delimited_list(
-    expr: ParserElement,
+    expr: Union[str, ParserElement],
     delim: Union[str, ParserElement] = ",",
     combine: bool = False,
     *,
@@ -34,6 +34,9 @@ def delimited_list(
         delimited_list(Word(alphas)).parse_string("aa,bb,cc") # -> ['aa', 'bb', 'cc']
         delimited_list(Word(hexnums), delim=':', combine=True).parse_string("AA:BB:CC:DD:EE") # -> ['AA:BB:CC:DD:EE']
     """
+    if isinstance(expr, str_type):
+        expr = ParserElement._literalStringClass(expr)
+
     dlName = "{expr} [{delim} {expr}]...{end}".format(
         expr=str(expr.streamline()),
         delim=str(delim),
@@ -387,23 +390,17 @@ def original_text_for(
     locMarker = Empty().set_parse_action(lambda s, loc, t: loc)
     endlocMarker = locMarker.copy()
     endlocMarker.callPreparse = False
-    # prefix these transient names with _NOWARN to suppress ungrouped name warnings
-    matchExpr = (
-        locMarker("_NOWARN_original_start")
-        + expr
-        + endlocMarker("_NOWARN_original_end")
-    )
+    matchExpr = locMarker("_original_start") + expr + endlocMarker("_original_end")
     if asString:
-        extractText = lambda s, l, t: s[
-            t._NOWARN_original_start : t._NOWARN_original_end
-        ]
+        extractText = lambda s, l, t: s[t._original_start : t._original_end]
     else:
 
         def extractText(s, l, t):
-            t[:] = [s[t.pop("_NOWARN_original_start") : t.pop("_NOWARN_original_end")]]
+            t[:] = [s[t.pop("_original_start") : t.pop("_original_end")]]
 
     matchExpr.set_parse_action(extractText)
     matchExpr.ignoreExprs = expr.ignoreExprs
+    matchExpr.suppress_warning(Diagnostics.warn_ungrouped_named_tokens_in_collection)
     return matchExpr
 
 

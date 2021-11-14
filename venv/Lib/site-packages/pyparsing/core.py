@@ -468,6 +468,23 @@ class ParserElement(ABC):
         # avoid redundant calls to preParse
         self.callPreparse = True
         self.callDuringTry = False
+        self.suppress_warnings_ = []
+
+    def suppress_warning(self, warning_type: Diagnostics):
+        """
+        Suppress warnings emitted for a particular diagnostic on this expression.
+
+        Example::
+
+            base = pp.Forward()
+            base.suppress_warning(Diagnostics.warn_on_parse_using_empty_Forward)
+
+            # statement would normally raise a warning, but is now suppressed
+            print(base.parseString("x"))
+
+        """
+        self.suppress_warnings_.append(warning_type)
+        return self
 
     def copy(self) -> "ParserElement":
         """
@@ -1117,6 +1134,7 @@ class ParserElement(ABC):
         max_matches: int = _MAX_INT,
         overlap: bool = False,
         *,
+        debug: bool = False,
         maxMatches: int = _MAX_INT,
     ) -> Generator[Tuple[ParseResults, int, int], None, None]:
         """
@@ -1173,6 +1191,14 @@ class ParserElement(ABC):
                 else:
                     if nextLoc > loc:
                         matches += 1
+                        if debug:
+                            print(
+                                {
+                                    "tokens": tokens.asList(),
+                                    "start": preloc,
+                                    "end": nextLoc,
+                                }
+                            )
                         yield tokens, preloc, nextLoc
                         if overlap:
                             nextloc = preparseFn(instring, loc)
@@ -1191,7 +1217,7 @@ class ParserElement(ABC):
                 # catch and re-raise exception from here, clears out pyparsing internal stack trace
                 raise exc.with_traceback(None)
 
-    def transform_string(self, instring: str) -> str:
+    def transform_string(self, instring: str, *, debug: bool = False) -> str:
         """
         Extension to :class:`scan_string`, to modify matching text with modified tokens that may
         be returned from a parse action.  To use ``transform_string``, define a grammar and
@@ -1217,7 +1243,7 @@ class ParserElement(ABC):
         # keep string locs straight between transform_string and scan_string
         self.keepTabs = True
         try:
-            for t, s, e in self.scan_string(instring):
+            for t, s, e in self.scan_string(instring, debug=debug):
                 out.append(instring[lastE:s])
                 if t:
                     if isinstance(t, ParseResults):
@@ -1238,7 +1264,12 @@ class ParserElement(ABC):
                 raise exc.with_traceback(None)
 
     def search_string(
-        self, instring: str, max_matches: int = _MAX_INT, *, maxMatches: int = _MAX_INT
+        self,
+        instring: str,
+        max_matches: int = _MAX_INT,
+        *,
+        debug: bool = False,
+        maxMatches: int = _MAX_INT,
     ) -> ParseResults:
         """
         Another extension to :class:`scan_string`, simplifying the access to the tokens found
@@ -1263,7 +1294,7 @@ class ParserElement(ABC):
         maxMatches = min(maxMatches, max_matches)
         try:
             return ParseResults(
-                [t for t, s, e in self.scan_string(instring, maxMatches)]
+                [t for t, s, e in self.scan_string(instring, maxMatches, debug=debug)]
             )
         except ParseBaseException as exc:
             if ParserElement.verbose_stacktrace:
@@ -2054,10 +2085,14 @@ class ParserElement(ABC):
                 fatal = "(FATAL)" if isinstance(pe, ParseFatalException) else ""
                 out.append(pe.explain())
                 out.append("FAIL: " + str(pe))
+                if ParserElement.verbose_stacktrace:
+                    out.extend(traceback.format_tb(pe.__traceback__))
                 success = success and failureTests
                 result = pe
             except Exception as exc:
-                out.append("FAIL-EXCEPTION: " + str(exc))
+                out.append("FAIL-EXCEPTION: {}: {}".format(type(exc).__name__, exc))
+                if ParserElement.verbose_stacktrace:
+                    out.extend(traceback.format_tb(exc.__traceback__))
                 success = success and failureTests
                 result = exc
             else:
@@ -3661,12 +3696,17 @@ class ParseExpression(ParserElement):
         return ret
 
     def _setResultsName(self, name, listAllMatches=False):
-        if __diag__.warn_ungrouped_named_tokens_in_collection:
+        if (
+            __diag__.warn_ungrouped_named_tokens_in_collection
+            and Diagnostics.warn_ungrouped_named_tokens_in_collection
+            not in self.suppress_warnings_
+        ):
             for e in self.exprs:
                 if (
                     isinstance(e, ParserElement)
                     and e.resultsName
-                    and not e.resultsName.startswith("_NOWARN")
+                    and Diagnostics.warn_ungrouped_named_tokens_in_collection
+                    not in e.suppress_warnings_
                 ):
                     warnings.warn(
                         "{}: setting results name {!r} on {} expression "
@@ -3959,12 +3999,22 @@ class Or(ParseExpression):
         return "{" + " ^ ".join(str(e) for e in self.exprs) + "}"
 
     def _setResultsName(self, name, listAllMatches=False):
-        if __diag__.warn_multiple_tokens_in_named_alternation:
-            if any(isinstance(e, And) for e in self.exprs):
+        if (
+            __diag__.warn_multiple_tokens_in_named_alternation
+            and Diagnostics.warn_multiple_tokens_in_named_alternation
+            not in self.suppress_warnings_
+        ):
+            if any(
+                isinstance(e, And)
+                and Diagnostics.warn_multiple_tokens_in_named_alternation
+                not in e.suppress_warnings_
+                for e in self.exprs
+            ):
                 warnings.warn(
                     "{}: setting results name {!r} on {} expression "
                     "will return a list of all parsed tokens in an And alternative, "
-                    "in prior versions only the first token was returned".format(
+                    "in prior versions only the first token was returned; enclose"
+                    "contained argument in Group".format(
                         "warn_multiple_tokens_in_named_alternation",
                         name,
                         type(self).__name__,
@@ -4058,12 +4108,22 @@ class MatchFirst(ParseExpression):
         return "{" + " | ".join(str(e) for e in self.exprs) + "}"
 
     def _setResultsName(self, name, listAllMatches=False):
-        if __diag__.warn_multiple_tokens_in_named_alternation:
-            if any(isinstance(e, And) for e in self.exprs):
+        if (
+            __diag__.warn_multiple_tokens_in_named_alternation
+            and Diagnostics.warn_multiple_tokens_in_named_alternation
+            not in self.suppress_warnings_
+        ):
+            if any(
+                isinstance(e, And)
+                and Diagnostics.warn_multiple_tokens_in_named_alternation
+                not in e.suppress_warnings_
+                for e in self.exprs
+            ):
                 warnings.warn(
                     "{}: setting results name {!r} on {} expression "
-                    "may only return a single token for an And alternative, "
-                    "in future will return the full list of tokens".format(
+                    "will return a list of all parsed tokens in an And alternative, "
+                    "in prior versions only the first token was returned; enclose"
+                    "contained argument in Group".format(
                         "warn_multiple_tokens_in_named_alternation",
                         name,
                         type(self).__name__,
@@ -4706,12 +4766,17 @@ class _MultipleMatch(ParseElementEnhance):
         return loc, tokens
 
     def _setResultsName(self, name, listAllMatches=False):
-        if __diag__.warn_ungrouped_named_tokens_in_collection:
+        if (
+            __diag__.warn_ungrouped_named_tokens_in_collection
+            and Diagnostics.warn_ungrouped_named_tokens_in_collection
+            not in self.suppress_warnings_
+        ):
             for e in [self.expr] + self.expr.recurse():
                 if (
                     isinstance(e, ParserElement)
                     and e.resultsName
-                    and not e.resultsName.startswith("_NOWARN")
+                    and Diagnostics.warn_ungrouped_named_tokens_in_collection
+                    not in e.suppress_warnings_
                 ):
                     warnings.warn(
                         "{}: setting results name {!r} on {} expression "
@@ -5068,6 +5133,8 @@ class Forward(ParseElementEnhance):
         if (
             __diag__.warn_on_match_first_with_lshift_operator
             and caller_line == self.lshift_line
+            and Diagnostics.warn_on_match_first_with_lshift_operator
+            not in self.suppress_warnings_
         ):
             warnings.warn(
                 "using '<<' operator with '|' is probably an error, use '<<='",
@@ -5078,7 +5145,11 @@ class Forward(ParseElementEnhance):
 
     def __del__(self):
         # see if we are getting dropped because of '=' reassignment of var instead of '<<=' or '<<'
-        if self.expr is None and __diag__.warn_on_assignment_to_Forward:
+        if (
+            self.expr is None
+            and __diag__.warn_on_assignment_to_Forward
+            and Diagnostics.warn_on_assignment_to_Forward not in self.suppress_warnings_
+        ):
             warnings.warn_explicit(
                 "Forward defined here but no expression attached later using '<<=' or '<<'",
                 UserWarning,
@@ -5087,7 +5158,12 @@ class Forward(ParseElementEnhance):
             )
 
     def parseImpl(self, instring, loc, doActions=True):
-        if self.expr is None and __diag__.warn_on_parse_using_empty_Forward:
+        if (
+            self.expr is None
+            and __diag__.warn_on_parse_using_empty_Forward
+            and Diagnostics.warn_on_parse_using_empty_Forward
+            not in self.suppress_warnings_
+        ):
             # walk stack until parse_string, scan_string, search_string, or transform_string is found
             parse_fns = [
                 "parse_string",
@@ -5224,7 +5300,11 @@ class Forward(ParseElementEnhance):
             return ret
 
     def _setResultsName(self, name, list_all_matches=False):
-        if __diag__.warn_name_set_on_empty_Forward:
+        if (
+            __diag__.warn_name_set_on_empty_Forward
+            and Diagnostics.warn_name_set_on_empty_Forward
+            not in self.suppress_warnings_
+        ):
             if self.expr is None:
                 warnings.warn(
                     "{}: setting results name {!r} on {} expression "
