@@ -1,4 +1,12 @@
 # ids
+TICKER_WINDOW_ID = "Ticker Window"
+TICKER_RADIO_BTN_CRYPTO_ID = "Ticker Crypto"
+TICKER_RADIO_BTN_STOCK_ID = "Ticker Stock"
+TICKER_RADIO_BTN_OPTION_ID = "Ticker Option"
+TICKER_INPUT_TICKER_ID = "Ticker Input Ticker"
+TICKER_SEARCH_BTN_ID = "Ticker Search Button"
+TICKER_INFO_WINDOW_ID = "Ticker Info"
+
 FINTRACKER_WINDOW_ID = "Fintracker Window"
 FINTRACKER_CLOSED_TRADES_ID = "Fintracker Closed Trades"
 FINTRACKER_OPEN_TRADES_CONTAINER_ID = "Fintracker Open Trades Container"
@@ -29,6 +37,15 @@ REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 
 # values
 FINTRACKER_WINDOW_VIEWPORT_SIZE = (1500, 800) # width x height
+
+# ticker search
+TICKER_WINDOW_TEXT = "(Fintracker) Search Ticker"
+TICKER_RADIO_BTN_CRYPTO_TEXT = "Crypto"
+TICKER_RADIO_BTN_STOCK_TEXT = "Stock"
+TICKER_RADIO_BTN_OPTION_TEXT = "Option"
+TICKER_INPUT_TICKER_TEXT = "Enter Ticker"
+TICKER_SEARCH_BTN_TEXT = "Search"
+TICKER_INFO_WINDOW_TEXT = "Ticker Information"
 
 # fintracker
 FINTRACKER_WINDOW_TEXT = "(Fintracker) Investment Tracker"

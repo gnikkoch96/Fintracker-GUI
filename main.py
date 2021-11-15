@@ -2,6 +2,7 @@ import dearpygui.dearpygui as dpg
 import configs
 from login import Login
 from register import Register
+from ticker_search import TickerSearch
 
 def create_windows():
     dpg.create_context()
@@ -16,8 +17,9 @@ def create_windows():
     # themes
 
     # load login and register windows
-    Register(dpg)
-    Login(dpg)
+    # Register(dpg)
+    # Login(dpg)
+    TickerSearch(dpg)
 
     dpg.show_viewport()
     dpg.start_dearpygui()
