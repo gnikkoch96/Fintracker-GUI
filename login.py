@@ -1,6 +1,6 @@
 import firebase_conn
 import configs
-
+from investment_tracker import Fintracker
 
 # desc: creates the login GUI
 class Login:
@@ -47,13 +47,17 @@ class Login:
         password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
         if firebase_conn.authenticate_user_login(email, password):
             # todo create a dialogue that shows sign-in was successful
-            pass
+            Fintracker(self.dpg)
+            self.dpg.hide_item(configs.LOGIN_WINDOW_ID)
         else:
             self.dpg.show_item(configs.LOGIN_INPUT_ERROR_ID)
+            self.dpg.set_value(configs.LOGIN_INPUT_EMAIL_ID, "")
+            self.dpg.set_value(configs.LOGIN_INPUT_PASS_ID, "")
 
     # goes to the register screen
     def register_callback(self, sender, app_data, user_data):
-        pass
+        self.dpg.show_item(configs.REGISTER_WINDOW_ID)
+        self.dpg.hide_item(configs.LOGIN_WINDOW_ID)
 
     def offline_callback(self, sender, app_data, user_data):
         pass

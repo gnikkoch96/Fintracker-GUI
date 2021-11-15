@@ -21,6 +21,9 @@ firebase_auth = firebase.auth()
 def authenticate_user_login(email, password):
     try:
         firebase_auth.sign_in_with_email_and_password(email, password)
+
+        # todo remove this
+        print("Logged in successfully!")
         return True
     except:
         print("[ERROR] Login Failed")
@@ -30,6 +33,10 @@ def authenticate_user_login(email, password):
 def create_user_account(email, password):
     try:
         firebase_auth.create_user_with_email_and_password(email, password)
+
+        # todo remove this
+        print("Successfully Created an Account")
         return True
     except:
+        print("Password has to have a length of 6 or higher")
         return False

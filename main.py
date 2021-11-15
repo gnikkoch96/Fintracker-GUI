@@ -1,15 +1,13 @@
 import dearpygui.dearpygui as dpg
+import configs
 from login import Login
 from register import Register
-
-VIEWPORT_HEIGHT = 700
-VIEWPORT_WIDTH = 1000
 
 def create_windows():
     dpg.create_context()
     dpg.create_viewport(title="Investment-Tracker GUI",
-                        width=VIEWPORT_WIDTH,
-                        height=VIEWPORT_HEIGHT)
+                        width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0],
+                        height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1])
     dpg.setup_dearpygui()
     dpg.set_global_font_scale(1.25)
 
@@ -17,10 +15,9 @@ def create_windows():
 
     # themes
 
-    # start login window
+    # load login and register windows
     Register(dpg)
     Login(dpg)
-
 
     dpg.show_viewport()
     dpg.start_dearpygui()
@@ -28,4 +25,5 @@ def create_windows():
 
 
 if __name__ == '__main__':
+    dpg.show_style_editor()
     create_windows()

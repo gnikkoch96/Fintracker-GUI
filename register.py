@@ -8,6 +8,9 @@ class Register:
         self.dpg = dpg
         self.create_register_win()
 
+        # hide the register
+        self.dpg.hide_item(configs.REGISTER_WINDOW_ID)
+
     def create_register_win(self):
         with self.dpg.window(tag=configs.REGISTER_WINDOW_ID,
                              label=configs.REGISTER_WINDOW_TEXT,
@@ -18,17 +21,17 @@ class Register:
 
     def create_register_items(self):
         with self.dpg.group(horizontal=True) as email_login:
-            self.dpg.add_text(configs.REGISTER_INPUT_EMAIL_TEXT)
-            self.dpg.add_input_text(tag=configs.REGISTER_INPUT_EMAIL_ID)
+            self.dpg.add_input_text(tag=configs.REGISTER_INPUT_EMAIL_ID,
+                                    hint=configs.REGISTER_INPUT_EMAIL_TEXT)
 
         with self.dpg.group(horizontal=True) as pass_login:
-            self.dpg.add_text(configs.REGISTER_INPUT_PASS_TEXT)
             self.dpg.add_input_text(tag=configs.REGISTER_INPUT_PASS_ID,
+                                    hint=configs.REGISTER_INPUT_PASS_TEXT,
                                     password=True)
 
         with self.dpg.group(horizontal=True) as confirm_pass_login:
-            self.dpg.add_text(configs.REGISTER_INPUT_CONFIRM_PASS_TEXT)
             self.dpg.add_input_text(tag=configs.REGISTER_INPUT_CONFIRM_PASS_ID,
+                                    hint=configs.REGISTER_INPUT_CONFIRM_PASS_TEXT,
                                     password=True)
 
         self.dpg.add_text(tag=configs.REGISTER_INPUT_ERROR_ID,
@@ -49,15 +52,14 @@ class Register:
         confirm_pass = self.dpg.get_value(configs.REGISTER_INPUT_CONFIRM_PASS_ID)
 
         # check to see if the confirm pass is the same as the pass if not return an error
-        if confirm_pass != password:
-            self.dpg.show_item(configs.REGISTER_INPUT_ERROR_ID)
-
         # try to make the account and see if the email is already being used or not
-        if not firebase_conn.create_user_account(email, password):
+        if confirm_pass != password or not firebase_conn.create_user_account(email, password):
             self.dpg.show_item(configs.REGISTER_INPUT_ERROR_ID)
-
-        # todo display login then a success dialogue
+        else:
+            # todo display login then a success dialogue
+            self.login_callback(None, None, None)  # dummy arguments
 
     # goes back to the login screen
     def login_callback(self, sender, app_data, user_data):
-        pass
+        self.dpg.show_item(configs.LOGIN_WINDOW_ID)
+        self.dpg.hide_item(configs.REGISTER_WINDOW_ID)
