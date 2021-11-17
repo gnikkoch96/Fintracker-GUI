@@ -11,6 +11,7 @@ class Add_Crypto_Stock:
                              label=configs.TICKER_ADD_CRYPTO_STOCK_WINDOW_TEXT,
                              width=self.dpg.get_viewport_width() /3,
                              height=self.dpg.get_viewport_height() /1.5,
+                             on_close=self.cleanup,
                              modal=True):
             self.create_add_crypto_stock_items()
 

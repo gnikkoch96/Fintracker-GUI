@@ -17,9 +17,9 @@ def create_windows():
     # themes
 
     # load login and register windows
-    # Register(dpg)
-    # Login(dpg)
-    TickerSearch(dpg)
+    Register(dpg)
+    Login(dpg)
+    # TickerSearch(dpg)
 
     dpg.show_viewport()
     dpg.start_dearpygui()

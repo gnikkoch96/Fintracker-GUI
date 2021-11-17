@@ -5,9 +5,13 @@ TICKER_SEARCH_BTN_ID = "Ticker Search Button"
 TICKER_INFO_WINDOW_ID = "Ticker Info"
 TICKER_ADD_BTN_ID = "Ticker Add"
 TICKER_RADIO_BTNS_ID = "Ticker Radio Buttons"
-
+TICKER_INFO_WINDOW_TICKER_ID = "Ticker Info Ticker"
+TICKER_INFO_WINDOW_COUNT_ID = "Ticker Info Count"
+TICKER_INFO_WINDOW_BOUGHT_PRICE_ID = "Ticker Info Bought Price"
 TICKER_ADD_CRYPTO_STOCK_WINDOW_ID = "Ticker Add Crypto Stock"
-
+TICKER_INFO_WINDOW_REASON_ID = "Ticker Info Reason"
+TICKER_INFO_WINDOW_CONTRACT_BTN_ID = "Ticker Info Contract Button"
+TICKER_INFO_WINDOW_SHOW_CONTRACT_ID = "Ticker Info Show Contract"
 
 FINTRACKER_WINDOW_ID = "Fintracker Window"
 FINTRACKER_CLOSED_TRADES_ID = "Fintracker Closed Trades"
@@ -50,8 +54,12 @@ TICKER_RADIO_BTN_OPTION_TEXT = "Option"
 TICKER_INPUT_TICKER_TEXT = "Enter Ticker"
 TICKER_SEARCH_BTN_TEXT = "Search"
 TICKER_INFO_WINDOW_TEXT = "Ticker Information"
-
+TICKER_INFO_WINDOW_TICKER_TEXT = "Enter Ticker"
+TICKER_INFO_WINDOW_COUNT_TEXT = "Enter Count"
+TICKER_INFO_WINDOW_BOUGHT_PRICE_TEXT = "Enter Bought Price"
+TICKER_INFO_WINDOW_REASON_TEXT = "(Optional) Enter your reason"
 TICKER_ADD_CRYPTO_STOCK_WINDOW_TEXT = "Add Crypto/Stock Trade"
+TICKER_INFO_WINDOW_CONTRACT_BTN_TEXT = "Choose Contract"
 
 # fintracker
 FINTRACKER_WINDOW_TEXT = "(Fintracker) Investment Tracker"
