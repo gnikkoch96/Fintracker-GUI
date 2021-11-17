@@ -55,6 +55,20 @@ def add_to_db(user_id, data):
         firebase_db.child().child('Open Trades').push(data)
 
 
+def add_open_trade_db(user_id, data):
+    if user_id is not None:
+        firebase_db.child(user_id).child('Open Trades').push(data)
+    else:
+        firebase_db.child().child('Open Trades').push(data)
+
+
+def add_closed_trade_db(user_id, data):
+    if user_id is not None:
+        firebase_db.child(user_id).child('Closed Trades').push(data)
+    else:
+        firebase_db.child().child('Open Trades').push(data)
+
+
 def get_closed_trades_db(user_id):
     if user_id is not None:
         return firebase_db.child(user_id).child("Closed Trades").get().val()

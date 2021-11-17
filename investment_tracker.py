@@ -24,6 +24,7 @@ class Fintracker:
             with self.dpg.child_window(tag=configs.FINTRACKER_CLOSED_TRADES_ID,
                                        width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.40,
                                        height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.65):
+                self.dpg.add_text(configs.FINTRACKER_CLOSED_TRADES_TEXT)
                 self.load_closed_trades()
 
             # child: open trades container (holds the open trades window and buttons)
@@ -34,6 +35,7 @@ class Fintracker:
                 with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_ID,
                                            width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.40,
                                            height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.45):
+                    self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_TEXT)
                     self.load_open_trades()
 
                 # sub-child: buttons
@@ -88,4 +90,5 @@ class Fintracker:
     def add_callback(self):
         # data = {'date':'12/12/21', 'ticker':'VUZI', 'type':'stock', 'count':100, 'bought_price':1.25}
         # firebase_conn.add_to_db(self.user_id, data)
-        TickerSearch(self.dpg)
+        self.dpg.disable_item(configs.FINTRACKER_ADD_BTN_ID)
+        TickerSearch(self.dpg, self.user_id)

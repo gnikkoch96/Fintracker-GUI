@@ -1,7 +1,7 @@
 import configs
 
 
-class Add_Crypto_Stock:
+class CryptoStockOptionInfo:
     def __init__(self, dpg):
         self.dpg = dpg
         self.create_add_crypto_stock_win()

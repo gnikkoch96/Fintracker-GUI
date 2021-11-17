@@ -18,6 +18,7 @@ pd.set_option('display.max_columns', 20)
 # stocks
 # print(info['longBusinessSummary'], info['currentPrice'], info['targetHighPrice'], info['targetMeanPrice'], info['sharesShort'], info['sharesShortPriorMonth'],
 #       info['shortPercentOfFloat'], info['shortRatio'], info['floatShares'], info['marketCap'])
+# print(dole.recommendations)
 
 
 # print(dole.major_holders)
@@ -25,8 +26,9 @@ pd.set_option('display.max_columns', 20)
 # print(dole.news)
 
 # options
-dole = yf.Ticker("DOLE")
-print(dole.option_chain(dole.options[0])[0])
-
-dole_options = dole.option_chain(dole.options[0])[0]
-print(dole_options['impliedVolatility'][8] * 100)
+dole = yf.Ticker("TSLA")
+print(dole.get_info()['regularMarketPrice'])
+# print(dole.option_chain(dole.options[0])[0])
+#
+# dole_options = dole.option_chain(dole.options[0])[0]
+# print(dole_options['impliedVolatility'][8] * 100)

@@ -45,6 +45,16 @@ REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 FINTRACKER_WINDOW_VIEWPORT_SIZE = (1500, 800) # width x height
 ADD_BTN_TEXT = "Add"
 
+# firebase keywords
+FIREBASE_DATE = "date"
+FIREBASE_TICKER = "ticker"
+FIREBASE_TYPE = "stock_type"
+FIREBASE_COUNT = "count"
+FIREBASE_BOUGHT_PRICE = "bought_price"
+
+
+# yfinance keywords
+YFINANCE_REGULARMARKETPRICE = "regularMarketPrice"
 
 # ticker search
 TICKER_WINDOW_TEXT = "(Fintracker) Search Ticker"
@@ -68,7 +78,8 @@ FINTRACKER_PROFIT_LABEL_TEXT = "Net Profit: "
 FINTRACKER_PROFIT_TEXT = "0"
 FINTRACKER_PROFIT_PERCENT_LABEL_TEXT = "Win-Rate: "
 FINTRACKER_PROFIT_PERCENT_TEXT = "0.0%"
-
+FINTRACKER_CLOSED_TRADES_TEXT = "Closed Trades"
+FINTRACKER_OPEN_TRADES_TEXT = "Open Trades"
 
 # login
 LOGIN_WINDOW_TEXT = "(FinTracker) Login"
