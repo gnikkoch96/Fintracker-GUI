@@ -45,9 +45,11 @@ class Login:
     def login_callback(self, sender, app_data, user_data):
         email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
         password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
-        if firebase_conn.authenticate_user_login(email, password):
+
+        user = firebase_conn.authenticate_user_login(email, password)
+        if user is not None:
             # todo create a dialogue that shows sign-in was successful
-            Fintracker(self.dpg)
+            Fintracker(self.dpg, False, user)
             self.dpg.hide_item(configs.LOGIN_WINDOW_ID)
         else:
             self.dpg.show_item(configs.LOGIN_INPUT_ERROR_ID)
@@ -60,4 +62,5 @@ class Login:
         self.dpg.hide_item(configs.LOGIN_WINDOW_ID)
 
     def offline_callback(self, sender, app_data, user_data):
-        pass
+        # todo also display a warning for choosing to go online
+        Fintracker(self.dpg, True)

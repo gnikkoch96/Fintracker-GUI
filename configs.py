@@ -1,11 +1,13 @@
 # ids
 TICKER_WINDOW_ID = "Ticker Window"
-TICKER_RADIO_BTN_CRYPTO_ID = "Ticker Crypto"
-TICKER_RADIO_BTN_STOCK_ID = "Ticker Stock"
-TICKER_RADIO_BTN_OPTION_ID = "Ticker Option"
 TICKER_INPUT_TICKER_ID = "Ticker Input Ticker"
 TICKER_SEARCH_BTN_ID = "Ticker Search Button"
 TICKER_INFO_WINDOW_ID = "Ticker Info"
+TICKER_ADD_BTN_ID = "Ticker Add"
+TICKER_RADIO_BTNS_ID = "Ticker Radio Buttons"
+
+TICKER_ADD_CRYPTO_STOCK_WINDOW_ID = "Ticker Add Crypto Stock"
+
 
 FINTRACKER_WINDOW_ID = "Fintracker Window"
 FINTRACKER_CLOSED_TRADES_ID = "Fintracker Closed Trades"
@@ -37,6 +39,8 @@ REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 
 # values
 FINTRACKER_WINDOW_VIEWPORT_SIZE = (1500, 800) # width x height
+ADD_BTN_TEXT = "Add"
+
 
 # ticker search
 TICKER_WINDOW_TEXT = "(Fintracker) Search Ticker"
@@ -47,14 +51,16 @@ TICKER_INPUT_TICKER_TEXT = "Enter Ticker"
 TICKER_SEARCH_BTN_TEXT = "Search"
 TICKER_INFO_WINDOW_TEXT = "Ticker Information"
 
+TICKER_ADD_CRYPTO_STOCK_WINDOW_TEXT = "Add Crypto/Stock Trade"
+
 # fintracker
 FINTRACKER_WINDOW_TEXT = "(Fintracker) Investment Tracker"
-FINTRACKER_ADD_BTN_TEXT = "Add"
 FINTRACKER_NEWS_BTN_TEXT = "News"
 FINTRACKER_PROFIT_LABEL_TEXT = "Net Profit: "
 FINTRACKER_PROFIT_TEXT = "0"
 FINTRACKER_PROFIT_PERCENT_LABEL_TEXT = "Win-Rate: "
 FINTRACKER_PROFIT_PERCENT_TEXT = "0.0%"
+
 
 # login
 LOGIN_WINDOW_TEXT = "(FinTracker) Login"
