@@ -59,29 +59,37 @@ class Fintracker:
             self.dpg.add_text(tag=configs.FINTRACKER_PROFIT_PERCENT_ID,
                               default_value=configs.FINTRACKER_PROFIT_PERCENT_TEXT)
 
+    # todo think about making this into a table as opposed to creating buttons
     def load_closed_trades(self):
         # todo make it so that if the local file exists we read from there as opposed to firebase
+        if firebase_conn.get_closed_trades_db(self.user_id) is None:
+            return
+
         for closed_trade_id in firebase_conn.get_closed_trades_db(self.user_id):
             closed_trade = firebase_conn.get_closed_trade_db(self.user_id, closed_trade_id)
-            bought_price = closed_trade['bought_price']
-            count = closed_trade['count']
-            ticker = closed_trade['ticker']
-            type = closed_trade['type']
-            date = closed_trade['date']
+            bought_price = closed_trade[configs.FIREBASE_BOUGHT_PRICE]
+            count = closed_trade[configs.FIREBASE_COUNT]
+            ticker = closed_trade[configs.FIREBASE_TICKER]
+            type = closed_trade[configs.FIREBASE_TYPE]
+            date = closed_trade[configs.FIREBASE_DATE]
 
             format = f"{date} | {ticker} | {type} | {count} | {bought_price}"
             self.dpg.add_button(label=format,
                                 parent=configs.FINTRACKER_CLOSED_TRADES_ID)
 
+    # todo think about making this into a table as opposed to creating buttons
     def load_open_trades(self):
         # todo make it so that if the local file exists we read from there as opposed to firebase
+        if firebase_conn.get_open_trades_db(self.user_id) is None:
+            return
+
         for open_trade_id in firebase_conn.get_open_trades_db(self.user_id):
             open_trade = firebase_conn.get_open_trade_db(self.user_id, open_trade_id)
-            bought_price = open_trade['bought_price']
-            count = open_trade['count']
-            ticker = open_trade['ticker']
-            type = open_trade['type']
-            date = open_trade['date']
+            bought_price = open_trade[configs.FIREBASE_BOUGHT_PRICE]
+            count = open_trade[configs.FIREBASE_COUNT]
+            ticker = open_trade[configs.FIREBASE_TICKER]
+            type = open_trade[configs.FIREBASE_TYPE]
+            date = open_trade[configs.FIREBASE_DATE]
 
             format = f"{date} | {ticker} | {type} | {count} | {bought_price}"
             self.dpg.add_button(label=format,

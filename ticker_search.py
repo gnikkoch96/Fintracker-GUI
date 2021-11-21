@@ -1,5 +1,6 @@
 import configs
 import yfinance as yf
+import yfinance_tool as yft
 import firebase_conn
 from ticker_search_info import CryptoStockOptionInfo
 from datetime import date
@@ -92,22 +93,65 @@ class TickerSearch:
 
         # enter count
         # todo figure out what to do when user puts a negative number
+        # todo add hints
         self.dpg.add_input_int(tag=configs.TICKER_INFO_WINDOW_COUNT_ID)
 
         #  enter bought price
         # todo figure out what to do when user puts a negative number
-        self.dpg.add_input_float(tag=configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID)
+        # todo add hints
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_input_float(tag=configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID)
+
+            # current price button
+            if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
+                self.dpg.add_button(tag=configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID,
+                                    label=configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT,
+                                    callback=self.get_current_price)
 
         # enter reason
         self.dpg.add_input_text(tag=configs.TICKER_INFO_WINDOW_REASON_ID,
                                 hint=configs.TICKER_INFO_WINDOW_REASON_TEXT)
 
+    def get_current_price(self):
+        ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID)
+        curr_price = yft.get_stock_price(ticker)
+        self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
+
+    # todo cleanup this code
     def add_callback(self):
         if self.validate_inputs():
-            # todo add to firebase
-            # data = {'date':'12/12/21', 'ticker':'VUZI', 'type':'stock', 'count':100, 'bought_price':1.25}
-            # firebase_conn.add_open_trade_db(self.user_id, data)
-            pass
+            try:
+                bought_price = round(self.dpg.get_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID), 2)
+                count = self.dpg.get_value(configs.TICKER_INFO_WINDOW_COUNT_ID)
+                ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID).upper()
+                type = self.investment_type.upper()
+                date_val = str(date.today())
+
+                data = {configs.FIREBASE_DATE: date_val,
+                        configs.FIREBASE_TICKER: ticker,
+                        configs.FIREBASE_TYPE: type,
+                        configs.FIREBASE_COUNT: count,
+                        configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                        configs.FIREBASE_REASON: self.dpg.get_value(configs.TICKER_INFO_WINDOW_REASON_ID).capitalize()
+                        }
+
+                firebase_conn.add_open_trade_db(self.user_id, data)
+                print("Successfully added to database")
+
+                # update the investment tracker gui
+                # todo think about making this into a table as opposed to creating buttons
+                format = f"{date_val} | {ticker} | {type} | {count} | {bought_price}"
+                self.dpg.add_button(label=format,
+                                    parent=configs.FINTRACKER_OPEN_TRADES_ID)
+
+                # reset the input fields
+                # todo might want to put this in a separate method
+                self.dpg.set_value(configs.TICKER_INFO_WINDOW_TICKER_ID, "")
+                self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, "")
+                self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, "")
+                self.dpg.set_value(configs.TICKER_INFO_WINDOW_REASON_ID, "")
+            except:
+                print("Error: Data is invalid...Could not push to database")
 
     def choose_option_contract(self):
         pass
@@ -116,12 +160,16 @@ class TickerSearch:
         # todo this is where we will call the respective api to get the information
         CryptoStockOptionInfo(self.dpg)
 
+    # todo cleanup: might want to move this to a tools.py or something
     def validate_inputs(self):
+        # todo also make sure to validate if the ticker is crypto or stock
+
         # todo also see if the user enters the company name then you can return with the correct ticker
         ticker = yf.Ticker(self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID))
 
         # ticker is empty or did not return a result
-        invalid_ticker = ticker.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is None or self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID) is None
+        invalid_ticker = ticker.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is None or self.dpg.get_value(
+            configs.TICKER_INFO_WINDOW_TICKER_ID) is None
 
         # no negative or 0 count values and no negative bought price values
         invalid_count = self.dpg.get_value(configs.TICKER_INFO_WINDOW_COUNT_ID) <= 0
@@ -154,6 +202,9 @@ class TickerSearch:
         self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID)
         self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_REASON_ID)
 
+        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID):
+            self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
+
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID):
             self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
 
@@ -176,9 +227,11 @@ class TickerSearch:
         self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID)
         self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_REASON_ID)
 
+        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID):
+            self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
+
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID):
             self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
 
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID):
             self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID)
-

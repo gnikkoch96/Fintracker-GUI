@@ -2,13 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ff56f13a-af49-4716-9548-457a8147bcdf" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/yfinance_tool.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/firebase_conn.py" beforeDir="false" afterPath="$PROJECT_DIR$/firebase_conn.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/investment_tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/investment_tracker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/yf-api-test.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing/yf-api-test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ticker_search.py" beforeDir="false" afterPath="$PROJECT_DIR$/ticker_search.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ticker_search_add_crypto_stock.py" beforeDir="false" afterPath="$PROJECT_DIR$/ticker_search_info.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +43,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/testing/yf-api-test.py" />
   </component>
-  <component name="RunManager" selected="Python.yf-api-test">
+  <component name="RunManager" selected="Python.main">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Fintracker-GUI" />
       <option name="INTERPRETER_OPTIONS" value="" />

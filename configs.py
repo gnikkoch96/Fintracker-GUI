@@ -12,6 +12,7 @@ TICKER_ADD_CRYPTO_STOCK_WINDOW_ID = "Ticker Add Crypto Stock"
 TICKER_INFO_WINDOW_REASON_ID = "Ticker Info Reason"
 TICKER_INFO_WINDOW_CONTRACT_BTN_ID = "Ticker Info Contract Button"
 TICKER_INFO_WINDOW_SHOW_CONTRACT_ID = "Ticker Info Show Contract"
+TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID = "Ticker Info Current Price Button"
 
 FINTRACKER_WINDOW_ID = "Fintracker Window"
 FINTRACKER_CLOSED_TRADES_ID = "Fintracker Closed Trades"
@@ -51,6 +52,7 @@ FIREBASE_TICKER = "ticker"
 FIREBASE_TYPE = "stock_type"
 FIREBASE_COUNT = "count"
 FIREBASE_BOUGHT_PRICE = "bought_price"
+FIREBASE_REASON = "reason"
 
 
 # yfinance keywords
@@ -70,7 +72,7 @@ TICKER_INFO_WINDOW_BOUGHT_PRICE_TEXT = "Enter Bought Price"
 TICKER_INFO_WINDOW_REASON_TEXT = "(Optional) Enter your reason"
 TICKER_ADD_CRYPTO_STOCK_WINDOW_TEXT = "Add Crypto/Stock Trade"
 TICKER_INFO_WINDOW_CONTRACT_BTN_TEXT = "Choose Contract"
-
+TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT = "Current Price"
 # fintracker
 FINTRACKER_WINDOW_TEXT = "(Fintracker) Investment Tracker"
 FINTRACKER_NEWS_BTN_TEXT = "News"
