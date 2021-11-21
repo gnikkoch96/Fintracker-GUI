@@ -13,6 +13,7 @@ class TickerSearch:
         self.investment_types = [configs.TICKER_RADIO_BTN_CRYPTO_TEXT,
                                  configs.TICKER_RADIO_BTN_STOCK_TEXT,
                                  configs.TICKER_RADIO_BTN_OPTION_TEXT]
+        self.option = None
 
         # default will be on Crypto
         self.investment_type = configs.TICKER_RADIO_BTN_CRYPTO_TEXT
@@ -156,7 +157,7 @@ class TickerSearch:
 
     # choose the options contract
     def contract_callback(self):
-        Options(self.dpg)
+        self.option = Options(self.dpg)
 
     def load_stock_info(self):
         # todo this is where we will call the respective api to get the information
@@ -242,7 +243,8 @@ class TickerSearch:
 class Options:
     def __init__(self, dpg):
         self.dpg = dpg
-
+        self.dpg.disable_item(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
+        self.contract = None
         self.create_options_win()
 
     def create_options_win(self):
@@ -250,8 +252,7 @@ class Options:
                              label=configs.OPTIONS_WINDOW_TEXT,
                              width=self.dpg.get_viewport_width() / 2,
                              height=self.dpg.get_viewport_height() / 1.5,
-                             on_close=self.cleanup_alias,
-                             modal=True):
+                             on_close=self.cleanup_alias):
             self.create_options_items()
 
     def create_options_items(self):
@@ -263,28 +264,50 @@ class Options:
                                 label=configs.SEARCH_BTN_TEXT,
                                 callback=self.search_callback)
 
-        # call or put combo (user chooses)
-        self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
-                           items=self.create_option_type_combo_list(),
-                           default_value=configs.OPTIONS_CALL_TEXT)
-
-        # date combo (callback will search)
-        self.dpg.add_combo(tag=configs.OPTION_WINDOW_DATE_COMBO_ID,
-                           items=self.create_option_date_combo_list(),
-                           callback=self.load_options)
-
-    def load_options(self):
-        pass
-
     def create_option_type_combo_list(self):
         option_types = [configs.OPTIONS_CALL_TEXT, configs.OPTIONS_PUT_TEXT]
         return option_types
 
     def create_option_date_combo_list(self):
-        pass
+        ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
+        print(type(yft.get_options_date(ticker)))
+        return yft.get_options_date(ticker)
 
     def search_callback(self):
-        pass
+        ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
+        if yft.validate_ticker(ticker):
+            with self.dpg.group(horizontal=True, parent=configs.OPTIONS_WINDOW_ID):
+                # call or put combo (user chooses)
+                self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
+                                   items=self.create_option_type_combo_list(),
+                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0]/10,
+                                   default_value=configs.OPTIONS_CALL_TEXT)
+
+                # date combo (callback will search)
+                self.dpg.add_combo(tag=configs.OPTION_WINDOW_DATE_COMBO_ID,
+                                   items=self.create_option_date_combo_list(),
+                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0]/10,
+                                   default_value=self.create_option_date_combo_list()[0])
+
+                # search contract button
+                self.dpg.add_button(tag=configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID,
+                                   label=configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_TEXT,
+                                   callback=self.load_options)
+        else:
+            # todo add a dialog that says invalid ticker
+            pass
+
+    def load_options(self):
+        ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
+        contract_type = self.dpg.get_value(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
+        date = self.dpg.get_value(configs.OPTION_WINDOW_DATE_COMBO_ID)
+        options_list = yft.get_options(ticker, contract_type, date)
 
     def cleanup_alias(self):
+        self.dpg.enable_item(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
+
         self.dpg.remove_alias(configs.OPTIONS_WINDOW_ID)
+        self.dpg.remove_alias(configs.OPTION_WINDOW_TICKER_INPUT_ID)
+        self.dpg.remove_alias(configs.OPTION_WINDOW_SEARCH_BTN_ID)
+        self.dpg.remove_alias(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
+        self.dpg.remove_alias(configs.OPTION_WINDOW_DATE_COMBO_ID)

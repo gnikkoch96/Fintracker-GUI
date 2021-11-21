@@ -1,5 +1,10 @@
 # ids
 OPTIONS_WINDOW_ID = "Options Window"
+OPTION_WINDOW_TICKER_INPUT_ID = "Options Ticker Input"
+OPTION_WINDOW_SEARCH_BTN_ID = "Options Search Button"
+OPTION_WINDOW_OPTION_TYPE_COMBO_ID = "Options Type Combo"
+OPTION_WINDOW_DATE_COMBO_ID = "Options Date Combo"
+OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID ="Options Contract Search Button"
 
 TICKER_WINDOW_ID = "Ticker Window"
 TICKER_INPUT_TICKER_ID = "Ticker Input Ticker"
@@ -65,6 +70,8 @@ YFINANCE_REGULARMARKETPRICE = "regularMarketPrice"
 OPTIONS_WINDOW_TEXT = "Choose Option Contract"
 OPTIONS_CALL_TEXT = "Call"
 OPTIONS_PUT_TEXT = "Put"
+OPTION_WINDOW_TICKER_INPUT_TEXT = "Enter Ticker"
+OPTION_WINDOW_SEARCH_CONTRACT_BTN_TEXT = "Search Contracts"
 
 # ticker search
 TICKER_WINDOW_TEXT = "(Fintracker) Search Ticker"
