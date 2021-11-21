@@ -1,4 +1,6 @@
 # ids
+OPTIONS_WINDOW_ID = "Options Window"
+
 TICKER_WINDOW_ID = "Ticker Window"
 TICKER_INPUT_TICKER_ID = "Ticker Input Ticker"
 TICKER_SEARCH_BTN_ID = "Ticker Search Button"
@@ -45,6 +47,7 @@ REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 # values
 FINTRACKER_WINDOW_VIEWPORT_SIZE = (1500, 800) # width x height
 ADD_BTN_TEXT = "Add"
+SEARCH_BTN_TEXT = "Search"
 
 # firebase keywords
 FIREBASE_DATE = "date"
@@ -58,13 +61,17 @@ FIREBASE_REASON = "reason"
 # yfinance keywords
 YFINANCE_REGULARMARKETPRICE = "regularMarketPrice"
 
+# options
+OPTIONS_WINDOW_TEXT = "Choose Option Contract"
+OPTIONS_CALL_TEXT = "Call"
+OPTIONS_PUT_TEXT = "Put"
+
 # ticker search
 TICKER_WINDOW_TEXT = "(Fintracker) Search Ticker"
 TICKER_RADIO_BTN_CRYPTO_TEXT = "Crypto"
 TICKER_RADIO_BTN_STOCK_TEXT = "Stock"
 TICKER_RADIO_BTN_OPTION_TEXT = "Option"
 TICKER_INPUT_TICKER_TEXT = "Enter Ticker"
-TICKER_SEARCH_BTN_TEXT = "Search"
 TICKER_INFO_WINDOW_TEXT = "Ticker Information"
 TICKER_INFO_WINDOW_TICKER_TEXT = "Enter Ticker"
 TICKER_INFO_WINDOW_COUNT_TEXT = "Enter Count"
@@ -73,6 +80,7 @@ TICKER_INFO_WINDOW_REASON_TEXT = "(Optional) Enter your reason"
 TICKER_ADD_CRYPTO_STOCK_WINDOW_TEXT = "Add Crypto/Stock Trade"
 TICKER_INFO_WINDOW_CONTRACT_BTN_TEXT = "Choose Contract"
 TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT = "Current Price"
+
 # fintracker
 FINTRACKER_WINDOW_TEXT = "(Fintracker) Investment Tracker"
 FINTRACKER_NEWS_BTN_TEXT = "News"

@@ -40,7 +40,7 @@ class TickerSearch:
                                     hint=configs.TICKER_INPUT_TICKER_TEXT)
 
             self.dpg.add_button(tag=configs.TICKER_SEARCH_BTN_ID,
-                                label=configs.TICKER_SEARCH_BTN_TEXT,
+                                label=configs.SEARCH_BTN_TEXT,
                                 callback=self.load_stock_info)
 
         # ticker info
@@ -78,14 +78,15 @@ class TickerSearch:
     def create_add_investment_info_items(self):
         # enter ticker
         # todo figure out what to do when user puts an invalid ticker
-        self.dpg.add_input_text(tag=configs.TICKER_INFO_WINDOW_TICKER_ID,
-                                hint=configs.TICKER_INFO_WINDOW_TICKER_TEXT)
+        if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
+            self.dpg.add_input_text(tag=configs.TICKER_INFO_WINDOW_TICKER_ID,
+                                    hint=configs.TICKER_INFO_WINDOW_TICKER_TEXT)
 
         # if options, allow user to choose contract
         if self.investment_type == configs.TICKER_RADIO_BTN_OPTION_TEXT:
             self.dpg.add_button(tag=configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID,
                                 label=configs.TICKER_INFO_WINDOW_CONTRACT_BTN_TEXT,
-                                callback=self.choose_option_contract)
+                                callback=self.contract_callback)
 
             # show this text once the user has chosen a contract
             self.dpg.add_text(tag=configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID)
@@ -153,8 +154,9 @@ class TickerSearch:
             except:
                 print("Error: Data is invalid...Could not push to database")
 
-    def choose_option_contract(self):
-        pass
+    # choose the options contract
+    def contract_callback(self):
+        Options(self.dpg)
 
     def load_stock_info(self):
         # todo this is where we will call the respective api to get the information
@@ -235,3 +237,54 @@ class TickerSearch:
 
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID):
             self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID)
+
+
+class Options:
+    def __init__(self, dpg):
+        self.dpg = dpg
+
+        self.create_options_win()
+
+    def create_options_win(self):
+        with self.dpg.window(tag=configs.OPTIONS_WINDOW_ID,
+                             label=configs.OPTIONS_WINDOW_TEXT,
+                             width=self.dpg.get_viewport_width() / 2,
+                             height=self.dpg.get_viewport_height() / 1.5,
+                             on_close=self.cleanup_alias,
+                             modal=True):
+            self.create_options_items()
+
+    def create_options_items(self):
+        # ticker input
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_input_text(tag=configs.OPTION_WINDOW_TICKER_INPUT_ID,
+                                    hint=configs.OPTION_WINDOW_TICKER_INPUT_TEXT)
+            self.dpg.add_button(tag=configs.OPTION_WINDOW_SEARCH_BTN_ID,
+                                label=configs.SEARCH_BTN_TEXT,
+                                callback=self.search_callback)
+
+        # call or put combo (user chooses)
+        self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
+                           items=self.create_option_type_combo_list(),
+                           default_value=configs.OPTIONS_CALL_TEXT)
+
+        # date combo (callback will search)
+        self.dpg.add_combo(tag=configs.OPTION_WINDOW_DATE_COMBO_ID,
+                           items=self.create_option_date_combo_list(),
+                           callback=self.load_options)
+
+    def load_options(self):
+        pass
+
+    def create_option_type_combo_list(self):
+        option_types = [configs.OPTIONS_CALL_TEXT, configs.OPTIONS_PUT_TEXT]
+        return option_types
+
+    def create_option_date_combo_list(self):
+        pass
+
+    def search_callback(self):
+        pass
+
+    def cleanup_alias(self):
+        self.dpg.remove_alias(configs.OPTIONS_WINDOW_ID)

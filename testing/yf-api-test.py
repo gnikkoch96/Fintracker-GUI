@@ -27,8 +27,9 @@ pd.set_option('display.max_columns', 20)
 
 # options
 dole = yf.Ticker("TSLA")
-print(dole.get_info()['regularMarketPrice'])
-# print(dole.option_chain(dole.options[0])[0])
+# print(dole.get_info()['regularMarketPrice'])
+# print(dole.option_chain(dole.options[0]))
 #
-# dole_options = dole.option_chain(dole.options[0])[0]
-# print(dole_options['impliedVolatility'][8] * 100)
+dole_options = dole.option_chain(dole.options[0])
+print(dole_options[0]) # 0 - calls and 1 - puts
+# print(dole_options[8] * 100)
