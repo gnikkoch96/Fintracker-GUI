@@ -11,6 +11,8 @@ class Fintracker:
 
 
         # todo if offline then we read a file instead of accessing the firebase
+        if is_offline:
+            pass
 
     def create_fintracker_win(self):
         with self.dpg.window(tag=configs.FINTRACKER_WINDOW_ID,
@@ -84,13 +86,13 @@ class Fintracker:
         # todo make it so that if the local file exists we read from there as opposed to firebase
         if firebase_conn.get_open_trades_stock_crypto_db(self.user_id) is not None:
             self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT)
-            self.load_stock_crypto_table()
+            self.load_open_stock_crypto_table()
 
         if firebase_conn.get_open_trades_options_db(self.user_id) is not None:
             self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT)
-            self.load_option_table()
+            self.load_open_option_table()
 
-    def load_stock_crypto_table(self):
+    def load_open_stock_crypto_table(self):
         with self.dpg.table(tag=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID,
                             resizable=True,
                             header_row=True):
@@ -137,7 +139,7 @@ class Fintracker:
                         # bought price
                         self.dpg.add_text(bought_price)
 
-    def load_option_table(self):
+    def load_open_option_table(self):
         with self.dpg.table(tag=configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID,
                             resizable=True,
                             header_row=True):
@@ -188,5 +190,8 @@ class Fintracker:
         pass
 
     def add_callback(self):
-        self.dpg.disable_item(configs.FINTRACKER_ADD_BTN_ID)
-        TickerSearch(self.dpg, self.user_id)
+        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_TICKER_ID):
+            self.dpg.focus_item(configs.TICKER_INFO_WINDOW_TICKER_ID)
+        else:
+            TickerSearch(self.dpg, self.user_id)
+

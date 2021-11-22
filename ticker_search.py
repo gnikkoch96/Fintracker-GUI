@@ -267,8 +267,6 @@ class TickerSearch:
 
     # todo this might get fixed in future updates
     def cleanup_alias(self):
-        self.dpg.enable_item(configs.FINTRACKER_ADD_BTN_ID)
-
         self.dpg.remove_alias(configs.TICKER_SEARCH_BTN_ID)
         self.dpg.remove_alias(configs.TICKER_INPUT_TICKER_ID)
         self.dpg.remove_alias(configs.TICKER_WINDOW_ID)

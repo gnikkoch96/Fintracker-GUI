@@ -63,9 +63,9 @@ class Register:
             self.dpg.show_item(configs.REGISTER_INPUT_ERROR_ID)
         else:
             # todo display login then a success dialogue
-            self.login_callback(None, None, None)  # dummy arguments
+            self.login_callback()
 
     # goes back to the login screen
-    def login_callback(self, sender, app_data, user_data):
+    def login_callback(self):
         self.dpg.show_item(configs.LOGIN_WINDOW_ID)
         self.dpg.hide_item(configs.REGISTER_WINDOW_ID)

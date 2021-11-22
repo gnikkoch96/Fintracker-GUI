@@ -2,7 +2,7 @@ import firebase_conn
 import configs
 from investment_tracker import Fintracker
 
-# desc: creates the login GUI
+
 class Login:
     def __init__(self, dpg):
         self.dpg = dpg
