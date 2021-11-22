@@ -4,10 +4,9 @@ from ticker_search import TickerSearch
 
 
 class Fintracker:
-    def __init__(self, dpg, is_offline, user_id=None):
+    def __init__(self, dpg, is_offline=False, user_id=None):
         self.dpg = dpg
         self.user_id = user_id
-        self.num_open_trades = 0
         self.create_fintracker_win()
 
 
@@ -69,7 +68,7 @@ class Fintracker:
             return
 
         for closed_trade_id in firebase_conn.get_closed_trades_db(self.user_id):
-            closed_trade = firebase_conn.get_closed_trade_db(self.user_id, closed_trade_id)
+            closed_trade = firebase_conn.get_closed_trade_by_id_db(self.user_id, closed_trade_id)
             bought_price = closed_trade[configs.FIREBASE_BOUGHT_PRICE]
             count = closed_trade[configs.FIREBASE_COUNT]
             ticker = closed_trade[configs.FIREBASE_TICKER]
@@ -83,35 +82,28 @@ class Fintracker:
     # todo think about making this into a table as opposed to creating buttons
     def load_open_trades(self):
         # todo make it so that if the local file exists we read from there as opposed to firebase
-        if firebase_conn.get_open_trades_db(self.user_id) is None:
-            return
+        if firebase_conn.get_open_trades_stock_crypto_db(self.user_id) is not None:
+            self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT)
+            self.load_stock_crypto_table()
 
-        self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT)
-        self.load_stock_crypto_table()
-
-        self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT)
-        self.load_option_table()
-
-    def load_option_table(self):
-        pass
+        if firebase_conn.get_open_trades_options_db(self.user_id) is not None:
+            self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT)
+            self.load_option_table()
 
     def load_stock_crypto_table(self):
-        if firebase_conn.get_open_trades_db(self.user_id) is None:
-            return
-
         with self.dpg.table(tag=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID,
                             resizable=True,
                             header_row=True):
             # column headers
-            self.dpg.add_table_column(label=configs.ID_TEXT, width_fixed=False)
+            self.dpg.add_table_column()
             self.dpg.add_table_column(label=configs.FIREBASE_DATE)
             self.dpg.add_table_column(label=configs.FIREBASE_TYPE)
             self.dpg.add_table_column(label=configs.FIREBASE_TICKER)
             self.dpg.add_table_column(label=configs.FIREBASE_COUNT)
             self.dpg.add_table_column(label=configs.FIREBASE_BOUGHT_PRICE)
 
-            for open_trade_id in firebase_conn.get_open_trades_db(self.user_id):
-                open_trade = firebase_conn.get_open_trade_db(self.user_id, open_trade_id)
+            for open_trade_id in firebase_conn.get_open_trades_stock_crypto_db(self.user_id):
+                open_trade = firebase_conn.get_open_trade_by_id_db(self.user_id, open_trade_id)
                 bought_price = round(open_trade[configs.FIREBASE_BOUGHT_PRICE], 2)
                 count = open_trade[configs.FIREBASE_COUNT]
                 ticker = open_trade[configs.FIREBASE_TICKER]
@@ -121,11 +113,9 @@ class Fintracker:
                 with self.dpg.table_row():
                     with self.dpg.table_cell():
                         # id (user clicks this to find about their trade)
-                        self.dpg.add_button(label=self.num_open_trades + 1,
+                        self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
                                             callback=self.open_trade_callback,
                                             user_data=open_trade_id)
-
-                        self.num_open_trades = self.num_open_trades + 1
 
                     with self.dpg.table_cell():
                         # date
@@ -138,6 +128,53 @@ class Fintracker:
                     with self.dpg.table_cell():
                         # ticker
                         self.dpg.add_text(ticker)
+
+                    with self.dpg.table_cell():
+                        # count
+                        self.dpg.add_text(count)
+
+                    with self.dpg.table_cell():
+                        # bought price
+                        self.dpg.add_text(bought_price)
+
+    def load_option_table(self):
+        with self.dpg.table(tag=configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID,
+                            resizable=True,
+                            header_row=True):
+            # column headers
+            self.dpg.add_table_column()
+            self.dpg.add_table_column(label=configs.FIREBASE_DATE)
+            self.dpg.add_table_column(label=configs.FIREBASE_TYPE)
+            self.dpg.add_table_column(label=configs.FIREBASE_CONTRACT)
+            self.dpg.add_table_column(label=configs.FIREBASE_COUNT)
+            self.dpg.add_table_column(label=configs.FIREBASE_BOUGHT_PRICE)
+
+            for open_trade_id in firebase_conn.get_open_trades_options_db(self.user_id):
+                open_trade = firebase_conn.get_open_trade_by_id_db(self.user_id, open_trade_id, True)
+                bought_price = round(open_trade[configs.FIREBASE_BOUGHT_PRICE], 2)
+                count = open_trade[configs.FIREBASE_COUNT]
+                contract = open_trade[configs.FIREBASE_CONTRACT]
+                invest_type = open_trade[configs.FIREBASE_TYPE]
+                date = open_trade[configs.FIREBASE_DATE]
+
+                with self.dpg.table_row():
+                    with self.dpg.table_cell():
+                        # id (user clicks this to find about their trade)
+                        self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
+                                            callback=self.open_trade_callback,
+                                            user_data=open_trade_id)
+
+                    with self.dpg.table_cell():
+                        # date
+                        self.dpg.add_text(date)
+
+                    with self.dpg.table_cell():
+                        # type
+                        self.dpg.add_text(invest_type)
+
+                    with self.dpg.table_cell():
+                        # ticker
+                        self.dpg.add_text(contract)
 
                     with self.dpg.table_cell():
                         # count

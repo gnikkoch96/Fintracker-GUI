@@ -8,7 +8,7 @@ class Register:
         self.dpg = dpg
         self.create_register_win()
 
-        # hide the register
+        # hide the register (prevent circular imports)
         self.dpg.hide_item(configs.REGISTER_WINDOW_ID)
 
     def create_register_win(self):
@@ -20,28 +20,34 @@ class Register:
             self.create_register_items()
 
     def create_register_items(self):
-        with self.dpg.group(horizontal=True) as email_login:
+        # email input
+        with self.dpg.group(horizontal=True):
             self.dpg.add_input_text(tag=configs.REGISTER_INPUT_EMAIL_ID,
                                     hint=configs.REGISTER_INPUT_EMAIL_TEXT)
 
-        with self.dpg.group(horizontal=True) as pass_login:
+        # pass input
+        with self.dpg.group(horizontal=True):
             self.dpg.add_input_text(tag=configs.REGISTER_INPUT_PASS_ID,
                                     hint=configs.REGISTER_INPUT_PASS_TEXT,
                                     password=True)
 
-        with self.dpg.group(horizontal=True) as confirm_pass_login:
+        # confirm pass input (validation)
+        with self.dpg.group(horizontal=True):
             self.dpg.add_input_text(tag=configs.REGISTER_INPUT_CONFIRM_PASS_ID,
                                     hint=configs.REGISTER_INPUT_CONFIRM_PASS_TEXT,
                                     password=True)
 
+        # error message
         self.dpg.add_text(tag=configs.REGISTER_INPUT_ERROR_ID,
                           default_value=configs.REGISTER_INPUT_ERROR_TEXT)
         self.dpg.hide_item(configs.REGISTER_INPUT_ERROR_ID)
 
+        # register button
         self.dpg.add_button(tag=configs.REGISTER_BTN_ID,
                             label=configs.REGISTER_BTN_TEXT,
                             callback=self.register_callback)
 
+        # login button
         self.dpg.add_button(tag=configs.REGISTER_LOGIN_BTN_ID,
                             label=configs.REGISTER_LOGIN_BTN_TEXT,
                             callback=self.login_callback)

@@ -32,6 +32,7 @@ FINTRACKER_NEWS_BTN_ID = "Fintracker News Button"
 FINTRACKER_PROFIT_PERCENT_ID = "Fintracker Win_Rate"
 FINTRACKER_PROFIT_ID = "Fintracker Profit"
 FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID = "Crypto Stock Open Trades Table"
+FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID = "Options Open Trades Table"
 
 LOGIN_WINDOW_ID = "Login Window"
 LOGIN_INPUT_EMAIL_ID = "Login E-Mail"
@@ -51,10 +52,23 @@ REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 
 
 # values
+FIREBASE_CONFIG = {
+    'apiKey': "AIzaSyBR0l5iXd7MwfLG5ltKhvMGKUsE7DpsGHQ",
+    'authDomain': "python-testing-ef238.firebaseapp.com",
+    'databaseURL': "https://python-testing-ef238-default-rtdb.firebaseio.com/",
+    'projectId': "python-testing-ef238",
+    'storageBucket': "python-testing-ef238.appspot.com",
+    'messagingSenderId': "1063640306776",
+    'appId': "1:1063640306776:web:b92a28f2ad29f10a67e62d",
+    'measurementId': "G-8PCYDLQTW3"
+}
+
 FINTRACKER_WINDOW_VIEWPORT_SIZE = (1700, 800) # width x height
 ADD_BTN_TEXT = "Add"
 SEARCH_BTN_TEXT = "Search"
-ID_TEXT = "id"
+VIEWPORT_TITLE = "Fintracker - Record Your Trades!"
+VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
+
 
 # firebase keywords
 FIREBASE_DATE = "date"
@@ -64,7 +78,11 @@ FIREBASE_COUNT = "count"
 FIREBASE_BOUGHT_PRICE = "bought_price"
 FIREBASE_REASON = "reason"
 FIREBASE_CONTRACT = "contract"
-
+FIREBASE_OPEN_TRADES_TEXT = "Open Trades"
+FIREBASE_CLOSE_TRADES_TEXT = "Closed Trades"
+FIREBASE_OPTION_TEXT = "Options"
+FIREBASE_STOCK_CRYPTO_TEXT = "Stock_Crypto"
+FIREBASE_LOCAL_ID = "localId"
 
 # yfinance keywords
 YFINANCE_REGULARMARKETPRICE = "regularMarketPrice"
@@ -110,6 +128,7 @@ FINTRACKER_CLOSED_TRADES_TEXT = "Closed Trades"
 FINTRACKER_OPEN_TRADES_TEXT = "Open Trades"
 FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT = "Stock/Crypto"
 FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT = "Option"
+FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT = "View Trade"
 
 # login
 LOGIN_WINDOW_TEXT = "(FinTracker) Login"

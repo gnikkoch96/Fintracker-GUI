@@ -2,15 +2,15 @@ import dearpygui.dearpygui as dpg
 import configs
 from login import Login
 from register import Register
-from ticker_search import TickerSearch
 
 def create_windows():
     dpg.create_context()
-    dpg.create_viewport(title="Investment-Tracker GUI",
+    dpg.create_viewport(title=configs.VIEWPORT_TITLE,
                         width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0],
                         height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1])
     dpg.setup_dearpygui()
     dpg.set_global_font_scale(1.25)
+    dpg.set_viewport_small_icon(configs.VIEWPORT_ICON_PATH)
 
     # fonts
 
@@ -19,7 +19,6 @@ def create_windows():
     # load login and register windows
     Register(dpg)
     Login(dpg)
-    # TickerSearch(dpg)
 
     dpg.show_viewport()
     dpg.start_dearpygui()
@@ -27,6 +26,6 @@ def create_windows():
 
 
 if __name__ == '__main__':
-    dpg.show_style_editor()
-    dpg.show_metrics()
+    # dpg.show_style_editor()
+    # dpg.show_metrics()
     create_windows()

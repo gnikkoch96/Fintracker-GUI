@@ -134,8 +134,10 @@ class TickerSearch:
                         configs.FIREBASE_BOUGHT_PRICE: bought_price,
                         configs.FIREBASE_REASON: reason
                         }
-                format = f"{date_val} | {invest_type} | {ticker}  | {count} | {bought_price}"
+                data_format = f"{date_val} | {invest_type} | {ticker} | {count} | {bought_price}"
+                firebase_conn.add_open_trade_db(self.user_id, data)
 
+                self.update_stock_crypto_to_table(date_val, invest_type, ticker, count, bought_price)
             else:
                 # todo remove hardcode
                 contract = f"{self.option.contract[0]} | {self.option.contract[1]} | {self.option.contract[2]} | {self.option.contract[3]}"
@@ -146,22 +148,78 @@ class TickerSearch:
                         configs.FIREBASE_BOUGHT_PRICE: bought_price,
                         configs.FIREBASE_REASON: reason
                         }
-                format = f"{date_val} | {invest_type} | {contract} | {count} | {bought_price}"
+                data_format = f"{date_val} | {invest_type} | {contract} | {count} | {bought_price}"
+                firebase_conn.add_open_trade_db(self.user_id, data, True)
 
-            firebase_conn.add_open_trade_db(self.user_id, data)
+                self.update_option_to_table(date_val, invest_type, contract, count, bought_price)
+
             print("Successfully added to database")
-
-            # update the investment tracker gui
-            # todo think about making this into a table as opposed to creating buttons
-            self.dpg.add_button(label=format,
-                                parent=configs.FINTRACKER_OPEN_TRADES_ID)
 
             # reset the input fields
             # todo might want to put this in a separate method
             self.dpg.set_value(configs.TICKER_INFO_WINDOW_TICKER_ID, "")
-            self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, "")
-            self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, "")
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, 0)
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, 0)
             self.dpg.set_value(configs.TICKER_INFO_WINDOW_REASON_ID, "")
+
+    def update_stock_crypto_to_table(self, date_val, invest_type, ticker, count, bought_price):
+        with self.dpg.table_row(parent=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID):
+            with self.dpg.table_cell():
+                # id (user clicks this to find about their trade)
+                # todo figure out how to send the trade's id as user_data
+                self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
+                                    callback=self.open_trade_callback)
+
+            with self.dpg.table_cell():
+                # date
+                self.dpg.add_text(date_val)
+
+            with self.dpg.table_cell():
+                # type
+                self.dpg.add_text(invest_type)
+
+            with self.dpg.table_cell():
+                # ticker
+                self.dpg.add_text(ticker)
+
+            with self.dpg.table_cell():
+                # count
+                self.dpg.add_text(count)
+
+            with self.dpg.table_cell():
+                # bought price
+                self.dpg.add_text(bought_price)
+
+    def update_option_to_table(self, date_val, invest_type, contract, count, bought_price):
+        with self.dpg.table_row(parent=configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID):
+            with self.dpg.table_cell():
+                # id (user clicks this to find about their trade)
+                # todo figure out how to send the trade's id as user_data
+                self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
+                                    callback=self.open_trade_callback)
+
+            with self.dpg.table_cell():
+                # date
+                self.dpg.add_text(date_val)
+
+            with self.dpg.table_cell():
+                # type
+                self.dpg.add_text(invest_type)
+
+            with self.dpg.table_cell():
+                # ticker
+                self.dpg.add_text(contract)
+
+            with self.dpg.table_cell():
+                # count
+                self.dpg.add_text(count)
+
+            with self.dpg.table_cell():
+                # bought price
+                self.dpg.add_text(bought_price)
+
+    def open_trade_callback(self, sender, app_data, user_data):
+        print(sender, app_data, user_data)
 
     # choose the options contract
     def contract_callback(self):
@@ -338,7 +396,7 @@ class Options:
         ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
         option_type = self.dpg.get_value(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
 
-        self.contract = (date_value, ticker, option_type, strike)
+        self.contract = (date_value, ticker.upper(), option_type, strike)
 
         self.dpg.set_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID,
                            f"{date_value}, {ticker.upper()}, {option_type}, {strike}")
