@@ -28,4 +28,5 @@ def create_windows():
 
 if __name__ == '__main__':
     dpg.show_style_editor()
+    dpg.show_metrics()
     create_windows()

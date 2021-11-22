@@ -33,7 +33,6 @@ dole = yf.Ticker("TSLA")
 # dole_options = dole.option_chain()
 # # print(type(dole_options[0])) # 0 - calls and 1 - puts
 # print(dole_options[0]) # 0 - calls and 1 - puts
-# print(dole.option_chain(dole.options[0]))
-print(type(list(dole.options)))
+print(dole.option_chain(dole.options[0])[0])
 # print(dole_options[8] * 100)
 

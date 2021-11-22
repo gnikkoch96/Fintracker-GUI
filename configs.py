@@ -5,6 +5,7 @@ OPTION_WINDOW_SEARCH_BTN_ID = "Options Search Button"
 OPTION_WINDOW_OPTION_TYPE_COMBO_ID = "Options Type Combo"
 OPTION_WINDOW_DATE_COMBO_ID = "Options Date Combo"
 OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID ="Options Contract Search Button"
+OPTION_TABLE_ID = "Options Table"
 
 TICKER_WINDOW_ID = "Ticker Window"
 TICKER_INPUT_TICKER_ID = "Ticker Input Ticker"
@@ -30,7 +31,7 @@ FINTRACKER_ADD_BTN_ID = "Fintracker Add Button"
 FINTRACKER_NEWS_BTN_ID = "Fintracker News Button"
 FINTRACKER_PROFIT_PERCENT_ID = "Fintracker Win_Rate"
 FINTRACKER_PROFIT_ID = "Fintracker Profit"
-
+FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID = "Crypto Stock Open Trades Table"
 
 LOGIN_WINDOW_ID = "Login Window"
 LOGIN_INPUT_EMAIL_ID = "Login E-Mail"
@@ -50,9 +51,10 @@ REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 
 
 # values
-FINTRACKER_WINDOW_VIEWPORT_SIZE = (1500, 800) # width x height
+FINTRACKER_WINDOW_VIEWPORT_SIZE = (1700, 800) # width x height
 ADD_BTN_TEXT = "Add"
 SEARCH_BTN_TEXT = "Search"
+ID_TEXT = "id"
 
 # firebase keywords
 FIREBASE_DATE = "date"
@@ -61,10 +63,15 @@ FIREBASE_TYPE = "stock_type"
 FIREBASE_COUNT = "count"
 FIREBASE_BOUGHT_PRICE = "bought_price"
 FIREBASE_REASON = "reason"
+FIREBASE_CONTRACT = "contract"
 
 
 # yfinance keywords
 YFINANCE_REGULARMARKETPRICE = "regularMarketPrice"
+YFINANCE_STRIKE_PRICE_TEXT = "strike"
+YFINANCE_VOLUME_TEXT = "volume"
+YFINANCE_OPEN_INTEREST_TEXT = "openInterest"
+YFINANCE_IV_TEXT = "impliedVolatility"
 
 # options
 OPTIONS_WINDOW_TEXT = "Choose Option Contract"
@@ -72,6 +79,10 @@ OPTIONS_CALL_TEXT = "Call"
 OPTIONS_PUT_TEXT = "Put"
 OPTION_WINDOW_TICKER_INPUT_TEXT = "Enter Ticker"
 OPTION_WINDOW_SEARCH_CONTRACT_BTN_TEXT = "Search Contracts"
+OPTION_STRIKE_LABEL_TEXT = "Strike Price"
+OPTION_VOLUME_LABEL_TEXT = "Volume"
+OPTION_OPEN_INTEREST_LABEL_TEXT = "Open Interest"
+OPTION_IV_LABEL_TEXT = "Implied Volatility"
 
 # ticker search
 TICKER_WINDOW_TEXT = "(Fintracker) Search Ticker"
@@ -97,6 +108,8 @@ FINTRACKER_PROFIT_PERCENT_LABEL_TEXT = "Win-Rate: "
 FINTRACKER_PROFIT_PERCENT_TEXT = "0.0%"
 FINTRACKER_CLOSED_TRADES_TEXT = "Closed Trades"
 FINTRACKER_OPEN_TRADES_TEXT = "Open Trades"
+FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT = "Stock/Crypto"
+FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT = "Option"
 
 # login
 LOGIN_WINDOW_TEXT = "(FinTracker) Login"

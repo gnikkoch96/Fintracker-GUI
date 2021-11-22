@@ -43,8 +43,12 @@ class Login:
                             callback=self.offline_callback)
 
     def login_callback(self, sender, app_data, user_data):
-        email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
-        password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
+        # email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
+        # password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
+
+        # todo remove in final product
+        email = "n2@email.com"
+        password = "123456"
 
         user = firebase_conn.authenticate_user_login(email, password)
         if user is not None:

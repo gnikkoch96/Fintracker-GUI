@@ -21,9 +21,9 @@ def get_options(ticker, contract_type, date):
     stock = yf.Ticker(ticker)
     stock_options = stock.option_chain(date)
     if contract_type == configs.OPTIONS_CALL_TEXT:
-        print(stock_options[0])
+        return stock_options[0]
     else:  # puts
-        print(stock_options[1])
+        return stock_options[1]
 
 
 def validate_ticker(ticker):

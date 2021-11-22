@@ -24,7 +24,7 @@ class TickerSearch:
                              label=configs.TICKER_WINDOW_TEXT,
                              width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
                              height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1],
-                             on_close=self.cleanup,
+                             on_close=self.cleanup_alias,
                              no_resize=True):
             self.create_ticker_search_items()
 
@@ -47,7 +47,6 @@ class TickerSearch:
         # ticker info
         # depending on the radio button choice, it will load a specific child window
         with self.dpg.child_window(tag=configs.TICKER_INFO_WINDOW_ID,
-                                   label=configs.TICKER_INFO_WINDOW_TEXT,
                                    width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2.5,
                                    height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5,
                                    parent=configs.TICKER_WINDOW_ID):
@@ -59,35 +58,34 @@ class TickerSearch:
                             callback=self.add_callback)
 
     def define_investment_type(self, sender, app_data, user_data):
-        self.cleanup_ticker_info_win()
         self.investment_type = app_data
 
-        # ticker info
-        with self.dpg.child_window(tag=configs.TICKER_INFO_WINDOW_ID,
-                                   label=configs.TICKER_INFO_WINDOW_TEXT,
-                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2.5,
-                                   height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5,
-                                   parent=configs.TICKER_WINDOW_ID):
-            self.create_add_investment_info_items()
+        # display corresponding items depending on investment type
+        if self.investment_type == configs.TICKER_RADIO_BTN_OPTION_TEXT:
+            self.dpg.hide_item(configs.TICKER_INFO_WINDOW_TICKER_ID)
+            self.dpg.hide_item(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
 
-        # add button
-        self.dpg.add_button(tag=configs.TICKER_ADD_BTN_ID,
-                            label=configs.ADD_BTN_TEXT,
-                            callback=self.add_callback,
-                            parent=configs.TICKER_WINDOW_ID)
+            self.dpg.show_item(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
+            self.dpg.show_item(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID)
+        else:
+            self.dpg.hide_item(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
+            self.dpg.hide_item(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID)
+
+            self.dpg.show_item(configs.TICKER_INFO_WINDOW_TICKER_ID)
+            self.dpg.show_item(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
 
     def create_add_investment_info_items(self):
         # enter ticker
         # todo figure out what to do when user puts an invalid ticker
-        if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
-            self.dpg.add_input_text(tag=configs.TICKER_INFO_WINDOW_TICKER_ID,
-                                    hint=configs.TICKER_INFO_WINDOW_TICKER_TEXT)
+        self.dpg.add_input_text(tag=configs.TICKER_INFO_WINDOW_TICKER_ID,
+                                hint=configs.TICKER_INFO_WINDOW_TICKER_TEXT)
 
-        # if options, allow user to choose contract
-        if self.investment_type == configs.TICKER_RADIO_BTN_OPTION_TEXT:
+        # options
+        with self.dpg.group(horizontal=True):
             self.dpg.add_button(tag=configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID,
                                 label=configs.TICKER_INFO_WINDOW_CONTRACT_BTN_TEXT,
                                 callback=self.contract_callback)
+            self.dpg.hide_item(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
 
             # show this text once the user has chosen a contract
             self.dpg.add_text(tag=configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID)
@@ -105,10 +103,9 @@ class TickerSearch:
             self.dpg.add_input_float(tag=configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID)
 
             # current price button
-            if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
-                self.dpg.add_button(tag=configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID,
-                                    label=configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT,
-                                    callback=self.get_current_price)
+            self.dpg.add_button(tag=configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID,
+                                label=configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT,
+                                callback=self.get_current_price)
 
         # enter reason
         self.dpg.add_input_text(tag=configs.TICKER_INFO_WINDOW_REASON_ID,
@@ -122,38 +119,49 @@ class TickerSearch:
     # todo cleanup this code
     def add_callback(self):
         if self.validate_inputs():
-            try:
-                bought_price = round(self.dpg.get_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID), 2)
-                count = self.dpg.get_value(configs.TICKER_INFO_WINDOW_COUNT_ID)
-                ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID).upper()
-                type = self.investment_type.upper()
-                date_val = str(date.today())
+            bought_price = round(self.dpg.get_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID), 2)
+            count = self.dpg.get_value(configs.TICKER_INFO_WINDOW_COUNT_ID)
+            invest_type = self.investment_type.upper()
+            date_val = str(date.today())
+            reason = self.dpg.get_value(configs.TICKER_INFO_WINDOW_REASON_ID).capitalize()
 
+            if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
+                ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID).upper()
                 data = {configs.FIREBASE_DATE: date_val,
                         configs.FIREBASE_TICKER: ticker,
-                        configs.FIREBASE_TYPE: type,
+                        configs.FIREBASE_TYPE: invest_type,
                         configs.FIREBASE_COUNT: count,
                         configs.FIREBASE_BOUGHT_PRICE: bought_price,
-                        configs.FIREBASE_REASON: self.dpg.get_value(configs.TICKER_INFO_WINDOW_REASON_ID).capitalize()
+                        configs.FIREBASE_REASON: reason
                         }
+                format = f"{date_val} | {invest_type} | {ticker}  | {count} | {bought_price}"
 
-                firebase_conn.add_open_trade_db(self.user_id, data)
-                print("Successfully added to database")
+            else:
+                # todo remove hardcode
+                contract = f"{self.option.contract[0]} | {self.option.contract[1]} | {self.option.contract[2]} | {self.option.contract[3]}"
+                data = {configs.FIREBASE_DATE: date_val,
+                        configs.FIREBASE_CONTRACT: contract,
+                        configs.FIREBASE_TYPE: invest_type,
+                        configs.FIREBASE_COUNT: count,
+                        configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                        configs.FIREBASE_REASON: reason
+                        }
+                format = f"{date_val} | {invest_type} | {contract} | {count} | {bought_price}"
 
-                # update the investment tracker gui
-                # todo think about making this into a table as opposed to creating buttons
-                format = f"{date_val} | {ticker} | {type} | {count} | {bought_price}"
-                self.dpg.add_button(label=format,
-                                    parent=configs.FINTRACKER_OPEN_TRADES_ID)
+            firebase_conn.add_open_trade_db(self.user_id, data)
+            print("Successfully added to database")
 
-                # reset the input fields
-                # todo might want to put this in a separate method
-                self.dpg.set_value(configs.TICKER_INFO_WINDOW_TICKER_ID, "")
-                self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, "")
-                self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, "")
-                self.dpg.set_value(configs.TICKER_INFO_WINDOW_REASON_ID, "")
-            except:
-                print("Error: Data is invalid...Could not push to database")
+            # update the investment tracker gui
+            # todo think about making this into a table as opposed to creating buttons
+            self.dpg.add_button(label=format,
+                                parent=configs.FINTRACKER_OPEN_TRADES_ID)
+
+            # reset the input fields
+            # todo might want to put this in a separate method
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_TICKER_ID, "")
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, "")
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, "")
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_REASON_ID, "")
 
     # choose the options contract
     def contract_callback(self):
@@ -166,13 +174,15 @@ class TickerSearch:
     # todo cleanup: might want to move this to a tools.py or something
     def validate_inputs(self):
         # todo also make sure to validate if the ticker is crypto or stock
-
         # todo also see if the user enters the company name then you can return with the correct ticker
-        ticker = yf.Ticker(self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID))
+        if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
+            ticker = yf.Ticker(self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID))
 
-        # ticker is empty or did not return a result
-        invalid_ticker = ticker.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is None or self.dpg.get_value(
-            configs.TICKER_INFO_WINDOW_TICKER_ID) is None
+            # ticker is empty or did not return a result
+            invalid_ticker = ticker.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is None or self.dpg.get_value(
+                configs.TICKER_INFO_WINDOW_TICKER_ID) is None
+        else:
+            invalid_ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID) is None
 
         # no negative or 0 count values and no negative bought price values
         invalid_count = self.dpg.get_value(configs.TICKER_INFO_WINDOW_COUNT_ID) <= 0
@@ -180,7 +190,7 @@ class TickerSearch:
         # no negative bought price values
         invalid_bought_price = self.dpg.get_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID) <= 0
 
-        if invalid_ticker or invalid_count or invalid_bought_price:
+        if invalid_count or invalid_bought_price or invalid_ticker:
             if invalid_ticker:
                 # todo display an error message
                 print("Error: Invalid Ticker (It has to be the ticker name and not the full name")
@@ -197,25 +207,8 @@ class TickerSearch:
 
         return True
 
-    def cleanup_ticker_info_win(self):
-        self.dpg.delete_item(configs.TICKER_INFO_WINDOW_ID)
-        self.dpg.delete_item(configs.TICKER_ADD_BTN_ID)
-        self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_TICKER_ID)
-        self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_COUNT_ID)
-        self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID)
-        self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_REASON_ID)
-
-        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID):
-            self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
-
-        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID):
-            self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
-
-        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID):
-            self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID)
-
     # todo this might get fixed in future updates
-    def cleanup(self):
+    def cleanup_alias(self):
         self.dpg.enable_item(configs.FINTRACKER_ADD_BTN_ID)
 
         self.dpg.remove_alias(configs.TICKER_SEARCH_BTN_ID)
@@ -225,7 +218,8 @@ class TickerSearch:
         self.dpg.remove_alias(configs.TICKER_ADD_BTN_ID)
         self.dpg.remove_alias(configs.TICKER_RADIO_BTNS_ID)
 
-        self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_TICKER_ID)
+        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_TICKER_ID):
+            self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_TICKER_ID)
         self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_COUNT_ID)
         self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID)
         self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_REASON_ID)
@@ -243,7 +237,6 @@ class TickerSearch:
 class Options:
     def __init__(self, dpg):
         self.dpg = dpg
-        self.dpg.disable_item(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
         self.contract = None
         self.create_options_win()
 
@@ -252,7 +245,8 @@ class Options:
                              label=configs.OPTIONS_WINDOW_TEXT,
                              width=self.dpg.get_viewport_width() / 2,
                              height=self.dpg.get_viewport_height() / 1.5,
-                             on_close=self.cleanup_alias):
+                             on_close=self.cleanup_alias,
+                             modal=True):
             self.create_options_items()
 
     def create_options_items(self):
@@ -280,19 +274,19 @@ class Options:
                 # call or put combo (user chooses)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
                                    items=self.create_option_type_combo_list(),
-                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0]/10,
+                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 10,
                                    default_value=configs.OPTIONS_CALL_TEXT)
 
                 # date combo (callback will search)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_DATE_COMBO_ID,
                                    items=self.create_option_date_combo_list(),
-                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0]/10,
+                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 10,
                                    default_value=self.create_option_date_combo_list()[0])
 
                 # search contract button
                 self.dpg.add_button(tag=configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID,
-                                   label=configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_TEXT,
-                                   callback=self.load_options)
+                                    label=configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_TEXT,
+                                    callback=self.load_options)
         else:
             # todo add a dialog that says invalid ticker
             pass
@@ -300,14 +294,81 @@ class Options:
     def load_options(self):
         ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
         contract_type = self.dpg.get_value(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
-        date = self.dpg.get_value(configs.OPTION_WINDOW_DATE_COMBO_ID)
-        options_list = yft.get_options(ticker, contract_type, date)
+        date_combo = self.dpg.get_value(configs.OPTION_WINDOW_DATE_COMBO_ID)
+        options_list = yft.get_options(ticker, contract_type, date_combo)
+
+        with self.dpg.table(tag=configs.OPTION_TABLE_ID,
+                            parent=configs.OPTIONS_WINDOW_ID,
+                            header_row=True):
+            # column headers
+            self.dpg.add_table_column(label=configs.OPTION_STRIKE_LABEL_TEXT)
+            self.dpg.add_table_column(label=configs.OPTION_VOLUME_LABEL_TEXT)
+            self.dpg.add_table_column(label=configs.OPTION_OPEN_INTEREST_LABEL_TEXT)
+            self.dpg.add_table_column(label=configs.OPTION_IV_LABEL_TEXT)
+
+            for row in range(0, len(options_list)):
+                with self.dpg.table_row():
+                    with self.dpg.table_cell():
+                        # strike price
+                        strike_price = options_list[configs.YFINANCE_STRIKE_PRICE_TEXT][row]
+                        self.dpg.add_button(label=strike_price,
+                                            callback=self.row_callback,
+                                            user_data=(self.dpg.get_value(configs.OPTION_WINDOW_DATE_COMBO_ID),
+                                                       strike_price))
+
+                    with self.dpg.table_cell():
+                        # volume
+                        volume = options_list[configs.YFINANCE_VOLUME_TEXT][row]
+                        self.dpg.add_text(volume)
+
+                    with self.dpg.table_cell():
+                        # open interest
+                        open_int = options_list[configs.YFINANCE_OPEN_INTEREST_TEXT][row]
+                        self.dpg.add_text(open_int)
+
+                    with self.dpg.table_cell():
+                        # implied volatility
+                        iv = round(options_list[configs.YFINANCE_IV_TEXT][row] * 100, 2)
+                        self.dpg.add_text(iv)
+
+    def row_callback(self, sender, app_data, user_data):
+        # user_data = (date, strike)
+        date_value = user_data[0]
+        strike = user_data[1]
+        ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
+        option_type = self.dpg.get_value(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
+
+        self.contract = (date_value, ticker, option_type, strike)
+
+        self.dpg.set_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID,
+                           f"{date_value}, {ticker.upper()}, {option_type}, {strike}")
+        self.dpg.show_item(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID)
+
+        # todo think about putting this in a method
+        self.dpg.delete_item(configs.OPTIONS_WINDOW_ID)
+        self.cleanup_alias()
 
     def cleanup_alias(self):
-        self.dpg.enable_item(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
+        if self.dpg.does_alias_exist(configs.OPTIONS_WINDOW_ID):
+            self.dpg.remove_alias(configs.OPTIONS_WINDOW_ID)
 
-        self.dpg.remove_alias(configs.OPTIONS_WINDOW_ID)
-        self.dpg.remove_alias(configs.OPTION_WINDOW_TICKER_INPUT_ID)
-        self.dpg.remove_alias(configs.OPTION_WINDOW_SEARCH_BTN_ID)
-        self.dpg.remove_alias(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
-        self.dpg.remove_alias(configs.OPTION_WINDOW_DATE_COMBO_ID)
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_TICKER_INPUT_ID):
+            self.dpg.remove_alias(configs.OPTION_WINDOW_TICKER_INPUT_ID)
+
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_SEARCH_BTN_ID):
+            self.dpg.remove_alias(configs.OPTION_WINDOW_SEARCH_BTN_ID)
+
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID):
+            self.dpg.remove_alias(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID)
+
+        if self.dpg.does_alias_exist(configs.OPTION_TABLE_ID):
+            self.dpg.remove_alias(configs.OPTION_TABLE_ID)
+
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID):
+            self.dpg.remove_alias(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
+
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_DATE_COMBO_ID):
+            self.dpg.remove_alias(configs.OPTION_WINDOW_DATE_COMBO_ID)
+
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID):
+            self.dpg.remove_alias(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID)
