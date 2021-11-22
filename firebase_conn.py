@@ -76,8 +76,5 @@ def get_open_trade_by_id_db(user_id, trade_id, is_option=False):
         return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
             configs.FIREBASE_OPTION_TEXT).child(trade_id).get().val()
     else:
-        print(user_id, trade_id, is_option)
-        print(firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
-            configs.FIREBASE_STOCK_CRYPTO_TEXT).child(trade_id).get().val())
         return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
             configs.FIREBASE_STOCK_CRYPTO_TEXT).child(trade_id).get().val()

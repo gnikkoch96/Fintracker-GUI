@@ -1,3 +1,15 @@
+# firebase config
+FIREBASE_CONFIG = {
+    'apiKey': "AIzaSyBR0l5iXd7MwfLG5ltKhvMGKUsE7DpsGHQ",
+    'authDomain': "python-testing-ef238.firebaseapp.com",
+    'databaseURL': "https://python-testing-ef238-default-rtdb.firebaseio.com/",
+    'projectId': "python-testing-ef238",
+    'storageBucket': "python-testing-ef238.appspot.com",
+    'messagingSenderId': "1063640306776",
+    'appId': "1:1063640306776:web:b92a28f2ad29f10a67e62d",
+    'measurementId': "G-8PCYDLQTW3"
+}
+
 # ids
 OPTIONS_WINDOW_ID = "Options Window"
 OPTION_WINDOW_TICKER_INPUT_ID = "Options Ticker Input"
@@ -8,8 +20,7 @@ OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID ="Options Contract Search Button"
 OPTION_TABLE_ID = "Options Table"
 
 TICKER_WINDOW_ID = "Ticker Window"
-TICKER_INPUT_TICKER_ID = "Ticker Input Ticker"
-TICKER_SEARCH_BTN_ID = "Ticker Search Button"
+TICKER_INFO_WINDOW_SEARCH_BTN_ID = "Ticker Search Button"
 TICKER_INFO_WINDOW_ID = "Ticker Info"
 TICKER_ADD_BTN_ID = "Ticker Add"
 TICKER_RADIO_BTNS_ID = "Ticker Radio Buttons"
@@ -52,23 +63,30 @@ REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 
 
 # values
-FIREBASE_CONFIG = {
-    'apiKey': "AIzaSyBR0l5iXd7MwfLG5ltKhvMGKUsE7DpsGHQ",
-    'authDomain': "python-testing-ef238.firebaseapp.com",
-    'databaseURL': "https://python-testing-ef238-default-rtdb.firebaseio.com/",
-    'projectId': "python-testing-ef238",
-    'storageBucket': "python-testing-ef238.appspot.com",
-    'messagingSenderId': "1063640306776",
-    'appId': "1:1063640306776:web:b92a28f2ad29f10a67e62d",
-    'measurementId': "G-8PCYDLQTW3"
-}
-
-FINTRACKER_WINDOW_VIEWPORT_SIZE = (1700, 800) # width x height
 ADD_BTN_TEXT = "Add"
 SEARCH_BTN_TEXT = "Search"
 VIEWPORT_TITLE = "Fintracker - Record Your Trades!"
 VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
 
+# height and width values
+FINTRACKER_WINDOW_VIEWPORT_SIZE = (1700, 800) # width x height
+FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.40,
+                                          FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.65)
+FINTRACKER_OPEN_TRADES_CONTAINER_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.45,
+                                          FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.65)
+FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.45,
+                                          FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.45)
+FINTRACKER_OPEN_TRADES_BUTTONS_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.45,
+                                                FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.20)
+
+TICKER_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
+                               FINTRACKER_WINDOW_VIEWPORT_SIZE[1])
+TICKER_INFO_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2.5,
+                                    FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5)
+
+OPTIONS_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
+                               FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5)
+OPTIONS_WINDOW_COMBO_WIDTH = FINTRACKER_WINDOW_VIEWPORT_SIZE[0]/10
 
 # firebase keywords
 FIREBASE_DATE = "date"
@@ -107,7 +125,6 @@ TICKER_WINDOW_TEXT = "(Fintracker) Search Ticker"
 TICKER_RADIO_BTN_CRYPTO_TEXT = "Crypto"
 TICKER_RADIO_BTN_STOCK_TEXT = "Stock"
 TICKER_RADIO_BTN_OPTION_TEXT = "Option"
-TICKER_INPUT_TICKER_TEXT = "Enter Ticker"
 TICKER_INFO_WINDOW_TEXT = "Ticker Information"
 TICKER_INFO_WINDOW_TICKER_TEXT = "Enter Ticker"
 TICKER_INFO_WINDOW_COUNT_TEXT = "Enter Count"

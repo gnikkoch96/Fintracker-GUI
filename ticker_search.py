@@ -22,8 +22,8 @@ class TickerSearch:
     def create_ticker_search_win(self):
         with self.dpg.window(tag=configs.TICKER_WINDOW_ID,
                              label=configs.TICKER_WINDOW_TEXT,
-                             width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
-                             height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1],
+                             width=configs.TICKER_WINDOW_VIEWPORT_SIZE[0],
+                             height=configs.TICKER_WINDOW_VIEWPORT_SIZE[1],
                              on_close=self.cleanup_alias,
                              no_resize=True):
             self.create_ticker_search_items()
@@ -35,20 +35,10 @@ class TickerSearch:
                                   horizontal=True,
                                   callback=self.define_investment_type)
 
-        # ticker search
-        with self.dpg.group(horizontal=True):
-            self.dpg.add_input_text(tag=configs.TICKER_INPUT_TICKER_ID,
-                                    hint=configs.TICKER_INPUT_TICKER_TEXT)
-
-            self.dpg.add_button(tag=configs.TICKER_SEARCH_BTN_ID,
-                                label=configs.SEARCH_BTN_TEXT,
-                                callback=self.load_stock_info)
-
-        # enter ticker info
         # depending on the radio button choice, it will load a specific child window
         with self.dpg.child_window(tag=configs.TICKER_INFO_WINDOW_ID,
-                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2.5,
-                                   height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5,
+                                   width=configs.TICKER_INFO_WINDOW_VIEWPORT_SIZE[0],
+                                   height=configs.TICKER_INFO_WINDOW_VIEWPORT_SIZE[1],
                                    parent=configs.TICKER_WINDOW_ID):
             self.create_add_investment_info_items()
 
@@ -63,6 +53,7 @@ class TickerSearch:
         # display corresponding items depending on investment type
         if self.investment_type == configs.TICKER_RADIO_BTN_OPTION_TEXT:
             self.dpg.hide_item(configs.TICKER_INFO_WINDOW_TICKER_ID)
+            self.dpg.hide_item(configs.TICKER_INFO_WINDOW_SEARCH_BTN_ID)
             self.dpg.hide_item(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
 
             self.dpg.show_item(configs.TICKER_INFO_WINDOW_CONTRACT_BTN_ID)
@@ -73,12 +64,18 @@ class TickerSearch:
 
             self.dpg.show_item(configs.TICKER_INFO_WINDOW_TICKER_ID)
             self.dpg.show_item(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
+            self.dpg.show_item(configs.TICKER_INFO_WINDOW_SEARCH_BTN_ID)
+
 
     def create_add_investment_info_items(self):
         # enter ticker
-        # todo figure out what to do when user puts an invalid ticker
-        self.dpg.add_input_text(tag=configs.TICKER_INFO_WINDOW_TICKER_ID,
-                                hint=configs.TICKER_INFO_WINDOW_TICKER_TEXT)
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_input_text(tag=configs.TICKER_INFO_WINDOW_TICKER_ID,
+                                    hint=configs.TICKER_INFO_WINDOW_TICKER_TEXT,
+                                    width=self.dpg.get_viewport_width()/4)
+            self.dpg.add_button(tag=configs.TICKER_INFO_WINDOW_SEARCH_BTN_ID,
+                                label=configs.SEARCH_BTN_TEXT,
+                                callback=self.load_stock_info)
 
         # options
         with self.dpg.group(horizontal=True):
@@ -92,12 +89,10 @@ class TickerSearch:
             self.dpg.hide_item(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID)
 
         # enter count
-        # todo figure out what to do when user puts a negative number
         # todo add hints
         self.dpg.add_input_int(tag=configs.TICKER_INFO_WINDOW_COUNT_ID)
 
         #  enter bought price
-        # todo figure out what to do when user puts a negative number
         # todo add hints
         with self.dpg.group(horizontal=True):
             self.dpg.add_input_float(tag=configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID)
@@ -161,6 +156,7 @@ class TickerSearch:
             self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, 0)
             self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, 0)
             self.dpg.set_value(configs.TICKER_INFO_WINDOW_REASON_ID, "")
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID, "")
 
     def update_stock_crypto_to_table(self, date_val, invest_type, ticker, count, bought_price):
         with self.dpg.table_row(parent=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID):
@@ -267,8 +263,7 @@ class TickerSearch:
 
     # todo this might get fixed in future updates
     def cleanup_alias(self):
-        self.dpg.remove_alias(configs.TICKER_SEARCH_BTN_ID)
-        self.dpg.remove_alias(configs.TICKER_INPUT_TICKER_ID)
+        self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_SEARCH_BTN_ID)
         self.dpg.remove_alias(configs.TICKER_WINDOW_ID)
         self.dpg.remove_alias(configs.TICKER_INFO_WINDOW_ID)
         self.dpg.remove_alias(configs.TICKER_ADD_BTN_ID)
@@ -299,8 +294,8 @@ class Options:
     def create_options_win(self):
         with self.dpg.window(tag=configs.OPTIONS_WINDOW_ID,
                              label=configs.OPTIONS_WINDOW_TEXT,
-                             width=self.dpg.get_viewport_width() / 2,
-                             height=self.dpg.get_viewport_height() / 1.5,
+                             width=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[0],
+                             height=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[1],
                              on_close=self.cleanup_alias,
                              modal=True):
             self.create_options_items()
@@ -330,13 +325,13 @@ class Options:
                 # call or put combo (user chooses)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
                                    items=self.create_option_type_combo_list(),
-                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 10,
+                                   width=configs.OPTIONS_WINDOW_COMBO_WIDTH,
                                    default_value=configs.OPTIONS_CALL_TEXT)
 
                 # date combo (callback will search)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_DATE_COMBO_ID,
                                    items=self.create_option_date_combo_list(),
-                                   width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 10,
+                                   width=configs.OPTIONS_WINDOW_COMBO_WIDTH,
                                    default_value=self.create_option_date_combo_list()[0])
 
                 # search contract button

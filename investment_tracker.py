@@ -25,26 +25,26 @@ class Fintracker:
         with self.dpg.group(horizontal=True):
             # child: closed trades window
             with self.dpg.child_window(tag=configs.FINTRACKER_CLOSED_TRADES_ID,
-                                       width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.40,
-                                       height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.65):
+                                       width=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[0],
+                                       height=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[1]):
                 self.dpg.add_text(configs.FINTRACKER_CLOSED_TRADES_TEXT)
                 self.load_closed_trades()
 
             # child: open trades container (holds the open trades window and buttons)
             with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_CONTAINER_ID,
-                                       width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.45,
-                                       height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.65):
+                                       width=configs.FINTRACKER_OPEN_TRADES_CONTAINER_VIEWPORT_SIZE[0],
+                                       height=configs.FINTRACKER_OPEN_TRADES_CONTAINER_VIEWPORT_SIZE[1]):
                 # sub-child: open trades window
                 with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_ID,
-                                           width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.45,
-                                           height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.45):
+                                           width=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[0],
+                                           height=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[1]):
                     self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_TEXT)
                     self.load_open_trades()
 
                 # sub-child: buttons
                 with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_BUTTONS_ID,
-                                           width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.40,
-                                           height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.20):
+                                           width=configs.FINTRACKER_OPEN_TRADES_BUTTONS_VIEWPORT_SIZE[0],
+                                           height=configs.FINTRACKER_OPEN_TRADES_BUTTONS_VIEWPORT_SIZE[1]):
                     self.dpg.add_button(tag=configs.FINTRACKER_NEWS_BTN_ID,
                                         label=configs.FINTRACKER_NEWS_BTN_TEXT)
 
