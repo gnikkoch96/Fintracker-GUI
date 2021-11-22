@@ -44,7 +44,7 @@ class TickerSearch:
                                 label=configs.SEARCH_BTN_TEXT,
                                 callback=self.load_stock_info)
 
-        # ticker info
+        # enter ticker info
         # depending on the radio button choice, it will load a specific child window
         with self.dpg.child_window(tag=configs.TICKER_INFO_WINDOW_ID,
                                    width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2.5,

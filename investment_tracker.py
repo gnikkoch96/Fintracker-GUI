@@ -9,7 +9,6 @@ class Fintracker:
         self.user_id = user_id
         self.create_fintracker_win()
 
-
         # todo if offline then we read a file instead of accessing the firebase
         if is_offline:
             pass
@@ -86,29 +85,51 @@ class Fintracker:
         # todo make it so that if the local file exists we read from there as opposed to firebase
         if firebase_conn.get_open_trades_stock_crypto_db(self.user_id) is not None:
             self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT)
-            self.load_open_stock_crypto_table()
+            self.load_open_table()
 
         if firebase_conn.get_open_trades_options_db(self.user_id) is not None:
             self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT)
-            self.load_open_option_table()
+            self.load_open_table(True)
 
-    def load_open_stock_crypto_table(self):
-        with self.dpg.table(tag=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID,
-                            resizable=True,
-                            header_row=True):
+    # depending on is_option it will load different tables
+    def load_open_table(self, is_option=False):
+        with self.dpg.table(resizable=True,
+                            header_row=True) as open_table:
+
+            # adding a tag to corresponding table
+            if not is_option:
+                self.dpg.add_alias(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID, open_table)
+            else:
+                self.dpg.add_alias(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID, open_table)
+
             # column headers
             self.dpg.add_table_column()
             self.dpg.add_table_column(label=configs.FIREBASE_DATE)
             self.dpg.add_table_column(label=configs.FIREBASE_TYPE)
-            self.dpg.add_table_column(label=configs.FIREBASE_TICKER)
+
+            if not is_option:
+                self.dpg.add_table_column(label=configs.FIREBASE_TICKER)
+            else:
+                self.dpg.add_table_column(label=configs.FIREBASE_CONTRACT)
+
             self.dpg.add_table_column(label=configs.FIREBASE_COUNT)
             self.dpg.add_table_column(label=configs.FIREBASE_BOUGHT_PRICE)
 
-            for open_trade_id in firebase_conn.get_open_trades_stock_crypto_db(self.user_id):
-                open_trade = firebase_conn.get_open_trade_by_id_db(self.user_id, open_trade_id)
+            if not is_option:
+                open_trades = firebase_conn.get_open_trades_stock_crypto_db(self.user_id)
+            else:
+                open_trades = firebase_conn.get_open_trades_options_db(self.user_id)
+
+            for open_trade_id in open_trades:
+                if not is_option:
+                    open_trade = firebase_conn.get_open_trade_by_id_db(self.user_id, open_trade_id, is_option)
+                    trade_type = open_trade[configs.FIREBASE_TICKER]
+                else:
+                    open_trade = firebase_conn.get_open_trade_by_id_db(self.user_id, open_trade_id, is_option)
+                    trade_type = open_trade[configs.FIREBASE_CONTRACT]
+
                 bought_price = round(open_trade[configs.FIREBASE_BOUGHT_PRICE], 2)
                 count = open_trade[configs.FIREBASE_COUNT]
-                ticker = open_trade[configs.FIREBASE_TICKER]
                 invest_type = open_trade[configs.FIREBASE_TYPE]
                 date = open_trade[configs.FIREBASE_DATE]
 
@@ -129,54 +150,7 @@ class Fintracker:
 
                     with self.dpg.table_cell():
                         # ticker
-                        self.dpg.add_text(ticker)
-
-                    with self.dpg.table_cell():
-                        # count
-                        self.dpg.add_text(count)
-
-                    with self.dpg.table_cell():
-                        # bought price
-                        self.dpg.add_text(bought_price)
-
-    def load_open_option_table(self):
-        with self.dpg.table(tag=configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID,
-                            resizable=True,
-                            header_row=True):
-            # column headers
-            self.dpg.add_table_column()
-            self.dpg.add_table_column(label=configs.FIREBASE_DATE)
-            self.dpg.add_table_column(label=configs.FIREBASE_TYPE)
-            self.dpg.add_table_column(label=configs.FIREBASE_CONTRACT)
-            self.dpg.add_table_column(label=configs.FIREBASE_COUNT)
-            self.dpg.add_table_column(label=configs.FIREBASE_BOUGHT_PRICE)
-
-            for open_trade_id in firebase_conn.get_open_trades_options_db(self.user_id):
-                open_trade = firebase_conn.get_open_trade_by_id_db(self.user_id, open_trade_id, True)
-                bought_price = round(open_trade[configs.FIREBASE_BOUGHT_PRICE], 2)
-                count = open_trade[configs.FIREBASE_COUNT]
-                contract = open_trade[configs.FIREBASE_CONTRACT]
-                invest_type = open_trade[configs.FIREBASE_TYPE]
-                date = open_trade[configs.FIREBASE_DATE]
-
-                with self.dpg.table_row():
-                    with self.dpg.table_cell():
-                        # id (user clicks this to find about their trade)
-                        self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
-                                            callback=self.open_trade_callback,
-                                            user_data=open_trade_id)
-
-                    with self.dpg.table_cell():
-                        # date
-                        self.dpg.add_text(date)
-
-                    with self.dpg.table_cell():
-                        # type
-                        self.dpg.add_text(invest_type)
-
-                    with self.dpg.table_cell():
-                        # ticker
-                        self.dpg.add_text(contract)
+                        self.dpg.add_text(trade_type)
 
                     with self.dpg.table_cell():
                         # count
@@ -194,4 +168,3 @@ class Fintracker:
             self.dpg.focus_item(configs.TICKER_INFO_WINDOW_TICKER_ID)
         else:
             TickerSearch(self.dpg, self.user_id)
-
