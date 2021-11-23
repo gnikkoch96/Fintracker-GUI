@@ -26,13 +26,14 @@ pd.set_option('display.max_columns', 20)
 # print(dole.news)
 
 # options
-dole = yf.Ticker("TSLA")
+dole = yf.Ticker("tsla")
+print(len(dole.options))
 # print(dole.get_info()['regularMarketPrice'])
 # print(dole.option_chain(dole.options[0]))
 #
 # dole_options = dole.option_chain()
 # # print(type(dole_options[0])) # 0 - calls and 1 - puts
 # print(dole_options[0]) # 0 - calls and 1 - puts
-print(dole.option_chain(dole.options[0])[0])
+# print(dole.option_chain(dole.options[0])[0])
 # print(dole_options[8] * 100)
 

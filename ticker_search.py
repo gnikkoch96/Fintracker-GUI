@@ -1,6 +1,6 @@
 import configs
-import yfinance as yf
 import yfinance_tool as yft
+import cngko_tool as cgt
 import firebase_conn
 from ticker_search_info import CryptoStockOptionInfo
 from datetime import date
@@ -66,13 +66,12 @@ class TickerSearch:
             self.dpg.show_item(configs.TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
             self.dpg.show_item(configs.TICKER_INFO_WINDOW_SEARCH_BTN_ID)
 
-
     def create_add_investment_info_items(self):
         # enter ticker
         with self.dpg.group(horizontal=True):
             self.dpg.add_input_text(tag=configs.TICKER_INFO_WINDOW_TICKER_ID,
                                     hint=configs.TICKER_INFO_WINDOW_TICKER_TEXT,
-                                    width=self.dpg.get_viewport_width()/4)
+                                    width=self.dpg.get_viewport_width() / 4)
             self.dpg.add_button(tag=configs.TICKER_INFO_WINDOW_SEARCH_BTN_ID,
                                 label=configs.SEARCH_BTN_TEXT,
                                 callback=self.load_stock_info)
@@ -129,7 +128,6 @@ class TickerSearch:
                         configs.FIREBASE_BOUGHT_PRICE: bought_price,
                         configs.FIREBASE_REASON: reason
                         }
-                data_format = f"{date_val} | {invest_type} | {ticker} | {count} | {bought_price}"
                 firebase_conn.add_open_trade_db(self.user_id, data)
 
                 self.update_stock_crypto_to_table(date_val, invest_type, ticker, count, bought_price)
@@ -143,20 +141,22 @@ class TickerSearch:
                         configs.FIREBASE_BOUGHT_PRICE: bought_price,
                         configs.FIREBASE_REASON: reason
                         }
-                data_format = f"{date_val} | {invest_type} | {contract} | {count} | {bought_price}"
                 firebase_conn.add_open_trade_db(self.user_id, data, True)
 
                 self.update_option_to_table(date_val, invest_type, contract, count, bought_price)
 
+            # todo make this message a dialog to the player
             print("Successfully added to database")
 
             # reset the input fields
-            # todo might want to put this in a separate method
-            self.dpg.set_value(configs.TICKER_INFO_WINDOW_TICKER_ID, "")
-            self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, 0)
-            self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, 0)
-            self.dpg.set_value(configs.TICKER_INFO_WINDOW_REASON_ID, "")
-            self.dpg.set_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID, "")
+            self.reset_ticker_info_win_items()
+
+    def reset_ticker_info_win_items(self):
+        self.dpg.set_value(configs.TICKER_INFO_WINDOW_TICKER_ID, "")
+        self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, 0)
+        self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, 0)
+        self.dpg.set_value(configs.TICKER_INFO_WINDOW_REASON_ID, "")
+        self.dpg.set_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID, "")
 
     def update_stock_crypto_to_table(self, date_val, invest_type, ticker, count, bought_price):
         with self.dpg.table_row(parent=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID):
@@ -228,15 +228,21 @@ class TickerSearch:
     # todo cleanup: might want to move this to a tools.py or something
     def validate_inputs(self):
         # todo also make sure to validate if the ticker is crypto or stock
-        # todo also see if the user enters the company name then you can return with the correct ticker
         if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
-            ticker = yf.Ticker(self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID))
+            ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID)
 
-            # ticker is empty or did not return a result
-            invalid_ticker = ticker.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is None or self.dpg.get_value(
-                configs.TICKER_INFO_WINDOW_TICKER_ID) is None
+            if self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
+                # ticker is empty or did not return a result
+                invalid_ticker = yft.validate_ticker(ticker) or self.dpg.get_value(
+                    configs.TICKER_INFO_WINDOW_TICKER_ID) is None
+
+            else:  # crypto
+                # ticker is empty or did not return a result
+                invalid_ticker = not cgt.validate_coin(ticker) or self.dpg.get_value(
+                    configs.TICKER_INFO_WINDOW_TICKER_ID) is None
         else:
-            invalid_ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID) is None
+            # they did not choose a contract
+            invalid_ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID) == ""
 
         # no negative or 0 count values and no negative bought price values
         invalid_count = self.dpg.get_value(configs.TICKER_INFO_WINDOW_COUNT_ID) <= 0
@@ -246,7 +252,7 @@ class TickerSearch:
 
         if invalid_count or invalid_bought_price or invalid_ticker:
             if invalid_ticker:
-                # todo display an error message
+                # todo display an error message (mention the rules for each radio button)
                 print("Error: Invalid Ticker (It has to be the ticker name and not the full name")
 
             if invalid_count:
@@ -315,12 +321,15 @@ class Options:
 
     def create_option_date_combo_list(self):
         ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
-        print(type(yft.get_options_date(ticker)))
-        return yft.get_options_date(ticker)
+        option_dates = yft.get_options_date(ticker)
+        return option_dates
 
     def search_callback(self):
+        # resets the option window every search
+        self.delete_option_win_items()
+
         ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
-        if yft.validate_ticker(ticker):
+        if self.validate_input(ticker):
             with self.dpg.group(horizontal=True, parent=configs.OPTIONS_WINDOW_ID):
                 # call or put combo (user chooses)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
@@ -340,9 +349,36 @@ class Options:
                                     callback=self.load_options)
         else:
             # todo add a dialog that says invalid ticker
+            print("Error: Ticker is invalid or does not support options")
             pass
 
+    def delete_option_win_items(self):
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID):
+            self.dpg.delete_item(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
+
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_DATE_COMBO_ID):
+            self.dpg.delete_item(configs.OPTION_WINDOW_DATE_COMBO_ID)
+
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID):
+            self.dpg.delete_item(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID)
+
+    def validate_input(self, ticker):
+        # test to see if it is a valid ticker
+        valid_ticker = yft.validate_ticker(ticker)
+
+        # test to see if it has options
+        has_options = len(self.create_option_date_combo_list()) > 0
+
+        if not valid_ticker or not has_options:
+            return False
+
+        return True
+
     def load_options(self):
+        # todo might put this in a separate method
+        if self.dpg.does_alias_exist(configs.OPTION_TABLE_ID):
+            self.dpg.delete_item(configs.OPTION_TABLE_ID)
+
         ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
         contract_type = self.dpg.get_value(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
         date_combo = self.dpg.get_value(configs.OPTION_WINDOW_DATE_COMBO_ID)
