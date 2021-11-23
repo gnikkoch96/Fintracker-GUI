@@ -1,22 +1,22 @@
 import configs
 
 
-class CryptoStockOptionInfo:
+class CryptoStockInfo:
     def __init__(self, dpg):
         self.dpg = dpg
-        self.create_add_crypto_stock_win()
+        self.create_search_win()
 
-    def create_add_crypto_stock_win(self):
-        with self.dpg.window(tag=configs.TICKER_ADD_CRYPTO_STOCK_WINDOW_ID,
-                             label=configs.TICKER_ADD_CRYPTO_STOCK_WINDOW_TEXT,
+    def create_search_win(self):
+        with self.dpg.window(tag=configs.TICKER_SEARCH_CRYPTO_STOCK_WINDOW_ID,
+                             label=configs.TICKER_SEARCH_CRYPTO_STOCK_WINDOW_TEXT,
                              width=self.dpg.get_viewport_width() /3,
                              height=self.dpg.get_viewport_height() /1.5,
                              on_close=self.cleanup,
                              modal=True):
-            self.create_add_crypto_stock_items()
+            self.create_search_win()
 
-    def create_add_crypto_stock_items(self):
+    def create_search_win_items(self):
         pass
 
     def cleanup(self):
-        self.dpg.remove_alias(configs.TICKER_ADD_CRYPTO_STOCK_WINDOW_ID)
+        self.dpg.remove_alias(configs.TICKER_SEARCH_CRYPTO_STOCK_WINDOW_ID)

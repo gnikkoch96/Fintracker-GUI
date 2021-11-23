@@ -2,7 +2,7 @@ import configs
 import yfinance_tool as yft
 import cngko_tool as cgt
 import firebase_conn
-from ticker_search_info import CryptoStockOptionInfo
+from ticker_search_info import CryptoStockInfo
 from datetime import date
 
 
@@ -223,7 +223,7 @@ class TickerSearch:
 
     def load_stock_info(self):
         # todo this is where we will call the respective api to get the information
-        CryptoStockOptionInfo(self.dpg)
+        CryptoStockInfo(self.dpg)
 
     # todo cleanup: might want to move this to a tools.py or something
     def validate_inputs(self):
