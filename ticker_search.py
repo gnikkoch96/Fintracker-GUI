@@ -48,6 +48,7 @@ class TickerSearch:
                             callback=self.add_callback)
 
     def define_investment_type(self, sender, app_data, user_data):
+        self.reset_ticker_info_win_items()
         self.investment_type = app_data
 
         # display corresponding items depending on investment type
@@ -152,11 +153,20 @@ class TickerSearch:
             self.reset_ticker_info_win_items()
 
     def reset_ticker_info_win_items(self):
-        self.dpg.set_value(configs.TICKER_INFO_WINDOW_TICKER_ID, "")
-        self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, 0)
-        self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, 0)
-        self.dpg.set_value(configs.TICKER_INFO_WINDOW_REASON_ID, "")
-        self.dpg.set_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID, "")
+        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_TICKER_ID):
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_TICKER_ID, "")
+
+        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_COUNT_ID):
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_COUNT_ID, 0)
+
+        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID):
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, 0)
+
+        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_REASON_ID):
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_REASON_ID, "")
+
+        if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID):
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID, "")
 
     def update_stock_crypto_to_table(self, date_val, invest_type, ticker, count, bought_price):
         with self.dpg.table_row(parent=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID):
@@ -223,7 +233,14 @@ class TickerSearch:
 
     def load_stock_info(self):
         # todo this is where we will call the respective api to get the information
-        CryptoStockInfo(self.dpg)
+        ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID)
+
+        # todo think about putting this in a separate method
+        if ticker == "" or not yft.validate_ticker(ticker):
+            print("Error: Ticker field is empty or invalid ticker")
+            return
+
+        CryptoStockInfo(self.dpg, ticker)
 
     # todo cleanup: might want to move this to a tools.py or something
     def validate_inputs(self):
