@@ -1,6 +1,6 @@
 import configs
 import firebase_conn
-from ticker_search import TickerSearch
+from trade_input import InputTrade
 
 
 class Fintracker:
@@ -20,6 +20,8 @@ class Fintracker:
                              height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1],
                              no_resize=True):
             self.create_fintracker_items()
+
+            # start the loading of open and closed trades
 
     def create_fintracker_items(self):
         with self.dpg.group(horizontal=True):
@@ -94,7 +96,8 @@ class Fintracker:
     # depending on is_option it will load different tables
     def load_open_table(self, is_option=False):
         with self.dpg.table(resizable=True,
-                            header_row=True) as open_table:
+                            header_row=True,
+                            parent=configs.FINTRACKER_OPEN_TRADES_ID) as open_table:
 
             # adding a tag to corresponding table
             if not is_option:
@@ -128,10 +131,13 @@ class Fintracker:
                     open_trade = firebase_conn.get_open_trade_by_id_db(self.user_id, open_trade_id, is_option)
                     trade_type = open_trade[configs.FIREBASE_CONTRACT]
 
-                bought_price = round(open_trade[configs.FIREBASE_BOUGHT_PRICE], 2)
+                bought_price = open_trade[configs.FIREBASE_BOUGHT_PRICE]
                 count = open_trade[configs.FIREBASE_COUNT]
                 invest_type = open_trade[configs.FIREBASE_TYPE]
                 date = open_trade[configs.FIREBASE_DATE]
+
+                if invest_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
+                    bought_price = round(bought_price, 2)
 
                 with self.dpg.table_row():
                     with self.dpg.table_cell():
@@ -167,4 +173,4 @@ class Fintracker:
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_TICKER_ID):
             self.dpg.focus_item(configs.TICKER_INFO_WINDOW_TICKER_ID)
         else:
-            TickerSearch(self.dpg, self.user_id)
+            InputTrade(self.dpg, self.user_id)

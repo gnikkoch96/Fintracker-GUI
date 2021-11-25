@@ -6,7 +6,7 @@ from ticker_search_info import CryptoStockInfo
 from datetime import date
 
 
-class TickerSearch:
+class InputTrade:
     def __init__(self, dpg, user_id):
         self.dpg = dpg
         self.user_id = user_id
@@ -108,13 +108,18 @@ class TickerSearch:
 
     def get_current_price(self):
         ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID)
-        curr_price = yft.get_stock_price(ticker)
+
+        if self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
+            curr_price = yft.get_stock_price(ticker)
+        else:
+            curr_price = cgt.get_current_price(ticker)
+
         self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
 
     # todo cleanup this code
     def add_callback(self):
         if self.validate_inputs():
-            bought_price = round(self.dpg.get_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID), 2)
+            bought_price = self.dpg.get_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID)
             count = self.dpg.get_value(configs.TICKER_INFO_WINDOW_COUNT_ID)
             invest_type = self.investment_type.upper()
             date_val = str(date.today())
@@ -122,8 +127,14 @@ class TickerSearch:
 
             if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
                 ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID).upper()
+
+                if self.investment_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT:
+                    token = cgt.get_symbol(ticker.lower())
+                else:
+                    bought_price = round(bought_price, 2)
+
                 data = {configs.FIREBASE_DATE: date_val,
-                        configs.FIREBASE_TICKER: ticker,
+                        configs.FIREBASE_TICKER: token,
                         configs.FIREBASE_TYPE: invest_type,
                         configs.FIREBASE_COUNT: count,
                         configs.FIREBASE_BOUGHT_PRICE: bought_price,
@@ -186,6 +197,9 @@ class TickerSearch:
 
             with self.dpg.table_cell():
                 # ticker
+                if self.investment_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT:  # puts symbol name instead of full name
+                    ticker = cgt.get_symbol(ticker.lower())
+
                 self.dpg.add_text(ticker)
 
             with self.dpg.table_cell():
@@ -236,11 +250,19 @@ class TickerSearch:
         ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID)
 
         # todo think about putting this in a separate method
-        if ticker == "" or not yft.validate_ticker(ticker):
-            print("Error: Ticker field is empty or invalid ticker")
-            return
-
-        CryptoStockInfo(self.dpg, ticker)
+        if ticker != "":
+            if self.investment_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT:
+                if cgt.validate_coin(ticker):
+                    CryptoStockInfo(self.dpg, ticker, True)
+                else:
+                    print("Error: Invalid Token")
+            elif self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
+                if yft.validate_ticker(ticker):
+                    CryptoStockInfo(self.dpg, ticker)
+                else:
+                    print("Error: Invalid Ticker")
+        else:
+            print("Error: Ticker field is empty")
 
     # todo cleanup: might want to move this to a tools.py or something
     def validate_inputs(self):
@@ -250,13 +272,12 @@ class TickerSearch:
 
             if self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
                 # ticker is empty or did not return a result
-                invalid_ticker = yft.validate_ticker(ticker) or self.dpg.get_value(
-                    configs.TICKER_INFO_WINDOW_TICKER_ID) is None
+                invalid_ticker = yft.validate_ticker(ticker) or ticker == ""
 
             else:  # crypto
+                print("checking crypto")
                 # ticker is empty or did not return a result
-                invalid_ticker = not cgt.validate_coin(ticker) or self.dpg.get_value(
-                    configs.TICKER_INFO_WINDOW_TICKER_ID) is None
+                invalid_ticker = not cgt.validate_coin(ticker) or ticker == ""
         else:
             # they did not choose a contract
             invalid_ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID) == ""
