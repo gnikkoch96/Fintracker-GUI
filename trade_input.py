@@ -2,6 +2,7 @@ import configs
 import yfinance_tool as yft
 import cngko_tool as cgt
 import firebase_conn
+import threading
 from ticker_search_info import CryptoStockInfo
 from datetime import date
 
@@ -13,10 +14,13 @@ class InputTrade:
         self.investment_types = [configs.TICKER_RADIO_BTN_CRYPTO_TEXT,
                                  configs.TICKER_RADIO_BTN_STOCK_TEXT,
                                  configs.TICKER_RADIO_BTN_OPTION_TEXT]
-        self.option = None
-
         # default will be on Crypto
         self.investment_type = configs.TICKER_RADIO_BTN_CRYPTO_TEXT
+        self.option = None
+
+        # threading to make gui responsive
+        self.ticker_search_thread = None
+
         self.create_ticker_search_win()
 
     def create_ticker_search_win(self):
@@ -75,7 +79,7 @@ class InputTrade:
                                     width=self.dpg.get_viewport_width() / 4)
             self.dpg.add_button(tag=configs.TICKER_INFO_WINDOW_SEARCH_BTN_ID,
                                 label=configs.SEARCH_BTN_TEXT,
-                                callback=self.load_stock_info)
+                                callback=self.search_callback)
 
         # options
         with self.dpg.group(horizontal=True):
@@ -107,14 +111,18 @@ class InputTrade:
                                 hint=configs.TICKER_INFO_WINDOW_REASON_TEXT)
 
     def get_current_price(self):
-        ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID)
+        if self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID) != "":
+            ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID)
 
-        if self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
-            curr_price = yft.get_stock_price(ticker)
+            if self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
+                curr_price = yft.get_stock_price(ticker)
+            else:
+                curr_price = cgt.get_current_price(ticker)
+
+            self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
         else:
-            curr_price = cgt.get_current_price(ticker)
-
-        self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
+            #todo add a dialogue
+            print("Error: Ticker is Empty, cannot load current price")
 
     # todo cleanup this code
     def add_callback(self):
@@ -128,13 +136,17 @@ class InputTrade:
             if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
                 ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID).upper()
 
-                if self.investment_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT:
-                    token = cgt.get_symbol(ticker.lower())
-                else:
+                if self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
                     bought_price = round(bought_price, 2)
 
+                self.update_stock_crypto_to_table(date_val, invest_type, ticker, count, bought_price)
+
+                # store the symbol of crypto as opposed to their name
+                if self.investment_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT:
+                    ticker = cgt.get_symbol(ticker.lower())
+
                 data = {configs.FIREBASE_DATE: date_val,
-                        configs.FIREBASE_TICKER: token,
+                        configs.FIREBASE_TICKER: ticker,
                         configs.FIREBASE_TYPE: invest_type,
                         configs.FIREBASE_COUNT: count,
                         configs.FIREBASE_BOUGHT_PRICE: bought_price,
@@ -142,10 +154,13 @@ class InputTrade:
                         }
                 firebase_conn.add_open_trade_db(self.user_id, data)
 
-                self.update_stock_crypto_to_table(date_val, invest_type, ticker, count, bought_price)
+
             else:
                 # todo remove hardcode
                 contract = f"{self.option.contract[0]} | {self.option.contract[1]} | {self.option.contract[2]} | {self.option.contract[3]}"
+
+                bought_price = round(bought_price, 2)
+
                 data = {configs.FIREBASE_DATE: date_val,
                         configs.FIREBASE_CONTRACT: contract,
                         configs.FIREBASE_TYPE: invest_type,
@@ -245,6 +260,11 @@ class InputTrade:
     def contract_callback(self):
         self.option = Options(self.dpg)
 
+    def search_callback(self):
+        self.ticker_search_thread = threading.Thread(target=self.load_stock_info,
+                                                     daemon=True)
+        self.ticker_search_thread.start()
+
     def load_stock_info(self):
         # todo this is where we will call the respective api to get the information
         ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID)
@@ -272,10 +292,9 @@ class InputTrade:
 
             if self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
                 # ticker is empty or did not return a result
-                invalid_ticker = yft.validate_ticker(ticker) or ticker == ""
+                invalid_ticker = not yft.validate_ticker(ticker) or ticker == ""
 
             else:  # crypto
-                print("checking crypto")
                 # ticker is empty or did not return a result
                 invalid_ticker = not cgt.validate_coin(ticker) or ticker == ""
         else:
@@ -291,7 +310,7 @@ class InputTrade:
         if invalid_count or invalid_bought_price or invalid_ticker:
             if invalid_ticker:
                 # todo display an error message (mention the rules for each radio button)
-                print("Error: Invalid Ticker (It has to be the ticker name and not the full name")
+                print("Error: Invalid Ticker (It has to be the ticker name and not the full name)")
 
             if invalid_count:
                 # todo display an error message
@@ -333,6 +352,8 @@ class Options:
     def __init__(self, dpg):
         self.dpg = dpg
         self.contract = None
+        self.search_options_thread = None
+
         self.create_options_win()
 
     def create_options_win(self):
@@ -363,12 +384,18 @@ class Options:
         return option_dates
 
     def search_callback(self):
+        self.search_options_thread = threading.Thread(target=self.load_option_combos,
+                                                      daemon=True)
+        self.search_options_thread.start()
+
+    def load_option_combos(self):
         # resets the option window every search
         self.delete_option_win_items()
 
         ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
         if self.validate_input(ticker):
             with self.dpg.group(horizontal=True, parent=configs.OPTIONS_WINDOW_ID):
+
                 # call or put combo (user chooses)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
                                    items=self.create_option_type_combo_list(),

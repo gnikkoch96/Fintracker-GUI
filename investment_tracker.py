@@ -1,5 +1,6 @@
 import configs
 import firebase_conn
+import threading
 from trade_input import InputTrade
 
 
@@ -7,6 +8,13 @@ class Fintracker:
     def __init__(self, dpg, is_offline=False, user_id=None):
         self.dpg = dpg
         self.user_id = user_id
+
+        # threads to create a more responsive gui
+        self.load_open_trades_thread = threading.Thread(target=self.load_open_trades,
+                                                        daemon=True)
+        self.load_closed_trades_thread = threading.Thread(target=self.load_closed_trades,
+                                                          daemon=True)
+
         self.create_fintracker_win()
 
         # todo if offline then we read a file instead of accessing the firebase
@@ -21,8 +29,6 @@ class Fintracker:
                              no_resize=True):
             self.create_fintracker_items()
 
-            # start the loading of open and closed trades
-
     def create_fintracker_items(self):
         with self.dpg.group(horizontal=True):
             # child: closed trades window
@@ -30,6 +36,8 @@ class Fintracker:
                                        width=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[0],
                                        height=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[1]):
                 self.dpg.add_text(configs.FINTRACKER_CLOSED_TRADES_TEXT)
+
+                # todo start the thread for loading of closed trades
                 self.load_closed_trades()
 
             # child: open trades container (holds the open trades window and buttons)
@@ -41,7 +49,10 @@ class Fintracker:
                                            width=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[0],
                                            height=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[1]):
                     self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_TEXT)
-                    self.load_open_trades()
+
+                    # start the thread for loading of open trades
+                    self.load_open_trades_thread.start()
+                    # self.load_open_trades()
 
                 # sub-child: buttons
                 with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_BUTTONS_ID,
@@ -86,11 +97,13 @@ class Fintracker:
     def load_open_trades(self):
         # todo make it so that if the local file exists we read from there as opposed to firebase
         if firebase_conn.get_open_trades_stock_crypto_db(self.user_id) is not None:
-            self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT)
+            self.dpg.add_text(default_value=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT,
+                              parent=configs.FINTRACKER_OPEN_TRADES_ID)
             self.load_open_table()
 
         if firebase_conn.get_open_trades_options_db(self.user_id) is not None:
-            self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT)
+            self.dpg.add_text(default_value=configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT,
+                              parent=configs.FINTRACKER_OPEN_TRADES_ID)
             self.load_open_table(True)
 
     # depending on is_option it will load different tables
