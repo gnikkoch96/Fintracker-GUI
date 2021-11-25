@@ -10,8 +10,7 @@ class Fintracker:
         self.user_id = user_id
 
         # threads to create a more responsive gui
-        self.load_open_trades_thread = threading.Thread(target=self.load_open_trades,
-                                                        daemon=True)
+        self.load_open_trades_table_thread = None
         self.load_closed_trades_thread = threading.Thread(target=self.load_closed_trades,
                                                           daemon=True)
 
@@ -51,29 +50,27 @@ class Fintracker:
                     self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_TEXT)
 
                     # start the thread for loading of open trades
-                    self.load_open_trades_thread.start()
-                    # self.load_open_trades()
+                    self.start_load_open_tables_thread()
 
-                # sub-child: buttons
-                with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_BUTTONS_ID,
-                                           width=configs.FINTRACKER_OPEN_TRADES_BUTTONS_VIEWPORT_SIZE[0],
-                                           height=configs.FINTRACKER_OPEN_TRADES_BUTTONS_VIEWPORT_SIZE[1]):
-                    self.dpg.add_button(tag=configs.FINTRACKER_NEWS_BTN_ID,
-                                        label=configs.FINTRACKER_NEWS_BTN_TEXT)
-
-                    self.dpg.add_button(tag=configs.FINTRACKER_ADD_BTN_ID,
-                                        label=configs.ADD_BTN_TEXT,
-                                        callback=self.add_callback)
-
-        # display profit and win-rate
         with self.dpg.group(horizontal=True):
+            # profit
             self.dpg.add_text(configs.FINTRACKER_PROFIT_LABEL_TEXT)
             self.dpg.add_text(tag=configs.FINTRACKER_PROFIT_ID,
                               default_value=configs.FINTRACKER_PROFIT_TEXT)
 
+            # win-rate
             self.dpg.add_text(configs.FINTRACKER_PROFIT_PERCENT_LABEL_TEXT)
             self.dpg.add_text(tag=configs.FINTRACKER_PROFIT_PERCENT_ID,
                               default_value=configs.FINTRACKER_PROFIT_PERCENT_TEXT)
+
+            # news button
+            self.dpg.add_button(tag=configs.FINTRACKER_NEWS_BTN_ID,
+                                label=configs.FINTRACKER_NEWS_BTN_TEXT)
+
+            # add trade button
+            self.dpg.add_button(tag=configs.FINTRACKER_ADD_BTN_ID,
+                                label=configs.ADD_BTN_TEXT,
+                                callback=self.add_callback)
 
     # todo think about making this into a table as opposed to creating buttons
     def load_closed_trades(self):
@@ -93,30 +90,38 @@ class Fintracker:
             self.dpg.add_button(label=format,
                                 parent=configs.FINTRACKER_CLOSED_TRADES_ID)
 
+    # will be used for refreshing the table
+    def start_load_open_tables_thread(self):
+        # delete the tables if they exist already
+        if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID):
+            self.dpg.delete_item(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID):
+            self.dpg.delete_item(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID)
+
+        self.load_open_trades_table_thread = threading.Thread(target=self.load_open_trades,
+                                                              daemon=True)
+        self.load_open_trades_table_thread.start()
+
     # todo think about making this into a table as opposed to creating buttons
     def load_open_trades(self):
         # todo make it so that if the local file exists we read from there as opposed to firebase
         if firebase_conn.get_open_trades_stock_crypto_db(self.user_id) is not None:
-            self.dpg.add_text(default_value=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT,
-                              parent=configs.FINTRACKER_OPEN_TRADES_ID)
             self.load_open_table()
 
         if firebase_conn.get_open_trades_options_db(self.user_id) is not None:
-            self.dpg.add_text(default_value=configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT,
-                              parent=configs.FINTRACKER_OPEN_TRADES_ID)
             self.load_open_table(True)
 
     # depending on is_option it will load different tables
     def load_open_table(self, is_option=False):
-        with self.dpg.table(resizable=True,
+        if is_option:
+            table_tag = configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID
+        else:
+            table_tag = configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID
+        with self.dpg.table(tag=table_tag,
+                            resizable=True,
                             header_row=True,
-                            parent=configs.FINTRACKER_OPEN_TRADES_ID) as open_table:
-
-            # adding a tag to corresponding table
-            if not is_option:
-                self.dpg.add_alias(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID, open_table)
-            else:
-                self.dpg.add_alias(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID, open_table)
+                            parent=configs.FINTRACKER_OPEN_TRADES_ID):
 
             # column headers
             self.dpg.add_table_column()
@@ -130,6 +135,8 @@ class Fintracker:
 
             self.dpg.add_table_column(label=configs.FIREBASE_COUNT)
             self.dpg.add_table_column(label=configs.FIREBASE_BOUGHT_PRICE)
+            self.dpg.add_table_column(label=configs.SELL_TEXT)
+            self.dpg.add_table_column(label=configs.REMOVE_TEXT)
 
             if not is_option:
                 open_trades = firebase_conn.get_open_trades_stock_crypto_db(self.user_id)
@@ -179,8 +186,33 @@ class Fintracker:
                         # bought price
                         self.dpg.add_text(bought_price)
 
+                    with self.dpg.table_cell():
+                        # sell button
+                        self.dpg.add_button(label=configs.SELL_TEXT,
+                                            callback=self.sell_callback,
+                                            user_data=(is_option,
+                                                       open_trade_id))  # so we know if we are removing from which table)
+
+                    with self.dpg.table_cell():
+                        # remove button
+                        self.dpg.add_button(label=configs.REMOVE_TEXT,
+                                            callback=self.remove_callback,
+                                            user_data=(is_option, open_trade_id))
+
     def open_trade_callback(self):
         pass
+
+    def sell_callback(self):
+        pass
+
+    def remove_callback(self, sender, app_data, user_data):
+        is_option = user_data[0]
+        open_trade_id = user_data[1]
+        firebase_conn.remove_open_trade_by_id(self.user_id, is_option, open_trade_id)
+
+        # todo update the table once it has been removed
+        # seems like it currently is not supported in the current version
+        self.start_load_open_tables_thread()
 
     def add_callback(self):
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_TICKER_ID):

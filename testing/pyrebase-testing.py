@@ -1,7 +1,5 @@
-import json
-
 import pyrebase
-import requests
+
 
 firebase_config = {
     'apiKey': "AIzaSyBR0l5iXd7MwfLG5ltKhvMGKUsE7DpsGHQ",

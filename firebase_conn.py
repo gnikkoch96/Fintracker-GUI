@@ -50,6 +50,14 @@ def add_closed_trade_db(user_id, data):
         firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).push(data)
 
 
+def remove_open_trade_by_id(user_id, is_option, trade_id):
+    if is_option:
+        firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
+            configs.FIREBASE_OPTION_TEXT).child(trade_id).remove()
+    else:
+        firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
+            configs.FIREBASE_STOCK_CRYPTO_TEXT).child(trade_id).remove()
+
 def get_closed_trades_db(user_id):
     if user_id is not None:
         return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).get().val()
