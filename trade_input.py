@@ -113,11 +113,20 @@ class InputTrade:
     def get_current_price(self):
         if self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID) != "":
             ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID)
+            curr_price = 0
 
             if self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
-                curr_price = yft.get_stock_price(ticker)
+                if yft.validate_ticker(ticker):
+                    curr_price = yft.get_stock_price(ticker)
+                else:
+                    # todo display an error message
+                    pass
             else:
-                curr_price = cgt.get_current_price(ticker)
+                if cgt.validate_coin(ticker):
+                    curr_price = cgt.get_current_price(ticker)
+                else:
+                    # todo display an error message
+                    pass
 
             self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
         else:
