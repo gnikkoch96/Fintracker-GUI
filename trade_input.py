@@ -145,13 +145,12 @@ class InputTrade:
             date_val = str(date.today())
             reason = self.dpg.get_value(configs.TICKER_INFO_WINDOW_REASON_ID).capitalize()
 
+            # stock and crypto
             if self.investment_type != configs.TICKER_RADIO_BTN_OPTION_TEXT:
                 ticker = self.dpg.get_value(configs.TICKER_INFO_WINDOW_TICKER_ID).upper()
 
                 if self.investment_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
                     bought_price = round(bought_price, 2)
-
-                self.update_stock_crypto_to_table(date_val, invest_type, ticker, count, bought_price)
 
                 # store the symbol of crypto as opposed to their name
                 if self.investment_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT:
@@ -165,8 +164,9 @@ class InputTrade:
                         configs.FIREBASE_REASON: reason
                         }
                 firebase_conn.add_open_trade_db(self.user_id, data)
+                self.update_stock_crypto_to_table(date_val, invest_type, ticker, count, bought_price)
 
-
+            # options
             else:
                 # todo remove hardcode
                 contract = f"{self.option.contract[0]} | {self.option.contract[1]} | {self.option.contract[2]} | {self.option.contract[3]}"

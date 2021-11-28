@@ -218,7 +218,13 @@ class Fintracker:
         bought_price = row_data[4]
 
         # todo figure out how to get the open trade id
-        open_trade_id = None
+        if is_option:
+            open_trades = firebase_conn.get_open_trades_keys(self.user_id, is_option)
+        else:
+            open_trades = firebase_conn.get_open_trades_keys(self.user_id, is_option)
+
+        # the recent trade should represent the last value of the trades
+        open_trade_id = list(open_trades)[-1]
 
         row_tag = configs.FINTRACKER_OPEN_TRADES_ROW_TEXT + str(self.num_open_trade_rows)
         with self.dpg.table_row(tag=row_tag,
