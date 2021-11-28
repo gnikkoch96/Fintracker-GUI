@@ -1,5 +1,7 @@
 import dearpygui.dearpygui as dpg
 
+import investment_tracker
+
 dpg.create_context()
 
 
@@ -8,7 +10,6 @@ def delete_row_1():
 
 def delete_row_2():
     dpg.delete_item("what_what2")
-
 
 with dpg.window(label="Tutorial"):
     with dpg.table(header_row=True):

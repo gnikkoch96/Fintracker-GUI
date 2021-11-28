@@ -66,8 +66,6 @@ class Fintracker:
             # start the thread for loading of open trades
             self.load_open_trades_table_thread.start()
 
-
-
     # todo think about making this into a table as opposed to creating buttons
     def load_closed_trades(self):
         # todo make it so that if the local file exists we read from there as opposed to firebase
@@ -209,6 +207,59 @@ class Fintracker:
                                             callback=self.remove_callback,
                                             user_data=(row_tag, is_option, open_trade_id))
 
+    # used by other classes to update the fintracker table
+    def add_to_open_table(self, table_id, row_data, is_option=False):
+        self.num_open_trade_rows += 1
+
+        date_val = row_data[0]
+        invest_type = row_data[1]
+        trade = row_data[2]
+        count = row_data[3]
+        bought_price = row_data[4]
+
+        # todo figure out how to get the open trade id
+        open_trade_id = None
+
+        row_tag = configs.FINTRACKER_OPEN_TRADES_ROW_TEXT + str(self.num_open_trade_rows)
+        with self.dpg.table_row(tag=row_tag,
+                                parent=table_id):
+            with self.dpg.table_cell():
+                self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
+                                    callback=self.open_trade_callback)
+
+            with self.dpg.table_cell():
+                # date
+                self.dpg.add_text(date_val)
+
+            with self.dpg.table_cell():
+                # type
+                self.dpg.add_text(invest_type)
+
+            with self.dpg.table_cell():
+                # ticker
+                self.dpg.add_text(trade)
+
+            with self.dpg.table_cell():
+                # count
+                self.dpg.add_text(count)
+
+            with self.dpg.table_cell():
+                # bought price
+                self.dpg.add_text(bought_price)
+
+            with self.dpg.table_cell():
+                # sell button
+                self.dpg.add_button(label=configs.SELL_TEXT,
+                                    callback=self.sell_callback,
+                                    user_data=(is_option,
+                                               open_trade_id))
+
+            with self.dpg.table_cell():
+                # remove button
+                self.dpg.add_button(label=configs.REMOVE_TEXT,
+                                    callback=self.remove_callback,
+                                    user_data=(row_tag, is_option, open_trade_id))
+
     def open_trade_callback(self):
         pass
 
@@ -228,4 +279,4 @@ class Fintracker:
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_TICKER_ID):
             self.dpg.focus_item(configs.TICKER_INFO_WINDOW_TICKER_ID)
         else:
-            InputTrade(self.dpg, self.user_id)
+            InputTrade(self.dpg, self.user_id, self)

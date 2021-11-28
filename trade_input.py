@@ -1,4 +1,5 @@
 import configs
+import investment_tracker
 import yfinance_tool as yft
 import cngko_tool as cgt
 import firebase_conn
@@ -8,9 +9,11 @@ from datetime import date
 
 
 class InputTrade:
-    def __init__(self, dpg, user_id):
+    def __init__(self, dpg, user_id, fintracker_gui):
         self.dpg = dpg
         self.user_id = user_id
+        self.fintracker = fintracker_gui
+
         self.investment_types = [configs.TICKER_RADIO_BTN_CRYPTO_TEXT,
                                  configs.TICKER_RADIO_BTN_STOCK_TEXT,
                                  configs.TICKER_RADIO_BTN_OPTION_TEXT]
@@ -130,7 +133,7 @@ class InputTrade:
 
             self.dpg.set_value(configs.TICKER_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
         else:
-            #todo add a dialogue
+            # todo add a dialogue
             print("Error: Ticker is Empty, cannot load current price")
 
     # todo cleanup this code
@@ -178,7 +181,6 @@ class InputTrade:
                         configs.FIREBASE_REASON: reason
                         }
                 firebase_conn.add_open_trade_db(self.user_id, data, True)
-
                 self.update_option_to_table(date_val, invest_type, contract, count, bought_price)
 
             # todo make this message a dialog to the player
@@ -204,63 +206,14 @@ class InputTrade:
             self.dpg.set_value(configs.TICKER_INFO_WINDOW_SHOW_CONTRACT_ID, "")
 
     def update_stock_crypto_to_table(self, date_val, invest_type, ticker, count, bought_price):
-        with self.dpg.table_row(parent=configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID):
-            with self.dpg.table_cell():
-                # id (user clicks this to find about their trade)
-                # todo figure out how to send the trade's id as user_data
-                self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
-                                    callback=self.open_trade_callback)
-
-            with self.dpg.table_cell():
-                # date
-                self.dpg.add_text(date_val)
-
-            with self.dpg.table_cell():
-                # type
-                self.dpg.add_text(invest_type)
-
-            with self.dpg.table_cell():
-                # ticker
-                if self.investment_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT:  # puts symbol name instead of full name
-                    ticker = cgt.get_symbol(ticker.lower())
-
-                self.dpg.add_text(ticker)
-
-            with self.dpg.table_cell():
-                # count
-                self.dpg.add_text(count)
-
-            with self.dpg.table_cell():
-                # bought price
-                self.dpg.add_text(bought_price)
+        table_id = configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID
+        row_data = (date_val, invest_type, ticker, count, bought_price)
+        self.fintracker.add_to_open_table(table_id, row_data)
 
     def update_option_to_table(self, date_val, invest_type, contract, count, bought_price):
-        with self.dpg.table_row(parent=configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID):
-            with self.dpg.table_cell():
-                # id (user clicks this to find about their trade)
-                # todo figure out how to send the trade's id as user_data
-                self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
-                                    callback=self.open_trade_callback)
-
-            with self.dpg.table_cell():
-                # date
-                self.dpg.add_text(date_val)
-
-            with self.dpg.table_cell():
-                # type
-                self.dpg.add_text(invest_type)
-
-            with self.dpg.table_cell():
-                # ticker
-                self.dpg.add_text(contract)
-
-            with self.dpg.table_cell():
-                # count
-                self.dpg.add_text(count)
-
-            with self.dpg.table_cell():
-                # bought price
-                self.dpg.add_text(bought_price)
+        table_id = configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID
+        row_data = (date_val, invest_type, contract, count, bought_price)
+        self.fintracker.add_to_open_table(table_id, row_data, True)
 
     def open_trade_callback(self, sender, app_data, user_data):
         print(sender, app_data, user_data)
