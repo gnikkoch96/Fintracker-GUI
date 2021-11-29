@@ -1,6 +1,7 @@
 import configs
 import firebase_conn
 import threading
+from view_trade import ViewTrade
 from trade_input import InputTrade
 
 
@@ -171,8 +172,8 @@ class Fintracker:
                     with self.dpg.table_cell():
                         # id (user clicks this to find about their trade)
                         self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
-                                            callback=self.open_trade_callback,
-                                            user_data=open_trade_id)
+                                            callback=self.view_trade_callback,
+                                            user_data=(open_trade_id, is_option))
 
                     with self.dpg.table_cell():
                         # date
@@ -231,7 +232,8 @@ class Fintracker:
                                 parent=table_id):
             with self.dpg.table_cell():
                 self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
-                                    callback=self.open_trade_callback)
+                                    callback=self.view_trade_callback,
+                                    user_data=(open_trade_id, is_option))
 
             with self.dpg.table_cell():
                 # date
@@ -266,8 +268,10 @@ class Fintracker:
                                     callback=self.remove_callback,
                                     user_data=(row_tag, is_option, open_trade_id))
 
-    def open_trade_callback(self):
-        pass
+    def view_trade_callback(self, sender, app_data, user_data):
+        trade_id = user_data[0]
+        is_option = user_data[1]
+        ViewTrade(self.dpg, self, trade_id, is_option)
 
     def sell_callback(self):
         pass
