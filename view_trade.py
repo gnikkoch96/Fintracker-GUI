@@ -1,5 +1,8 @@
 import configs
 import firebase_conn
+import yfinance_tool as yft
+import cngko_tool as cgt
+from search_options import Options
 
 
 class ViewTrade:
@@ -21,8 +24,7 @@ class ViewTrade:
                              label=configs.VIEW_TRADE_WINDOW_TEXT,
                              width=configs.VIEW_TRADE_WINDOW_SIZE[0],
                              height=configs.VIEW_TRADE_WINDOW_SIZE[1],
-                             on_close=self.cleanup_alias,
-                             modal=True):
+                             on_close=self.cleanup_alias):
             self.create_view_trades_items()
 
     def create_view_trades_items(self):
@@ -52,6 +54,9 @@ class ViewTrade:
             self.dpg.add_text(configs.VIEW_TRADE_DATE_TEXT)
             self.dpg.add_input_text(tag=configs.VIEW_TRADE_DATE_ID,
                                     default_value=date)
+            self.dpg.add_button(tag=configs.VIEW_TRADE_CHANGE_DATE_BTN_ID,
+                                label=configs.VIEW_TRADE_CHANGE_DATE_BTN_TEXT,
+                                callback=self.change_date)
 
         # display stock type
         with self.dpg.group(horizontal=True):
@@ -69,7 +74,7 @@ class ViewTrade:
         with self.dpg.group(horizontal=True):
             self.dpg.add_text(configs.VIEW_TRADE_BOUGHT_PRICE_TEXT)
             self.dpg.add_input_float(tag=configs.VIEW_TRADE_BOUGHT_PRICE_ID,
-                                   default_value=bought_price)
+                                     default_value=bought_price)
 
         # display reason
         with self.dpg.group(horizontal=True):
@@ -93,6 +98,7 @@ class ViewTrade:
                             callback=self.cancel_callback)
 
         self.disable_items()
+
     # disable the items so that the user doesn't accidentally edit them
     def disable_items(self):
         # hide buttons only until user wants to edit their trades
@@ -108,14 +114,19 @@ class ViewTrade:
         self.dpg.disable_item(configs.VIEW_TRADE_INPUT_ID)
 
     def enable_items(self):
+        if self.is_options:
+            self.dpg.show_item(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
+        else:  # only change trade input if it isn't options related (a button will replace it instead)
+            self.dpg.enable_item(configs.VIEW_TRADE_INPUT_ID)
+
         self.dpg.enable_item(configs.VIEW_TRADE_REASON_ID)
         self.dpg.enable_item(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
         self.dpg.enable_item(configs.VIEW_TRADE_COUNT_ID)
         self.dpg.enable_item(configs.VIEW_TRADE_TYPE_ID)
-        self.dpg.enable_item(configs.VIEW_TRADE_DATE_ID)
-        self.dpg.enable_item(configs.VIEW_TRADE_INPUT_ID)
 
     def edit_callback(self):
+        self.enable_items()
+
         self.dpg.hide_item(configs.VIEW_TRADE_EDIT_BTN_ID)
         self.dpg.show_item(configs.VIEW_TRADE_SAVE_BTN_ID)
         self.dpg.show_item(configs.VIEW_TRADE_CANCEL_BTN_ID)
@@ -146,13 +157,59 @@ class ViewTrade:
         pass
 
     def change_contract_callback(self):
-        pass
+        Options(self.dpg, configs.VIEW_TRADE_INPUT_ID)
+
+    def change_date(self):
+        with self.dpg.window(tag=configs.VIEW_TRADE_DATE_PICKER_WINDOW_ID,
+                             label=configs.VIEW_TRADE_DATE_PICKER_WINDOW_TEXT,
+                             width=configs.VIEW_TRADE_WINDOW_SIZE[0]/2,
+                             height=configs.VIEW_TRADE_WINDOW_SIZE[1]/2,
+                             modal=True):
+            self.dpg.add_date_picker(tag=configs.VIEW_TRADE_DATE_PICKER_ID,
+                                     callback=self.date_picker_callback)
+
+    def date_picker_callback(self, sender, app_data, user_data):
+        year = app_data['year'] + 1900
+        month = app_data['month'] + 1
+        day = app_data['month_day']
+        new_date = f"{year}-{month}-{day}"
+
+        self.dpg.set_value(configs.VIEW_TRADE_DATE_ID, new_date)
+        self.dpg.delete_item(configs.VIEW_TRADE_DATE_PICKER_WINDOW_ID)
+        self.dpg.remove_alias(configs.VIEW_TRADE_DATE_PICKER_ID)
+
+    # makes sure the user is inputting valid data
+    def validate_edit(self):
+        # don't need to validate options because it will be properly formatted when user chooses contract
+        if not self.is_options:
+            ticker = self.dpg.get_value(configs.VIEW_TRADE_INPUT_ID)
+            valid_ticker = yft.validate_ticker(ticker) or cgt.validate_coin(ticker)
+
+        trade_type = self.dpg.get_value(configs.VIEW_TRADE_TYPE_ID).capitalize()
+        count = self.dpg.get_value(configs.VIEW_TRADE_COUNT_ID)
+        bought_price = self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
+
+        valid_type = (trade_type == configs.TICKER_RADIO_BTN_STOCK_TEXT or
+                      trade_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT or
+                      trade_type == configs.TICKER_RADIO_BTN_OPTION_TEXT)
+
+        valid_count = count >= 0
+
+        valid_bought_price = bought_price >= 0
+
+        if not valid_ticker and not valid_type and not valid_count and not valid_bought_price:
+            # todo display error message for corresponding errors (users want to know where they were wrong)
+            return False
+
+
 
     def load_trade_data(self):
         return firebase_conn.get_open_trade_by_id_db(self.user_id, self.trade_id, self.is_options)
 
     def cleanup_alias(self):
-        self.dpg.remove_alias(configs.VIEW_TRADE_WINDOW_ID)
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_WINDOW_ID)
+
         self.dpg.remove_alias(configs.VIEW_TRADE_INPUT_ID)
         self.dpg.remove_alias(configs.VIEW_TRADE_DATE_ID)
         self.dpg.remove_alias(configs.VIEW_TRADE_TYPE_ID)
@@ -162,3 +219,5 @@ class ViewTrade:
         self.dpg.remove_alias(configs.VIEW_TRADE_EDIT_BTN_ID)
         self.dpg.remove_alias(configs.VIEW_TRADE_SAVE_BTN_ID)
         self.dpg.remove_alias(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
+        self.dpg.remove_alias(configs.VIEW_TRADE_CANCEL_BTN_ID)
+        self.dpg.remove_alias(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID)

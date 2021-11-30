@@ -19,6 +19,9 @@ class Fintracker:
         self.load_closed_trades_thread = threading.Thread(target=self.load_closed_trades,
                                                           daemon=True)
 
+        # todo cleanup
+        self.view_trade = None
+
         self.create_fintracker_win()
 
         # todo if offline then we read a file instead of accessing the firebase
@@ -271,12 +274,25 @@ class Fintracker:
     def view_trade_callback(self, sender, app_data, user_data):
         trade_id = user_data[0]
         is_option = user_data[1]
-        ViewTrade(self.dpg, self, trade_id, is_option)
+
+        if not self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
+            self.view_trade = ViewTrade(self.dpg, self, trade_id, is_option)
+        else:
+            self.close_view_trade_win()
+            self.view_trade = ViewTrade(self.dpg, self, trade_id, is_option)
 
     def sell_callback(self):
         pass
 
+    def close_view_trade_win(self):
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
+            self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
+            self.view_trade.cleanup_alias()
+
     def remove_callback(self, sender, app_data, user_data):
+        # close the window of the removed trade
+        self.close_view_trade_win()
+
         row_tag = user_data[0]
         is_option = user_data[1]
         open_trade_id = user_data[2]
@@ -284,6 +300,8 @@ class Fintracker:
 
         # todo update the table once it has been removed
         self.dpg.delete_item(row_tag)
+
+
 
     def add_callback(self):
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_TICKER_ID):
