@@ -147,6 +147,7 @@ FIREBASE_CLOSE_TRADES_TEXT = "Closed Trades"
 FIREBASE_OPTION_TEXT = "Options"
 FIREBASE_STOCK_CRYPTO_TEXT = "Stock_Crypto"
 FIREBASE_LOCAL_ID = "localId"
+FIREBASE_SOLD_PRICE = "sold_price"
 
 # coingecko keywords
 COINGECKO_SYMBOL_TEXT = "symbol"

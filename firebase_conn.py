@@ -81,6 +81,16 @@ def get_open_trades_options_db(user_id):
             configs.FIREBASE_OPTION_TEXT).get().val()
 
 
+def get_closed_trades_db(user_id, is_option):
+    if user_id is not None:
+        if is_option:
+            return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
+                configs.FIREBASE_OPTION_TEXT).get().val()
+        else:
+            return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
+                configs.FIREBASE_STOCK_CRYPTO_TEXT).get().val()
+
+
 def get_open_trade_by_id_db(user_id, trade_id, is_option=False):
     if is_option:
         return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
@@ -92,10 +102,10 @@ def get_open_trade_by_id_db(user_id, trade_id, is_option=False):
 
 def get_closed_trade_by_id_db(user_id, trade_id, is_option=False):
     if is_option:
-        return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
+        return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
             configs.FIREBASE_OPTION_TEXT).child(trade_id).get().val()
     else:
-        return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
+        return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
             configs.FIREBASE_STOCK_CRYPTO_TEXT).child(trade_id).get().val()
 
 
