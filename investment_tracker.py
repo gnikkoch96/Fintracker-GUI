@@ -176,7 +176,7 @@ class Fintracker:
                         # id (user clicks this to find about their trade)
                         self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
                                             callback=self.view_trade_callback,
-                                            user_data=(open_trade_id, is_option))
+                                            user_data=(open_trade_id, is_option, row_tag))
 
                     with self.dpg.table_cell():
                         # date
@@ -212,6 +212,7 @@ class Fintracker:
                                             user_data=(row_tag, is_option, open_trade_id))
 
     # used by other classes to update the fintracker table
+    # todo cleanup this contains code that is similar to load_open_table()
     def add_to_open_table(self, table_id, row_data, is_option=False):
         self.num_open_trade_rows += 1
 
@@ -236,7 +237,7 @@ class Fintracker:
             with self.dpg.table_cell():
                 self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
                                     callback=self.view_trade_callback,
-                                    user_data=(open_trade_id, is_option))
+                                    user_data=(open_trade_id, is_option, row_tag))
 
             with self.dpg.table_cell():
                 # date
@@ -271,15 +272,48 @@ class Fintracker:
                                     callback=self.remove_callback,
                                     user_data=(row_tag, is_option, open_trade_id))
 
+    def update_table_row(self, row_tag, new_data, is_options):
+        row_cols = self.dpg.get_item_children(row_tag, 1)
+
+        # data
+        new_date = new_data[configs.FIREBASE_DATE]
+        new_type = new_data[configs.FIREBASE_TYPE]
+        new_count = new_data[configs.FIREBASE_COUNT]
+        new_bought_price = new_data[configs.FIREBASE_BOUGHT_PRICE]
+
+        if is_options:
+            new_trade = new_data[configs.FIREBASE_CONTRACT]
+        else:
+            new_trade = new_data[configs.FIREBASE_TICKER]
+
+        counter = 0
+        for row_col_id in row_cols:
+            row_col_items = self.dpg.get_item_children(row_col_id, 1)
+            for item_id in row_col_items:
+                if self.dpg.get_value(item_id) is not None:
+                    print(counter)
+                    if counter == 0:  # date
+                        self.dpg.set_value(item_id, new_date)
+                    elif counter == 1:  # type
+                        self.dpg.set_value(item_id, new_type)
+                    elif counter == 2:  # trade
+                        self.dpg.set_value(item_id, new_trade)
+                    elif counter == 3:  # count
+                        self.dpg.set_value(item_id, new_count)
+                    elif counter == 4:  # bought_price
+                        self.dpg.set_value(item_id, new_bought_price)
+                    counter += 1
+
     def view_trade_callback(self, sender, app_data, user_data):
         trade_id = user_data[0]
         is_option = user_data[1]
+        row_tag = user_data[2]  # used to update the row if any changes were made
 
         if not self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
-            self.view_trade = ViewTrade(self.dpg, self, trade_id, is_option)
+            self.view_trade = ViewTrade(self.dpg, self, trade_id, is_option, row_tag)
         else:
             self.close_view_trade_win()
-            self.view_trade = ViewTrade(self.dpg, self, trade_id, is_option)
+            self.view_trade = ViewTrade(self.dpg, self, trade_id, is_option, row_tag)
 
     def sell_callback(self):
         pass
@@ -300,8 +334,6 @@ class Fintracker:
 
         # todo update the table once it has been removed
         self.dpg.delete_item(row_tag)
-
-
 
     def add_callback(self):
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_TICKER_ID):

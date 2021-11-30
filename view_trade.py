@@ -7,10 +7,11 @@ from search_options import Options
 
 class ViewTrade:
     # fintracker will be needed to update the table after edit
-    def __init__(self, dpg, fintracker, trade_id, is_options):
+    def __init__(self, dpg, fintracker, trade_id, is_options, row_tag):
         self.dpg = dpg
         self.is_options = is_options
         self.trade_id = trade_id
+        self.row_tag = row_tag
         self.fintracker = fintracker
         self.user_id = fintracker.user_id
 
@@ -161,18 +162,10 @@ class ViewTrade:
             date_val = self.dpg.get_value(configs.VIEW_TRADE_DATE_ID)
             invest_type = self.dpg.get_value(configs.VIEW_TRADE_TYPE_ID)
             count = self.dpg.get_value(configs.VIEW_TRADE_COUNT_ID)
-            bought_price = self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
+            bought_price = round(self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID), 2)
             reason = self.dpg.get_value(configs.VIEW_TRADE_REASON_ID)
 
             if self.is_options:
-                new_data = {configs.FIREBASE_DATE: date_val,
-                            configs.FIREBASE_TICKER: trade,
-                            configs.FIREBASE_TYPE: invest_type,
-                            configs.FIREBASE_COUNT: count,
-                            configs.FIREBASE_BOUGHT_PRICE: bought_price,
-                            configs.FIREBASE_REASON: reason
-                            }
-            else:
                 new_data = {configs.FIREBASE_DATE: date_val,
                             configs.FIREBASE_CONTRACT: trade,
                             configs.FIREBASE_TYPE: invest_type,
@@ -180,12 +173,27 @@ class ViewTrade:
                             configs.FIREBASE_BOUGHT_PRICE: bought_price,
                             configs.FIREBASE_REASON: reason
                             }
+            else:
+                new_data = {configs.FIREBASE_DATE: date_val,
+                            configs.FIREBASE_TICKER: trade,
+                            configs.FIREBASE_TYPE: invest_type,
+                            configs.FIREBASE_COUNT: count,
+                            configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                            configs.FIREBASE_REASON: reason
+                            }
 
             firebase_conn.update_open_trade_by_id(self.user_id, self.trade_id, new_data, self.is_options)
+
+            # todo create a dialog to display this notice
             print("Update Successful")
 
+
+            # closing window
             self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
             self.cleanup_alias()
+
+            self.fintracker.update_table_row(self.row_tag, new_data, self.is_options)
+
 
     def change_contract_callback(self):
         Options(self.dpg, configs.VIEW_TRADE_INPUT_ID)
@@ -229,9 +237,11 @@ class ViewTrade:
 
         valid_bought_price = bought_price >= 0
 
-        if not valid_ticker and not valid_type and not valid_count and not valid_bought_price:
-            # todo display error message for corresponding errors (users want to know where they were wrong)
-            return False
+        if not valid_type and not valid_count and not valid_bought_price:
+            if not self.is_options:
+                if not valid_ticker:
+                    # todo display error message for corresponding errors (users want to know where they were wrong)
+                    return False
 
         return True
 
