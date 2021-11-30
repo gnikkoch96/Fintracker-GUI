@@ -291,7 +291,6 @@ class Fintracker:
             row_col_items = self.dpg.get_item_children(row_col_id, 1)
             for item_id in row_col_items:
                 if self.dpg.get_value(item_id) is not None:
-                    print(counter)
                     if counter == 0:  # date
                         self.dpg.set_value(item_id, new_date)
                     elif counter == 1:  # type

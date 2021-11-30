@@ -233,15 +233,21 @@ class ViewTrade:
                       trade_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT or
                       trade_type == configs.TICKER_RADIO_BTN_OPTION_TEXT)
 
-        valid_count = count >= 0
+        valid_count = count > 0
 
-        valid_bought_price = bought_price >= 0
+        valid_bought_price = bought_price > 0
 
-        if not valid_type and not valid_count and not valid_bought_price:
-            if not self.is_options:
-                if not valid_ticker:
-                    # todo display error message for corresponding errors (users want to know where they were wrong)
-                    return False
+        # todo cleanup
+        if self.is_options:
+            if not valid_type or not valid_count or not valid_bought_price:
+                # todo display error message for corresponding errors (users want to know where they were wrong)
+                print("Error: Incorrect Format")
+                return False
+        else:
+            if not valid_type or not valid_count or not valid_bought_price or valid_ticker:
+                # todo display error message for corresponding errors (users want to know where they were wrong)
+                print("Error: Incorrect Format")
+                return False
 
         return True
 
