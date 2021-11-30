@@ -3,7 +3,7 @@ import firebase_conn
 import threading
 from view_trade import ViewTrade
 from trade_input import InputTrade
-
+from sell_trade import SellTrade
 
 class Fintracker:
     def __init__(self, dpg, is_offline=False, user_id=None):
@@ -58,58 +58,151 @@ class Fintracker:
                                 callback=self.add_callback)
 
         with self.dpg.group(horizontal=True):
-            # child: closed trades window
-            with self.dpg.child_window(tag=configs.FINTRACKER_CLOSED_TRADES_ID,
-                                       width=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[0],
-                                       height=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[1]):
-                self.dpg.add_text(configs.FINTRACKER_CLOSED_TRADES_TEXT)
-
-                # todo start the thread for loading of closed trades
-                self.load_closed_trades()
+            # start the thread for loading of closed trades
+            self.load_closed_trades_thread.start()
 
             # start the thread for loading of open trades
             self.load_open_trades_table_thread.start()
 
     # todo think about making this into a table as opposed to creating buttons
     def load_closed_trades(self):
+        # child: close trade window
+        with self.dpg.child_window(tag=configs.FINTRACKER_CLOSED_TRADES_ID,
+                                   width=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[0],
+                                   height=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[1]):
+            self.dpg.add_text(configs.FINTRACKER_CLOSED_TRADES_TEXT)
+
+            # todo make it so that if the local file exists if user chooses offline mode
+
+            # stock/crypto table
+            self.dpg.add_text(default_value=configs.FIREBASE_STOCK_CRYPTO_TEXT)
+            self.load_closed_table()
+
+            # options table
+            self.dpg.add_text(default_value=configs.FIREBASE_OPTION_TEXT)
+            self.load_closed_table(True)
+
         # todo make it so that if the local file exists we read from there as opposed to firebase
-        if firebase_conn.get_closed_trades_db(self.user_id) is None:
-            return
 
-        for closed_trade_id in firebase_conn.get_closed_trades_db(self.user_id):
-            closed_trade = firebase_conn.get_closed_trade_by_id_db(self.user_id, closed_trade_id)
-            bought_price = closed_trade[configs.FIREBASE_BOUGHT_PRICE]
-            count = closed_trade[configs.FIREBASE_COUNT]
-            ticker = closed_trade[configs.FIREBASE_TICKER]
-            type = closed_trade[configs.FIREBASE_TYPE]
-            date = closed_trade[configs.FIREBASE_DATE]
+    # depending on is_option it will load different tables
+    def load_closed_table(self, is_option=False):
+        if is_option:
+            table_tag = configs.FINTRACKER_CLOSED_TRADES_OPTION_TABLE_ID
+        else:
+            table_tag = configs.FINTRACKER_CLOSED_TRADES_CRYPTO_STOCK_TABLE_ID
 
-            format = f"{date} | {ticker} | {type} | {count} | {bought_price}"
-            self.dpg.add_button(label=format,
-                                parent=configs.FINTRACKER_CLOSED_TRADES_ID)
+        with self.dpg.table(tag=table_tag,
+                            resizable=True,
+                            header_row=True,
+                            parent=configs.FINTRACKER_CLOSED_TRADES_ID):
+
+            # column headers
+            self.dpg.add_table_column()
+            self.dpg.add_table_column(label=configs.FIREBASE_DATE)
+            self.dpg.add_table_column(label=configs.FIREBASE_TYPE)
+
+            if not is_option:
+                self.dpg.add_table_column(label=configs.FIREBASE_TICKER)
+            else:
+                self.dpg.add_table_column(label=configs.FIREBASE_CONTRACT)
+
+            self.dpg.add_table_column(label=configs.FIREBASE_COUNT)
+            self.dpg.add_table_column(label=configs.FIREBASE_BOUGHT_PRICE)
+            self.dpg.add_table_column(label=configs.SELL_TEXT)
+            self.dpg.add_table_column(label=configs.REMOVE_TEXT)
+
+            if not is_option:
+                # no stock or crypto trades
+                if firebase_conn.get_closed_trades_stock_crypto_db(self.user_id) is None:
+                    return
+
+                open_trades = firebase_conn.get_closed_trades_stock_crypto_db(self.user_id)
+            else:
+                # no option trades
+                if firebase_conn.get_closed_trades_options_db(self.user_id) is None:
+                    return
+
+                closed_trades = firebase_conn.get_closed_trades_options_db(self.user_id)
+
+            for closed_trade_id in closed_trades:
+                self.num_open_trade_rows += 1
+
+                if not is_option:
+                    closed_trade = firebase_conn.get_closed_trade_by_id_db(self.user_id, open_trade_id, is_option)
+                    trade_type = closed_trade[configs.FIREBASE_TICKER]
+                else:
+                    closed_trade = firebase_conn.get_closed_trade_by_id_db(self.user_id, open_trade_id, is_option)
+                    trade_type = closed_trade[configs.FIREBASE_CONTRACT]
+
+                bought_price = closed_trade[configs.FIREBASE_BOUGHT_PRICE]
+                count = closed_trade[configs.FIREBASE_COUNT]
+                invest_type = closed_trade[configs.FIREBASE_TYPE]
+                date = closed_trade[configs.FIREBASE_DATE]
+
+                if invest_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
+                    bought_price = round(bought_price, 2)
+
+                row_tag = configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_close_trade_rows)
+                with self.dpg.table_row(tag=row_tag,
+                                        parent=table_tag):
+                    with self.dpg.table_cell():
+                        # id (user clicks this to find about their trade)
+                        self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                            callback=self.view_trade_callback,
+                                            user_data=(closed_trade_id, is_option, row_tag))
+
+                    with self.dpg.table_cell():
+                        # date
+                        self.dpg.add_text(date)
+
+                    with self.dpg.table_cell():
+                        # type
+                        self.dpg.add_text(invest_type)
+
+                    with self.dpg.table_cell():
+                        # ticker
+                        self.dpg.add_text(trade_type)
+
+                    with self.dpg.table_cell():
+                        # count
+                        self.dpg.add_text(count)
+
+                    with self.dpg.table_cell():
+                        # bought price
+                        self.dpg.add_text(bought_price)
+
+                    with self.dpg.table_cell():
+                        # sell button
+                        self.dpg.add_button(label=configs.SELL_TEXT,
+                                            callback=self.sell_callback,
+                                            user_data=(is_option,
+                                                       closed_trade_id))
+
+                    with self.dpg.table_cell():
+                        # remove button
+                        self.dpg.add_button(label=configs.REMOVE_TEXT,
+                                            callback=self.remove_callback,
+                                            user_data=(row_tag, is_option, closed_trade_id))
 
     # todo think about making this into a table as opposed to creating buttons
     def load_open_trades(self):
-        # child: open trades container (holds the open trades window and buttons)
-        with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_CONTAINER_ID,
-                                   width=configs.FINTRACKER_OPEN_TRADES_CONTAINER_VIEWPORT_SIZE[0],
-                                   height=configs.FINTRACKER_OPEN_TRADES_CONTAINER_VIEWPORT_SIZE[1]):
-            # sub-child: open trades window
-            with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_ID,
-                                       width=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[0],
-                                       height=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[1]):
-                self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_TEXT)
+        # child: open trades window
+        with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_ID,
+                                   width=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[0],
+                                   height=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[1]):
+            self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_TEXT)
 
-                # todo make it so that if the local file exists we read from there as opposed to firebase
-                # if firebase_conn.get_open_trades_stock_crypto_db(self.user_id) is not None:
-                self.dpg.add_text(default_value=configs.FIREBASE_STOCK_CRYPTO_TEXT,
-                                  parent=configs.FINTRACKER_OPEN_TRADES_ID)
-                self.load_open_table()
+            # todo make it so that if the local file exists if user chooses offline mode
 
-                # if firebase_conn.get_open_trades_options_db(self.user_id) is not None:
-                self.dpg.add_text(default_value=configs.FIREBASE_OPTION_TEXT,
-                                  parent=configs.FINTRACKER_OPEN_TRADES_ID)
-                self.load_open_table(True)
+            # stock/crypto table
+            self.dpg.add_text(default_value=configs.FIREBASE_STOCK_CRYPTO_TEXT,
+                              parent=configs.FINTRACKER_OPEN_TRADES_ID)
+            self.load_open_table()
+
+            # options table
+            self.dpg.add_text(default_value=configs.FIREBASE_OPTION_TEXT,
+                              parent=configs.FINTRACKER_OPEN_TRADES_ID)
+            self.load_open_table(True)
 
     # depending on is_option it will load different tables
     def load_open_table(self, is_option=False):
@@ -174,7 +267,7 @@ class Fintracker:
                                         parent=table_tag):
                     with self.dpg.table_cell():
                         # id (user clicks this to find about their trade)
-                        self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
+                        self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
                                             callback=self.view_trade_callback,
                                             user_data=(open_trade_id, is_option, row_tag))
 
@@ -235,7 +328,7 @@ class Fintracker:
         with self.dpg.table_row(tag=row_tag,
                                 parent=table_id):
             with self.dpg.table_cell():
-                self.dpg.add_button(label=configs.FINTRACKER_OPEN_TRADES_VIEW_TRADE_TEXT,
+                self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
                                     callback=self.view_trade_callback,
                                     user_data=(open_trade_id, is_option, row_tag))
 
@@ -314,8 +407,10 @@ class Fintracker:
             self.close_view_trade_win()
             self.view_trade = ViewTrade(self.dpg, self, trade_id, is_option, row_tag)
 
-    def sell_callback(self):
-        pass
+    def sell_callback(self, sender, app_data, user_data):
+        is_option = user_data[0]
+        trade_id = user_data[1]
+        SellTrade(self.dpg, self, trade_id, is_option)
 
     def close_view_trade_win(self):
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
