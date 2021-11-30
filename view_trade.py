@@ -105,6 +105,7 @@ class ViewTrade:
         self.dpg.hide_item(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
         self.dpg.hide_item(configs.VIEW_TRADE_SAVE_BTN_ID)
         self.dpg.hide_item(configs.VIEW_TRADE_CANCEL_BTN_ID)
+        self.dpg.hide_item(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID)
 
         self.dpg.disable_item(configs.VIEW_TRADE_REASON_ID)
         self.dpg.disable_item(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
@@ -130,6 +131,7 @@ class ViewTrade:
         self.dpg.hide_item(configs.VIEW_TRADE_EDIT_BTN_ID)
         self.dpg.show_item(configs.VIEW_TRADE_SAVE_BTN_ID)
         self.dpg.show_item(configs.VIEW_TRADE_CANCEL_BTN_ID)
+        self.dpg.show_item(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID)
 
     def cancel_callback(self):
         if self.is_options:
@@ -154,7 +156,36 @@ class ViewTrade:
         self.dpg.show_item(configs.VIEW_TRADE_EDIT_BTN_ID)
 
     def save_callback(self):
-        pass
+        if self.validate_edit():
+            trade = self.dpg.get_value(configs.VIEW_TRADE_INPUT_ID)
+            date_val = self.dpg.get_value(configs.VIEW_TRADE_DATE_ID)
+            invest_type = self.dpg.get_value(configs.VIEW_TRADE_TYPE_ID)
+            count = self.dpg.get_value(configs.VIEW_TRADE_COUNT_ID)
+            bought_price = self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
+            reason = self.dpg.get_value(configs.VIEW_TRADE_REASON_ID)
+
+            if self.is_options:
+                new_data = {configs.FIREBASE_DATE: date_val,
+                            configs.FIREBASE_TICKER: trade,
+                            configs.FIREBASE_TYPE: invest_type,
+                            configs.FIREBASE_COUNT: count,
+                            configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                            configs.FIREBASE_REASON: reason
+                            }
+            else:
+                new_data = {configs.FIREBASE_DATE: date_val,
+                            configs.FIREBASE_CONTRACT: trade,
+                            configs.FIREBASE_TYPE: invest_type,
+                            configs.FIREBASE_COUNT: count,
+                            configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                            configs.FIREBASE_REASON: reason
+                            }
+
+            firebase_conn.update_open_trade_by_id(self.user_id, self.trade_id, new_data, self.is_options)
+            print("Update Successful")
+
+            self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
+            self.cleanup_alias()
 
     def change_contract_callback(self):
         Options(self.dpg, configs.VIEW_TRADE_INPUT_ID)
@@ -162,16 +193,17 @@ class ViewTrade:
     def change_date(self):
         with self.dpg.window(tag=configs.VIEW_TRADE_DATE_PICKER_WINDOW_ID,
                              label=configs.VIEW_TRADE_DATE_PICKER_WINDOW_TEXT,
-                             width=configs.VIEW_TRADE_WINDOW_SIZE[0]/2,
-                             height=configs.VIEW_TRADE_WINDOW_SIZE[1]/2,
+                             width=configs.VIEW_TRADE_WINDOW_SIZE[0] / 2,
+                             height=configs.VIEW_TRADE_WINDOW_SIZE[1] / 2,
                              modal=True):
             self.dpg.add_date_picker(tag=configs.VIEW_TRADE_DATE_PICKER_ID,
+                                     default_value=configs.DEFAULT_DATE,
                                      callback=self.date_picker_callback)
 
     def date_picker_callback(self, sender, app_data, user_data):
-        year = app_data['year'] + 1900
-        month = app_data['month'] + 1
-        day = app_data['month_day']
+        year = app_data[configs.DPG_DATE_PICKER_YEAR] + 1900
+        month = app_data[configs.DPG_DATE_PICKER_MONTH] + 1
+        day = app_data[configs.DPG_DATE_PICKER_DAY]
         new_date = f"{year}-{month}-{day}"
 
         self.dpg.set_value(configs.VIEW_TRADE_DATE_ID, new_date)
@@ -201,7 +233,7 @@ class ViewTrade:
             # todo display error message for corresponding errors (users want to know where they were wrong)
             return False
 
-
+        return True
 
     def load_trade_data(self):
         return firebase_conn.get_open_trade_by_id_db(self.user_id, self.trade_id, self.is_options)

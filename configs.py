@@ -1,3 +1,5 @@
+from datetime import date
+
 # firebase config
 FIREBASE_CONFIG = {
     'apiKey': "AIzaSyBR0l5iXd7MwfLG5ltKhvMGKUsE7DpsGHQ",
@@ -88,6 +90,10 @@ VIEWPORT_TITLE = "Fintracker - Record Your Trades!"
 VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
 NOT_APPLICABLE_TEXT = "N/A"
 
+DEFAULT_DATE = {'month': date.today().month - 1,
+                'year': date.today().year - 1900,
+                'month_day': date.today().day}
+
 # height and width values
 FINTRACKER_WINDOW_VIEWPORT_SIZE = (1700, 800) # width x height
 FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.40,
@@ -111,8 +117,13 @@ OPTIONS_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
                                FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5)
 OPTIONS_WINDOW_COMBO_WIDTH = FINTRACKER_WINDOW_VIEWPORT_SIZE[0]/10
 
-VIEW_TRADE_WINDOW_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 3,
+VIEW_TRADE_WINDOW_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
                                     FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5)
+
+# dearpygui keywords
+DPG_DATE_PICKER_YEAR = "year"
+DPG_DATE_PICKER_MONTH = "month"
+DPG_DATE_PICKER_DAY = "month_day"
 
 # firebase keywords
 FIREBASE_DATE = "date"

@@ -2,13 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ff56f13a-af49-4716-9548-457a8147bcdf" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/search_options.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing/date_picker.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing/mult_modal_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/investment_tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/investment_tracker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trade_input.py" beforeDir="false" afterPath="$PROJECT_DIR$/trade_input.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebase_conn.py" beforeDir="false" afterPath="$PROJECT_DIR$/firebase_conn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/date_picker.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing/date_picker.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/view_trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/view_trade.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
