@@ -11,6 +11,9 @@ class Fintracker:
         self.dpg = dpg
         self.user_id = user_id
 
+        # todo cleanup
+        self.view_trade = None
+
         # threads to create a more responsive gui
         self.num_open_trade_rows = 0
         self.load_open_trades_table_thread = threading.Thread(target=self.load_open_trades,
@@ -19,9 +22,6 @@ class Fintracker:
         self.num_closed_trade_rows = 0
         self.load_closed_trades_thread = threading.Thread(target=self.load_closed_trades,
                                                           daemon=True)
-
-        # todo cleanup
-        self.view_trade = None
 
         self.create_fintracker_win()
 
@@ -38,6 +38,7 @@ class Fintracker:
             self.create_fintracker_items()
 
     def create_fintracker_items(self):
+        # profit, win-rate, news and add new trade button
         with self.dpg.group(horizontal=True):
             # profit
             self.dpg.add_text(configs.FINTRACKER_PROFIT_LABEL_TEXT)
