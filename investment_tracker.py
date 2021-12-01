@@ -126,7 +126,7 @@ class Fintracker:
             closed_trades = firebase_conn.get_closed_trades_db(self.user_id, is_option)
 
             for closed_trade_id in closed_trades:
-                self.num_open_trade_rows += 1
+                self.num_closed_trade_rows += 1
 
                 if not is_option:
                     closed_trade = firebase_conn.get_closed_trade_by_id_db(self.user_id, closed_trade_id, is_option)
@@ -140,6 +140,8 @@ class Fintracker:
                 invest_type = closed_trade[configs.FIREBASE_TYPE]
                 date = closed_trade[configs.FIREBASE_DATE]
                 sold_price = closed_trade[configs.FIREBASE_SOLD_PRICE]
+                net_profit = closed_trade[configs.FIREBASE_NET_PROFIT]
+                profit_per = closed_trade[configs.FIREBASE_PROFIT_PERCENTAGE]
 
                 if invest_type == configs.TICKER_RADIO_BTN_STOCK_TEXT:
                     bought_price = round(bought_price, 2)
@@ -179,11 +181,11 @@ class Fintracker:
 
                     with self.dpg.table_cell():
                         # net profit
-                        pass
+                        self.dpg.add_text(net_profit)
 
                     with self.dpg.table_cell():
                         # profit percentage
-                        pass
+                        self.dpg.add_text(profit_per)
 
                     with self.dpg.table_cell():
                         # remove button
@@ -304,7 +306,7 @@ class Fintracker:
                         self.dpg.add_button(label=configs.SELL_TEXT,
                                             callback=self.sell_callback,
                                             user_data=(is_option,
-                                                       open_trade_id))
+                                                       open_trade_id, row_tag))
 
                     with self.dpg.table_cell():
                         # remove button
@@ -323,14 +325,9 @@ class Fintracker:
         count = row_data[3]
         bought_price = row_data[4]
 
-        # todo figure out how to get the open trade id
-        if is_option:
-            open_trades = firebase_conn.get_open_trades_keys(self.user_id, is_option)
-        else:
-            open_trades = firebase_conn.get_open_trades_keys(self.user_id, is_option)
-
-        # the recent trade should represent the last value of the trades
-        open_trade_id = list(open_trades)[-1]
+        # get the recent trade
+        open_trade_keys = firebase_conn.get_open_trades_keys(self.user_id, is_option)
+        open_trade_id = list(open_trade_keys)[-1]
 
         row_tag = configs.FINTRACKER_OPEN_TRADES_ROW_TEXT + str(self.num_open_trade_rows)
         with self.dpg.table_row(tag=row_tag,
@@ -365,13 +362,82 @@ class Fintracker:
                 self.dpg.add_button(label=configs.SELL_TEXT,
                                     callback=self.sell_callback,
                                     user_data=(is_option,
-                                               open_trade_id))
+                                               open_trade_id, row_tag))
 
             with self.dpg.table_cell():
                 # remove button
                 self.dpg.add_button(label=configs.REMOVE_TEXT,
                                     callback=self.open_trade_remove_callback,
                                     user_data=(row_tag, is_option, open_trade_id))
+
+    # used by other classes to update the fintracker table
+    # todo cleanup this contains code that is similar to load_open_table()
+    def add_to_closed_table(self, table_id, row_data, is_option=False):
+        self.num_closed_trade_rows += 1
+
+        if not is_option:
+            trade_type = row_data[configs.FIREBASE_TICKER]
+        else:
+            trade_type = row_data[configs.FIREBASE_CONTRACT]
+
+        bought_price = row_data[configs.FIREBASE_BOUGHT_PRICE]
+        count = row_data[configs.FIREBASE_COUNT]
+        invest_type = row_data[configs.FIREBASE_TYPE]
+        date = row_data[configs.FIREBASE_DATE]
+        sold_price = row_data[configs.FIREBASE_SOLD_PRICE]
+        net_profit = row_data[configs.FIREBASE_NET_PROFIT]
+        profit_per = row_data[configs.FIREBASE_PROFIT_PERCENTAGE]
+
+        # get the recent trade that was added
+        closed_trade_keys = firebase_conn.get_closed_trades_keys(self.user_id, is_option)
+        closed_trade_id = list(closed_trade_keys)[-1]
+
+        row_tag = configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_closed_trade_rows)
+        with self.dpg.table_row(tag=row_tag,
+                                parent=table_id):
+            with self.dpg.table_cell():
+                # id (user clicks this to find about their trade)
+                self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                    callback=self.view_trade_callback,
+                                    user_data=(closed_trade_id, is_option, row_tag))
+
+            with self.dpg.table_cell():
+                # date
+                self.dpg.add_text(date)
+
+            with self.dpg.table_cell():
+                # type
+                self.dpg.add_text(invest_type)
+
+            with self.dpg.table_cell():
+                # ticker
+                self.dpg.add_text(trade_type)
+
+            with self.dpg.table_cell():
+                # count
+                self.dpg.add_text(count)
+
+            with self.dpg.table_cell():
+                # bought price
+                self.dpg.add_text(bought_price)
+
+            with self.dpg.table_cell():
+                # sold price
+                self.dpg.add_text(sold_price)
+
+            with self.dpg.table_cell():
+                # net profit
+                self.dpg.add_text(net_profit)
+
+            with self.dpg.table_cell():
+                # profit percentage
+                self.dpg.add_text(profit_per)
+
+            with self.dpg.table_cell():
+                # remove button
+                self.dpg.add_button(label=configs.REMOVE_TEXT,
+                                    callback=self.closed_trade_remove_callback,
+                                    user_data=(row_tag, is_option, closed_trade_id))
 
     def update_table_row(self, row_tag, new_data, is_options):
         row_cols = self.dpg.get_item_children(row_tag, 1)
@@ -418,7 +484,8 @@ class Fintracker:
     def sell_callback(self, sender, app_data, user_data):
         is_option = user_data[0]
         trade_id = user_data[1]
-        SellTrade(self.dpg, self, trade_id, is_option)
+        row_tag = user_data[2]
+        SellTrade(self.dpg, self, trade_id, is_option, row_tag)
 
     def close_view_trade_win(self):
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):

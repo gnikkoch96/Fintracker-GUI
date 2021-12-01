@@ -123,6 +123,15 @@ def get_open_trades_keys(user_id, is_option):
             configs.FIREBASE_STOCK_CRYPTO_TEXT).get().val().keys()
 
 
+def get_closed_trades_keys(user_id, is_option):
+    if is_option:
+        return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
+            configs.FIREBASE_OPTION_TEXT).get().val().keys()
+    else:
+        return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
+            configs.FIREBASE_STOCK_CRYPTO_TEXT).get().val().keys()
+
+
 def update_open_trade_by_id(user_id, trade_id, new_data, is_options=False):
     if is_options:
         firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(

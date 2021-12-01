@@ -187,13 +187,11 @@ class ViewTrade:
             # todo create a dialog to display this notice
             print("Update Successful")
 
-
             # closing window
             self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
             self.cleanup_alias()
 
             self.fintracker.update_table_row(self.row_tag, new_data, self.is_options)
-
 
     def change_contract_callback(self):
         Options(self.dpg, configs.VIEW_TRADE_INPUT_ID)
