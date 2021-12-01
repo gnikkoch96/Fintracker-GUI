@@ -45,9 +45,14 @@ def add_open_trade_db(user_id, data, is_option=False):
                 configs.FIREBASE_STOCK_CRYPTO_TEXT).push(data)
 
 
-def add_closed_trade_db(user_id, data):
+def add_closed_trade_db(user_id, data, is_option=False):
     if user_id is not None:
-        firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).push(data)
+        if is_option:
+            firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
+                configs.FIREBASE_OPTION_TEXT).push(data)
+        else:
+            firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
+                configs.FIREBASE_STOCK_CRYPTO_TEXT).push(data)
 
 
 def remove_open_trade_by_id(user_id, is_option, trade_id):

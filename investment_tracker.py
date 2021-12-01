@@ -16,8 +16,8 @@ class Fintracker:
 
         # threads to create a more responsive gui
         self.num_open_trade_rows = 0
-        self.load_open_trades_table_thread = threading.Thread(target=self.load_open_trades,
-                                                              daemon=True)
+        self.load_open_trades_thread = threading.Thread(target=self.load_open_trades,
+                                                        daemon=True)
 
         self.num_closed_trade_rows = 0
         self.load_closed_trades_thread = threading.Thread(target=self.load_closed_trades,
@@ -60,19 +60,20 @@ class Fintracker:
                                 callback=self.add_callback)
 
         # loading of closed and open trade windows
-        with self.dpg.group(horizontal=True):
+        with self.dpg.group(tag=configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_ID,
+                            horizontal=True):
             # start the thread for loading of closed trades
             self.load_closed_trades_thread.start()
 
             # start the thread for loading of open trades
-            self.load_open_trades_table_thread.start()
+            self.load_open_trades_thread.start()
 
     def load_closed_trades(self):
         # child: close trade window
         with self.dpg.child_window(tag=configs.FINTRACKER_CLOSED_TRADES_ID,
                                    width=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[0],
                                    height=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[1],
-                                   parent=configs.FINTRACKER_WINDOW_ID):
+                                   parent=configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_ID):
             self.dpg.add_text(configs.FINTRACKER_CLOSED_TRADES_TEXT)
 
             # todo make it so that if the local file exists if user chooses offline mode
@@ -113,22 +114,16 @@ class Fintracker:
 
             self.dpg.add_table_column(label=configs.FIREBASE_COUNT)
             self.dpg.add_table_column(label=configs.FIREBASE_BOUGHT_PRICE)
-            self.dpg.add_table_column(label=configs.SELL_TEXT)
+            self.dpg.add_table_column(label=configs.FIREBASE_SOLD_PRICE)
+            self.dpg.add_table_column(label=configs.FIREBASE_NET_PROFIT)
+            self.dpg.add_table_column(label=configs.FIREBASE_PROFIT_PERCENTAGE)
             self.dpg.add_table_column(label=configs.REMOVE_TEXT)
 
             # don't continue if there are no trades
-            if not is_option:
-                # no stock or crypto trades
-                if firebase_conn.get_closed_trades_db(self.user_id, is_option) is None:
-                    return
+            if firebase_conn.get_closed_trades_db(self.user_id, is_option) is None:
+                return
 
-                closed_trades = firebase_conn.get_closed_trades_db(self.user_id, is_option)
-            else:
-                # no option trades
-                if firebase_conn.get_closed_trades_db(self.user_id, is_option) is None:
-                    return
-
-                closed_trades = firebase_conn.get_closed_trades_db(self.user_id, is_option)
+            closed_trades = firebase_conn.get_closed_trades_db(self.user_id, is_option)
 
             for closed_trade_id in closed_trades:
                 self.num_open_trade_rows += 1
@@ -183,16 +178,17 @@ class Fintracker:
                         self.dpg.add_text(sold_price)
 
                     with self.dpg.table_cell():
-                        # sell button
-                        self.dpg.add_button(label=configs.SELL_TEXT,
-                                            callback=self.sell_callback,
-                                            user_data=(is_option,
-                                                       closed_trade_id))
+                        # net profit
+                        pass
+
+                    with self.dpg.table_cell():
+                        # profit percentage
+                        pass
 
                     with self.dpg.table_cell():
                         # remove button
                         self.dpg.add_button(label=configs.REMOVE_TEXT,
-                                            callback=self.remove_callback,
+                                            callback=self.closed_trade_remove_callback,
                                             user_data=(row_tag, is_option, closed_trade_id))
 
     # todo think about making this into a table as opposed to creating buttons
@@ -201,7 +197,7 @@ class Fintracker:
         with self.dpg.child_window(tag=configs.FINTRACKER_OPEN_TRADES_ID,
                                    width=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[0],
                                    height=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[1],
-                                   parent=configs.FINTRACKER_WINDOW_ID):
+                                   parent=configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_ID):
             self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_TEXT)
 
             # todo make it so that if the local file exists if user chooses offline mode
@@ -313,7 +309,7 @@ class Fintracker:
                     with self.dpg.table_cell():
                         # remove button
                         self.dpg.add_button(label=configs.REMOVE_TEXT,
-                                            callback=self.remove_callback,
+                                            callback=self.open_trade_remove_callback,
                                             user_data=(row_tag, is_option, open_trade_id))
 
     # used by other classes to update the fintracker table
@@ -374,7 +370,7 @@ class Fintracker:
             with self.dpg.table_cell():
                 # remove button
                 self.dpg.add_button(label=configs.REMOVE_TEXT,
-                                    callback=self.remove_callback,
+                                    callback=self.open_trade_remove_callback,
                                     user_data=(row_tag, is_option, open_trade_id))
 
     def update_table_row(self, row_tag, new_data, is_options):
@@ -429,7 +425,8 @@ class Fintracker:
             self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
             self.view_trade.cleanup_alias()
 
-    def remove_callback(self, sender, app_data, user_data):
+    # removing a trade from open table
+    def open_trade_remove_callback(self, sender, app_data, user_data):
         # close the window of the removed trade
         self.close_view_trade_win()
 
@@ -440,6 +437,10 @@ class Fintracker:
 
         # todo update the table once it has been removed
         self.dpg.delete_item(row_tag)
+
+    # removing a trade from closed table will affect the total profit and win-rate
+    def closed_trade_remove_callback(self, sender, app_data, user_data):
+        pass
 
     def add_callback(self):
         if self.dpg.does_alias_exist(configs.TICKER_INFO_WINDOW_TICKER_ID):
