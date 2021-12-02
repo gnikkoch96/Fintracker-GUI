@@ -315,20 +315,12 @@ class Fintracker:
         self.num_open_trade_rows += 1
 
         # data
-        # date_val = row_data[0]
-        # invest_type = row_data[1]
-        # trade = row_data[2]
-        # count = row_data[3]
-        # bought_price = row_data[4]
-
-        # data
-        date_val = row_data[configs.FIREBASE_DATE]
-        invest_type = row_data[configs.FIREBASE_TYPE]
         if is_option:
             trade = row_data[configs.FIREBASE_CONTRACT]
         else:
             trade = row_data[configs.FIREBASE_TICKER]
-
+        date_val = row_data[configs.FIREBASE_DATE]
+        invest_type = row_data[configs.FIREBASE_TYPE]
         count = row_data[configs.FIREBASE_COUNT]
         bought_price = row_data[configs.FIREBASE_BOUGHT_PRICE]
 
@@ -447,6 +439,7 @@ class Fintracker:
                                     user_data=(row_tag, is_option, closed_trade_id))
 
     def update_table_row(self, row_tag, new_data, is_options, for_open_table):
+        # get the columns for the row (since no tag was given to them)
         row_cols = self.dpg.get_item_children(row_tag, 1)
 
         # data
@@ -454,12 +447,12 @@ class Fintracker:
             new_trade = new_data[configs.FIREBASE_CONTRACT]
         else:
             new_trade = new_data[configs.FIREBASE_TICKER]
-
         new_date = new_data[configs.FIREBASE_DATE]
         new_type = new_data[configs.FIREBASE_TYPE]
         new_count = new_data[configs.FIREBASE_COUNT]
         new_bought_price = new_data[configs.FIREBASE_BOUGHT_PRICE]
 
+        # for closed table
         if not for_open_table:
             new_sold_price = new_data[configs.FIREBASE_SOLD_PRICE]
             new_net_profit = new_data[configs.FIREBASE_NET_PROFIT]
@@ -492,6 +485,20 @@ class Fintracker:
 
                     counter += 1
 
+    def add_callback(self):
+        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID):
+            self.dpg.focus_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+        else:
+            InputTrade(self.dpg, self.user_id, self)
+
+    def sell_callback(self, sender, app_data, user_data):
+        self.close_view_trade_win()
+
+        is_option = user_data[0]
+        trade_id = user_data[1]
+        row_tag = user_data[2]
+        SellTrade(self.dpg, self, trade_id, is_option, row_tag)
+
     def view_trade_callback(self, sender, app_data, user_data):
         trade_id = user_data[0]
         is_option = user_data[1]
@@ -502,19 +509,6 @@ class Fintracker:
         else:
             self.close_view_trade_win()
             self.view_trade = ViewTrade(self.dpg, self, trade_id, is_option, row_tag)
-
-    def sell_callback(self, sender, app_data, user_data):
-        self.close_view_trade_win()
-
-        is_option = user_data[0]
-        trade_id = user_data[1]
-        row_tag = user_data[2]
-        SellTrade(self.dpg, self, trade_id, is_option, row_tag)
-
-    def close_view_trade_win(self):
-        if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
-            self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
-            self.view_trade.cleanup_alias()
 
     # removing a trade from open table
     def open_trade_remove_callback(self, sender, app_data, user_data):
@@ -533,8 +527,7 @@ class Fintracker:
     def closed_trade_remove_callback(self, sender, app_data, user_data):
         pass
 
-    def add_callback(self):
-        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID):
-            self.dpg.focus_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
-        else:
-            InputTrade(self.dpg, self.user_id, self)
+    def close_view_trade_win(self):
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
+            self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
+            self.view_trade.cleanup_alias()

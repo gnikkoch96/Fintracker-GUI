@@ -166,7 +166,6 @@ class InputTrade:
                         }
                 firebase_conn.add_open_trade_db(self.user_id, data, False)
                 self.update_to_open_table(data, False)
-                # self.update_stock_crypto_to_table(date_val, invest_type, ticker, count, bought_price)
 
             # options
             else:
@@ -184,7 +183,6 @@ class InputTrade:
                         }
                 firebase_conn.add_open_trade_db(self.user_id, data, True)
                 self.update_to_open_table(data, True)
-                # self.update_option_to_table(date_val, invest_type, contract, count, bought_price)
 
             # todo make this message a dialog to the player
             print("Successfully added to database")
