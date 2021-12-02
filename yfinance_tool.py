@@ -2,42 +2,45 @@ import yfinance as yf
 import configs
 
 
+# checks if ticker exists
 def validate_ticker(ticker):
     stock = yf.Ticker(ticker)
 
-    # if it doesn't have a regularmarketprice then it is invalid (all stocks do)
+    # if it doesn't have a regular market price then it is invalid (all stocks do)
     return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is None
 
 
 def get_stock_price(ticker):
-    stock = yf.Ticker(ticker)
-    if stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is None:
+    # stock doesn't exist
+    if validate_ticker(ticker):
         return 0
 
+    stock = yf.Ticker(ticker)
     return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE]
 
 
 def get_options_date(ticker):
+    # stock doesn't exist
+    if validate_ticker(ticker):
+        return
+
     stock = yf.Ticker(ticker)
     return list(stock.options)
 
 
 def get_options(ticker, contract_type, date):
+    # stock doesn't exist
+    if validate_ticker(ticker):
+        return
+
     stock = yf.Ticker(ticker)
     stock_options = stock.option_chain(date)
+
+    # returns call contracts
     if contract_type == configs.OPTIONS_CALL_TEXT:
         return stock_options[0]
-    else:  # puts
+    else:  # returns put contracts
         return stock_options[1]
-
-
-def validate_ticker(ticker):
-    stock = yf.Ticker(ticker)
-
-    if stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is None:
-        return False
-
-    return True
 
 
 def get_long_business_summary(ticker):
