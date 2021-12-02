@@ -7,23 +7,27 @@ import firebase_conn
 class SellTrade:
     def __init__(self, dpg, fintracker, trade_id, is_option, row_tag):
         self.dpg = dpg
-        self.fintracker = fintracker
-        self.user_id = fintracker.user_id
         self.trade_id = trade_id
         self.row_tag = row_tag
         self.is_option = is_option
+
+        # fintracker related
+        self.fintracker = fintracker
+        self.user_id = fintracker.user_id
+
         self.create_sell_trade_win()
 
     def create_sell_trade_win(self):
+        # sell trades window
         with self.dpg.window(tag=configs.SELL_TRADE_WINDOW_ID,
                              label=configs.SELL_TRADE_WINDOW_TEXT,
                              width=configs.SELL_TRADE_WINDOW_SIZE[0],
                              height=configs.SELL_TRADE_WINDOW_SIZE[1],
                              on_close=self.cleanup_alias,
                              modal=True):
-            self.create_sell_trade_items()
+            self.create_sell_trade_win_items()
 
-    def create_sell_trade_items(self):
+    def create_sell_trade_win_items(self):
         # count amount
         self.dpg.add_text(configs.SELL_TRADE_COUNT_TEXT)
         self.dpg.add_input_int(tag=configs.SELL_TRADE_COUNT_ID)
@@ -43,8 +47,10 @@ class SellTrade:
 
     def sell_trade_callback(self):
         if self.validate_input():
+            # retrieve the trade that we are selling
             trade = firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
 
+            # data
             date_val = str(date.today())
             count = self.dpg.get_value(configs.SELL_TRADE_COUNT_ID)
             invest_type = trade[configs.FIREBASE_TYPE]
@@ -79,14 +85,20 @@ class SellTrade:
                         configs.FIREBASE_REASON: reason
                         }
             firebase_conn.add_closed_trade_db(self.user_id, data, self.is_option)
-            self.update_closed_table(data, self.is_option)
+            self.update_closed_table(data)
             self.update_open_trades(trade, data)
+
+            # todo create a dialog for this message
             print("Sold Successfully")
 
-            # delete window and cleanup alias
-            self.dpg.delete_item(configs.SELL_TRADE_WINDOW_ID)
-            self.cleanup_alias()
+            self.close_sell_trade_win()
 
+    # delete window and cleanup alias
+    def close_sell_trade_win(self):
+        self.dpg.delete_item(configs.SELL_TRADE_WINDOW_ID)
+        self.cleanup_alias()
+
+    # updates the open trades table
     def update_open_trades(self, selling_trade, sold_data):
         current_holdings = selling_trade[configs.FIREBASE_COUNT]
         sold_holdings = self.dpg.get_value(configs.SELL_TRADE_COUNT_ID)
@@ -98,7 +110,9 @@ class SellTrade:
 
             # update the firebase data
             firebase_conn.remove_open_trade_by_id(self.user_id, self.is_option, self.trade_id)
+
         else:  # user is only selling a percentage of their holdings
+            # update current holdings
             current_holdings = current_holdings - sold_holdings
 
             # update to the difference of counts
@@ -107,17 +121,19 @@ class SellTrade:
             # update the count in the open table
             self.fintracker.update_table_row(self.row_tag, sold_data, self.is_option, True)
 
-            # update the firebase data
+            # update db
             firebase_conn.update_open_trade_by_id_key(self.user_id, self.trade_id, configs.FIREBASE_COUNT,
                                                       current_holdings, self.is_option)
 
-    def update_closed_table(self, row_data, is_option):
-        if is_option:
+    # updates the closed trades table
+    def update_closed_table(self, row_data):
+        # place in corresponding table (i.e.crypto/stock vs. options)
+        if self.is_option:
             table_id = configs.FINTRACKER_CLOSED_TRADES_OPTION_TABLE_ID
         else:
             table_id = configs.FINTRACKER_CLOSED_TRADES_CRYPTO_STOCK_TABLE_ID
 
-        self.fintracker.add_to_closed_table(table_id, row_data, is_option)
+        self.fintracker.add_to_closed_table(table_id, row_data, self.is_option)
 
     def validate_input(self):
         trade = firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
