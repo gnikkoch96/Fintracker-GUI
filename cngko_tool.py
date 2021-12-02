@@ -14,48 +14,49 @@ def validate_coin(ticker):
 
 def get_symbol(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_SYMBOL_TEXT].upper()
+    return coin[configs.COINGECKO_SYMBOL].upper()
 
 
 def get_name(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_NAME_TEXT].upper()
+    return coin[configs.COINGECKO_NAME].upper()
 
 
 def get_hashing_algorithm(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_HASHINGALGO_TEXT]
+    return coin[configs.COINGECKO_HASHINGALGO]
 
 
 def get_categories(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_CATEGORIES_TEXT]
+    return coin[configs.COINGECKO_CATEGORIES]
 
 
 def get_description(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_DESC_TEXT][configs.COINGECKO_ENGLISH_TEXT]
+    return coin[configs.COINGECKO_DESC][configs.COINGECKO_ENGLISH]
 
 
 def get_current_price(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_MARKETDATA_TEXT][configs.COINGECKO_CURRENTPRICE_TEXT][configs.COINGECKO_USD_TEXT]
+    return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CURRENTPRICE][configs.COINGECKO_USD]
 
 
 def get_circulating_supply(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_MARKETDATA_TEXT][configs.COINGECKO_CIRCULATINGSUPPLY_TEXT]
+    return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CIRCULATINGSUPPLY]
 
 
 def get_total_supply(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_MARKETDATA_TEXT][configs.COINGECKO_TOTALSUPPLY_TEXT]
+    return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_TOTALSUPPLY]
 
 
 def get_market_cap(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_MARKETDATA_TEXT][configs.COINGECKO_MARKETCAP_TEXT][configs.COINGECKO_USD_TEXT]
+    return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_MARKETCAP][configs.COINGECKO_USD]
+
 
 def get_price_change_percentage_24h(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_MARKETDATA_TEXT][configs.COINGECKO_PRICECHANGEPERCENT24H_TEXT]
+    return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_PRICECHANGEPERCENT24H]

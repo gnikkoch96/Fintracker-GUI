@@ -296,9 +296,9 @@ class ViewTrade:
         count = self.dpg.get_value(configs.VIEW_TRADE_COUNT_ID)
         bought_price = self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
 
-        valid_type = (trade_type == configs.TICKER_RADIO_BTN_STOCK_TEXT or
-                      trade_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT or
-                      trade_type == configs.TICKER_RADIO_BTN_OPTION_TEXT)
+        valid_type = (trade_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT or
+                      trade_type == configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT or
+                      trade_type == configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT)
 
         valid_count = count > 0
 
@@ -332,7 +332,7 @@ class ViewTrade:
             return firebase_conn.get_closed_trade_by_id_db(self.user_id, self.trade_id, self.is_options)
 
         # return open trade info
-        return firebase_conn.get_open_trade_by_id_db(self.user_id, self.trade_id, self.is_options)
+        return firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_options)
 
     def cleanup_alias(self):
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):

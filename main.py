@@ -3,14 +3,15 @@ import configs
 from login import Login
 from register import Register
 
+
 def create_windows():
     dpg.create_context()
-    dpg.create_viewport(title=configs.VIEWPORT_TITLE,
+    dpg.create_viewport(title=configs.FINTRACKER_VIEWPORT_TITLE,
                         width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0],
                         height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1])
     dpg.setup_dearpygui()
-    dpg.set_global_font_scale(1.25)
-    dpg.set_viewport_small_icon(configs.VIEWPORT_ICON_PATH)
+    dpg.set_global_font_scale(configs.FONT_SCALE)
+    dpg.set_viewport_small_icon(configs.FINTRACKER_VIEWPORT_ICON_PATH)
 
     # fonts
 
@@ -26,6 +27,4 @@ def create_windows():
 
 
 if __name__ == '__main__':
-    # dpg.show_style_editor()
-    # dpg.show_metrics()
     create_windows()

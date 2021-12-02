@@ -42,27 +42,27 @@ def validate_ticker(ticker):
 
 def get_long_business_summary(ticker):
     stock = yf.Ticker(ticker)
-    return stock.get_info()[configs.YFINANCE_LONGBUSINESSSUMMARY_TEXT]
+    return stock.get_info()[configs.YFINANCE_LONGBUSINESSSUMMARY]
 
 
 def get_shares_short(ticker):
     stock = yf.Ticker(ticker)
-    return str(stock.get_info()[configs.YFINANCE_SHARESHORT_TEXT])
+    return str(stock.get_info()[configs.YFINANCE_SHARESHORT])
 
 
 def get_shares_short_prior_month(ticker):
     stock = yf.Ticker(ticker)
-    return str(stock.get_info()[configs.YFINANCE_SHARESHORTPRIORMONTH_TEXT])
+    return str(stock.get_info()[configs.YFINANCE_SHARESHORTPRIORMONTH])
 
 
 def get_short_percent_float(ticker):
     stock = yf.Ticker(ticker)
-    return str(stock.get_info()[configs.YFINANCE_SHORTPERCENTFLOAT_TEXT])
+    return str(stock.get_info()[configs.YFINANCE_SHORTPERCENTFLOAT])
 
 
 def get_market_cap(ticker):
     stock = yf.Ticker(ticker)
-    return str(stock.get_info()[configs.YFINANCE_MARKETCAP_TEXT])
+    return str(stock.get_info()[configs.YFINANCE_MARKETCAP])
 
 
 def get_major_holders(ticker):

@@ -1,6 +1,6 @@
 from datetime import date
 
-# firebase config
+# firebase
 FIREBASE_CONFIG = {
     'apiKey': "AIzaSyBR0l5iXd7MwfLG5ltKhvMGKUsE7DpsGHQ",
     'authDomain': "python-testing-ef238.firebaseapp.com",
@@ -12,8 +12,10 @@ FIREBASE_CONFIG = {
     'measurementId': "G-8PCYDLQTW3"
 }
 
-# ids
-OPTIONS_WINDOW_ID = "Options Window"
+# ids======================================================================
+
+# option window
+OPTION_WINDOW_ID = "Options Window"
 OPTION_WINDOW_TICKER_INPUT_ID = "Options Ticker Input"
 OPTION_WINDOW_SEARCH_BTN_ID = "Options Search Button"
 OPTION_WINDOW_OPTION_TYPE_COMBO_ID = "Options Type Combo"
@@ -21,20 +23,22 @@ OPTION_WINDOW_DATE_COMBO_ID = "Options Date Combo"
 OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID = "Options Contract Search Button"
 OPTION_TABLE_ID = "Options Table"
 
-TICKER_WINDOW_ID = "Ticker Window"
-TICKER_INFO_WINDOW_SEARCH_BTN_ID = "Ticker Search Button"
-TICKER_INFO_WINDOW_ID = "Ticker Info"
-TICKER_ADD_BTN_ID = "Ticker Add"
-TICKER_RADIO_BTNS_ID = "Ticker Radio Buttons"
-TICKER_INFO_WINDOW_TICKER_ID = "Ticker Info Ticker"
-TICKER_INFO_WINDOW_COUNT_ID = "Ticker Info Count"
-TICKER_INFO_WINDOW_BOUGHT_PRICE_ID = "Ticker Info Bought Price"
+# trade input window
+TRADE_INPUT_WINDOW_ID = "Trade Input Window"
+TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID = "Ticker Search Button"
+TRADE_INPUT_INFO_WINDOW_ID = "Ticker Info"
+TRADE_INPUT_ADD_BTN_ID = "Ticker Add"
+TRADE_INPUT_RADIO_BTNS_ID = "Ticker Radio Buttons"
+TRADE_INPUT_INFO_WINDOW_TICKER_ID = "Ticker Info Ticker"
+TRADE_INPUT_INFO_WINDOW_COUNT_ID = "Ticker Info Count"
+TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID = "Ticker Info Bought Price"
 TICKER_SEARCH_CRYPTO_STOCK_WINDOW_ID = "Ticker Search Crypto Stock"
-TICKER_INFO_WINDOW_REASON_ID = "Ticker Info Reason"
-TICKER_INFO_WINDOW_CONTRACT_BTN_ID = "Ticker Info Contract Button"
-TICKER_INFO_WINDOW_SHOW_CONTRACT_ID = "Ticker Info Show Contract"
-TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_ID = "Ticker Info Current Price Button"
+TRADE_INPUT_INFO_WINDOW_REASON_ID = "Ticker Info Reason"
+TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID = "Ticker Info Contract Button"
+TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID = "Ticker Info Show Contract"
+TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID = "Ticker Info Current Price Button"
 
+# fintracker window
 FINTRACKER_WINDOW_ID = "Fintracker Window"
 FINTRACKER_CLOSED_TRADES_ID = "Fintracker Closed Trades"
 FINTRACKER_OPEN_TRADES_CONTAINER_ID = "Fintracker Open Trades Container"
@@ -44,20 +48,22 @@ FINTRACKER_ADD_BTN_ID = "Fintracker Add Button"
 FINTRACKER_NEWS_BTN_ID = "Fintracker News Button"
 FINTRACKER_PROFIT_PERCENT_ID = "Fintracker Win_Rate"
 FINTRACKER_PROFIT_ID = "Fintracker Profit"
-FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID = "Crypto Stock Open Trades Table"
-FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID = "Options Open Trades Table"
-FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT_ID = "Stock Crypto Table Label"
-FINTRACKER_OPEN_TRADES_OPTIONS_TABLE_TEXT_ID = "Options Table Label"
-FINTRACKER_CLOSED_TRADES_OPTION_TABLE_ID = "Closed Trade Option Table"
-FINTRACKER_CLOSED_TRADES_CRYPTO_STOCK_TABLE_ID = "Closed Trade Stock Crypto Table"
+FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID = "Fintracker Crypto Stock Open Trades Table"
+FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID = "Fintracker Options Open Trades Table"
+FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT_ID = "Fintracker Stock Crypto Table Label"
+FINTRACKER_OPEN_TRADES_OPTIONS_TABLE_TEXT_ID = "Fintracker Options Table Label"
+FINTRACKER_CLOSED_TRADES_OPTION_TABLE_ID = "Fintracker Closed Trade Option Table"
+FINTRACKER_CLOSED_TRADES_CRYPTO_STOCK_TABLE_ID = "Fintracker Closed Trade Stock Crypto Table"
 FINTRACKER_CLOSED_OPEN_TRADES_GROUP_ID = "Fintracker Closed Open Trades Group"
 
+# sell trade window
 SELL_TRADE_WINDOW_ID = "Sell Trade Window"
 SELL_TRADE_COUNT_ID = "Sell Trade Count"
 SELL_TRADE_SOLD_PRICE_ID = "Sell Trade Sold Price"
 SELL_TRADE_SELL_BTN_ID = "Sell Trade Sell Button"
 SELL_TRADE_REASON_ID = "Sell Trade Reason"
 
+# view trade window
 VIEW_TRADE_WINDOW_ID = "View Trade ID"
 VIEW_TRADE_INPUT_ID = "View Trade Trade Input"
 VIEW_TRADE_DATE_ID = "View Trade Date Input"
@@ -76,31 +82,27 @@ VIEW_TRADE_SOLD_PRICE_ID = "View Trade Sold Price"
 VIEW_TRADE_NET_PROFIT_ID = "View Trade Net Profit"
 VIEW_TRADE_PROFIT_PERCENTAGE_ID = "View Trade Profit Percentage"
 
+# login window
 LOGIN_WINDOW_ID = "Login Window"
 LOGIN_INPUT_EMAIL_ID = "Login E-Mail"
 LOGIN_INPUT_PASS_ID = "Login Password"
 LOGIN_INPUT_BTN_ID = "Login Button"
 LOGIN_INPUT_ERROR_ID = "Login Error"
-LOGIN_REGISTER_BTN_ID = "Login->Register"
+LOGIN_REGISTER_BTN_ID = "Login_Register"
 LOGIN_OFFLINE_BTN_ID = "Offline Mode"
 
+# register window
 REGISTER_WINDOW_ID = "Register Window"
 REGISTER_INPUT_EMAIL_ID = "Register Email"
 REGISTER_INPUT_PASS_ID = "Register Pass"
 REGISTER_INPUT_ERROR_ID = "Register Error"
 REGISTER_BTN_ID = "Register Button"
-REGISTER_LOGIN_BTN_ID = "Register to Login"
+REGISTER_LOGIN_BTN_ID = "Register_Login"
 REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 
-# values
-SELL_TEXT = "sell"
-REMOVE_TEXT = "X"
-ADD_BTN_TEXT = "Add"
-SEARCH_BTN_TEXT = "Search"
-VIEWPORT_TITLE = "Fintracker - Record Your Trades!"
-VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
+# value=======================================================================
 NOT_APPLICABLE_TEXT = "N/A"
-
+FONT_SCALE = 1.25
 DEFAULT_DATE = {'month': date.today().month - 1,
                 'year': date.today().year - 1900,
                 'month_day': date.today().day}
@@ -114,10 +116,11 @@ FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.4
 FINTRACKER_OPEN_TRADES_BUTTONS_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.45,
                                                 FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.20)
 
-TICKER_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
-                               FINTRACKER_WINDOW_VIEWPORT_SIZE[1])
-TICKER_INFO_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2.5,
-                                    FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5)
+TRADE_INPUT_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
+                                    FINTRACKER_WINDOW_VIEWPORT_SIZE[1])
+TRADE_INPUT_INFO_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2.5,
+                                         FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5)
+TRADE_INPUT_INFO_WINDOW_TICKER_WIDTH = FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 4
 
 TICKER_SEARCH_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 3,
                                       FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 1.5)
@@ -144,41 +147,41 @@ FIREBASE_COUNT = "count"
 FIREBASE_BOUGHT_PRICE = "bought_price"
 FIREBASE_REASON = "reason"
 FIREBASE_CONTRACT = "contract"
-FIREBASE_OPEN_TRADES_TEXT = "Open Trades"
-FIREBASE_CLOSE_TRADES_TEXT = "Closed Trades"
+FIREBASE_OPEN_TRADES = "Open Trades"
+FIREBASE_CLOSE_TRADES = "Closed Trades"
 FIREBASE_OPTION_TEXT = "Options"
-FIREBASE_STOCK_CRYPTO_TEXT = "Stock_Crypto"
+FIREBASE_STOCK_CRYPTO = "Stock_Crypto"
 FIREBASE_LOCAL_ID = "localId"
 FIREBASE_SOLD_PRICE = "sold_price"
 FIREBASE_NET_PROFIT = "net_profit"
 FIREBASE_PROFIT_PERCENTAGE = "profit_per"
 
 # coingecko keywords
-COINGECKO_SYMBOL_TEXT = "symbol"
-COINGECKO_NAME_TEXT = "name"
-COINGECKO_HASHINGALGO_TEXT = "hashing_algorithm"
-COINGECKO_CATEGORIES_TEXT = "categories"
-COINGECKO_DESC_TEXT = "description"
-COINGECKO_CURRENTPRICE_TEXT = "current_price"
-COINGECKO_CIRCULATINGSUPPLY_TEXT = "circulating_supply"
-COINGECKO_TOTALSUPPLY_TEXT = "total_supply"
-COINGECKO_MARKETCAP_TEXT = "market_cap"
-COINGECKO_MARKETDATA_TEXT = "market_data"
-COINGECKO_USD_TEXT = "usd"
-COINGECKO_ENGLISH_TEXT = "en"
-COINGECKO_PRICECHANGEPERCENT24H_TEXT = "price_change_percentage_24h"
+COINGECKO_SYMBOL = "symbol"
+COINGECKO_NAME = "name"
+COINGECKO_HASHINGALGO = "hashing_algorithm"
+COINGECKO_CATEGORIES = "categories"
+COINGECKO_DESC = "description"
+COINGECKO_CURRENTPRICE = "current_price"
+COINGECKO_CIRCULATINGSUPPLY = "circulating_supply"
+COINGECKO_TOTALSUPPLY = "total_supply"
+COINGECKO_MARKETCAP = "market_cap"
+COINGECKO_MARKETDATA = "market_data"
+COINGECKO_USD = "usd"
+COINGECKO_ENGLISH = "en"
+COINGECKO_PRICECHANGEPERCENT24H = "price_change_percentage_24h"
 
 # yfinance keywords
 YFINANCE_REGULARMARKETPRICE = "regularMarketPrice"
-YFINANCE_STRIKE_PRICE_TEXT = "strike"
-YFINANCE_VOLUME_TEXT = "volume"
-YFINANCE_OPEN_INTEREST_TEXT = "openInterest"
+YFINANCE_STRIKE_PRICE = "strike"
+YFINANCE_VOLUME = "volume"
+YFINANCE_OPEN_INTEREST = "openInterest"
 YFINANCE_IV_TEXT = "impliedVolatility"
-YFINANCE_LONGBUSINESSSUMMARY_TEXT = "longBusinessSummary"
-YFINANCE_SHARESHORT_TEXT = "sharesShort"
-YFINANCE_SHARESHORTPRIORMONTH_TEXT = "sharesShortPriorMonth"
-YFINANCE_SHORTPERCENTFLOAT_TEXT = "shortPercentOfFloat"
-YFINANCE_MARKETCAP_TEXT = "marketCap"
+YFINANCE_LONGBUSINESSSUMMARY = "longBusinessSummary"
+YFINANCE_SHARESHORT = "sharesShort"
+YFINANCE_SHARESHORTPRIORMONTH = "sharesShortPriorMonth"
+YFINANCE_SHORTPERCENTFLOAT = "shortPercentOfFloat"
+YFINANCE_MARKETCAP = "marketCap"
 
 # options
 OPTIONS_WINDOW_TEXT = "Choose Option Contract"
@@ -190,20 +193,22 @@ OPTION_STRIKE_LABEL_TEXT = "Strike Price"
 OPTION_VOLUME_LABEL_TEXT = "Volume"
 OPTION_OPEN_INTEREST_LABEL_TEXT = "Open Interest"
 OPTION_IV_LABEL_TEXT = "Implied Volatility"
+OPTION_SEARCH_BTN_TEXT = "Enter Ticker"
+
+# trade input
+TRADE_INPUT_WINDOW_TEXT = "(Fintracker) Add Trade"
+TRADE_INPUT_ADD_BTN_TEXT = "Add Trade"
+TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_TEXT = "Search Ticker"
+TRADE_INPUT_INFO_WINDOW_TICKER_TEXT = "Enter Ticker"
+TRADE_INPUT_INFO_WINDOW_REASON_TEXT = "(Optional) Enter your reason"
+TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_TEXT = "Choose Contract"
+TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT = "Current Price"
+TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT = "Crypto"
+TRADE_INPUT_RADIO_BTN_STOCK_TEXT = "Stock"
+TRADE_INPUT_RADIO_BTN_OPTION_TEXT = "Option"
 
 # ticker search
-TICKER_WINDOW_TEXT = "(Fintracker) Search Ticker"
-TICKER_RADIO_BTN_CRYPTO_TEXT = "Crypto"
-TICKER_RADIO_BTN_STOCK_TEXT = "Stock"
-TICKER_RADIO_BTN_OPTION_TEXT = "Option"
-TICKER_INFO_WINDOW_TEXT = "Ticker Information"
-TICKER_INFO_WINDOW_TICKER_TEXT = "Enter Ticker"
-TICKER_INFO_WINDOW_COUNT_TEXT = "Enter Count"
-TICKER_INFO_WINDOW_BOUGHT_PRICE_TEXT = "Enter Bought Price"
-TICKER_INFO_WINDOW_REASON_TEXT = "(Optional) Enter your reason"
 TICKER_SEARCH_CRYPTO_STOCK_WINDOW_TEXT = "Search Crypto/Stock Info"
-TICKER_INFO_WINDOW_CONTRACT_BTN_TEXT = "Choose Contract"
-TICKER_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT = "Current Price"
 TICKER_SEARCH_TICKER_TEXT = "Ticker: "
 TICKER_SEARCH_MARKET_CAP_STOCK_TEXT = "Market Cap: "
 TICKER_SEARCH_SUMMARY_OF_BUSINESS_STOCK_TEXT = "Business Summary: "
@@ -221,7 +226,10 @@ TICKER_SEARCH_CRYPTO_MRKTCAPTEXT = "Market Cap: "
 TICKER_SEARCH_CHANGE_PERCENT_24H_TEXT = "24H Change %: "
 TICKERS_SEARCH_WRAP_COUNT = 500
 
+
 # fintracker
+FINTRACKER_VIEWPORT_TITLE = "Fintracker - Record Your Trades!"
+FINTRACKER_VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
 FINTRACKER_WINDOW_TEXT = "(Fintracker) Investment Tracker"
 FINTRACKER_NEWS_BTN_TEXT = "News"
 FINTRACKER_PROFIT_LABEL_TEXT = "Net Profit: "
@@ -235,6 +243,9 @@ FINTRACKER_OPEN_TRADES_OPTION_TABLE_TEXT = "Option"
 FINTRACKER_VIEW_TRADE_BTN_TEXT = "View Trade"
 FINTRACKER_OPEN_TRADES_ROW_TEXT = "open_trade row "
 FINTRACKER_CLOSED_TRADES_ROW_TEXT = "closed_trade row "
+FINTRACKER_SELL_TEXT = "sell"
+FINTRACKER_REMOVE_TEXT = "X"
+FINTRACKER_ADD_BTN_TEXT = "Add"
 
 # sell trade
 SELL_TRADE_WINDOW_TEXT = "Selling Trade"

@@ -16,7 +16,7 @@ class Options:
         self.create_options_win()
 
     def create_options_win(self):
-        with self.dpg.window(tag=configs.OPTIONS_WINDOW_ID,
+        with self.dpg.window(tag=configs.OPTION_WINDOW_ID,
                              label=configs.OPTIONS_WINDOW_TEXT,
                              width=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[1],
@@ -30,7 +30,7 @@ class Options:
             self.dpg.add_input_text(tag=configs.OPTION_WINDOW_TICKER_INPUT_ID,
                                     hint=configs.OPTION_WINDOW_TICKER_INPUT_TEXT)
             self.dpg.add_button(tag=configs.OPTION_WINDOW_SEARCH_BTN_ID,
-                                label=configs.SEARCH_BTN_TEXT,
+                                label=configs.OPTION_SEARCH_BTN_TEXT,
                                 callback=self.search_callback)
 
     def create_option_type_combo_list(self):
@@ -53,7 +53,7 @@ class Options:
 
         ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
         if self.validate_input(ticker):
-            with self.dpg.group(horizontal=True, parent=configs.OPTIONS_WINDOW_ID):
+            with self.dpg.group(horizontal=True, parent=configs.OPTION_WINDOW_ID):
 
                 # call or put combo (user chooses)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
@@ -109,7 +109,7 @@ class Options:
         options_list = yft.get_options(ticker, contract_type, date_combo)
 
         with self.dpg.table(tag=configs.OPTION_TABLE_ID,
-                            parent=configs.OPTIONS_WINDOW_ID,
+                            parent=configs.OPTION_WINDOW_ID,
                             header_row=True):
             # column headers
             self.dpg.add_table_column(label=configs.OPTION_STRIKE_LABEL_TEXT)
@@ -121,7 +121,7 @@ class Options:
                 with self.dpg.table_row():
                     with self.dpg.table_cell():
                         # strike price
-                        strike_price = options_list[configs.YFINANCE_STRIKE_PRICE_TEXT][row]
+                        strike_price = options_list[configs.YFINANCE_STRIKE_PRICE][row]
                         self.dpg.add_button(label=strike_price,
                                             callback=self.row_callback,
                                             user_data=(self.dpg.get_value(configs.OPTION_WINDOW_DATE_COMBO_ID),
@@ -129,12 +129,12 @@ class Options:
 
                     with self.dpg.table_cell():
                         # volume
-                        volume = options_list[configs.YFINANCE_VOLUME_TEXT][row]
+                        volume = options_list[configs.YFINANCE_VOLUME][row]
                         self.dpg.add_text(volume)
 
                     with self.dpg.table_cell():
                         # open interest
-                        open_int = options_list[configs.YFINANCE_OPEN_INTEREST_TEXT][row]
+                        open_int = options_list[configs.YFINANCE_OPEN_INTEREST][row]
                         self.dpg.add_text(open_int)
 
                     with self.dpg.table_cell():
@@ -156,12 +156,12 @@ class Options:
         self.dpg.show_item(self.item_id)
 
         # todo think about putting this in a method
-        self.dpg.delete_item(configs.OPTIONS_WINDOW_ID)
+        self.dpg.delete_item(configs.OPTION_WINDOW_ID)
         self.cleanup_alias()
 
     def cleanup_alias(self):
-        if self.dpg.does_alias_exist(configs.OPTIONS_WINDOW_ID):
-            self.dpg.remove_alias(configs.OPTIONS_WINDOW_ID)
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_ID):
+            self.dpg.remove_alias(configs.OPTION_WINDOW_ID)
 
         if self.dpg.does_alias_exist(configs.OPTION_WINDOW_TICKER_INPUT_ID):
             self.dpg.remove_alias(configs.OPTION_WINDOW_TICKER_INPUT_ID)

@@ -43,7 +43,7 @@ class SellTrade:
 
     def sell_trade_callback(self):
         if self.validate_input():
-            trade = firebase_conn.get_open_trade_by_id_db(self.user_id, self.trade_id, self.is_option)
+            trade = firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
 
             date_val = str(date.today())
             count = self.dpg.get_value(configs.SELL_TRADE_COUNT_ID)
@@ -78,7 +78,7 @@ class SellTrade:
                         configs.FIREBASE_PROFIT_PERCENTAGE: profit_per,
                         configs.FIREBASE_REASON: reason
                         }
-            firebase_conn.add_closed_trade_db(self.user_id, data, self.is_option)
+            firebase_conn.add_closed_trade_db(self.user_id, data, self.is_option, False)
             self.update_to_closed_table(data, self.is_option)
             self.update_open_trades(trade, data)
             print("Sold Successfully")
@@ -120,7 +120,7 @@ class SellTrade:
         self.fintracker.add_to_closed_table(table_id, row_data, is_option)
 
     def validate_input(self):
-        trade = firebase_conn.get_open_trade_by_id_db(self.user_id, self.trade_id, self.is_option)
+        trade = firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
 
         # has to be above the number of held positions
         valid_count = self.dpg.get_value(configs.SELL_TRADE_COUNT_ID) <= trade[configs.FIREBASE_COUNT]
