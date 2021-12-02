@@ -1,7 +1,6 @@
 import configs
-from datetime import date
-
 import firebase_conn
+from datetime import date
 
 
 class SellTrade:
@@ -93,7 +92,7 @@ class SellTrade:
 
             self.close_sell_trade_win()
 
-    # delete window and cleanup alias
+    # delete window and cleanup_aliases alias
     def close_sell_trade_win(self):
         self.dpg.delete_item(configs.SELL_TRADE_WINDOW_ID)
         self.cleanup_alias()

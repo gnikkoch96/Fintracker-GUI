@@ -3,6 +3,7 @@ import yfinance_tool as yft
 import cngko_tool as cgt
 
 
+# desc: creates the window that displays information about the stock or crypto
 class CryptoStockInfo:
     def __init__(self, dpg, ticker, is_crypto=False):
         self.dpg = dpg
@@ -11,19 +12,21 @@ class CryptoStockInfo:
         self.create_search_win()
 
     def create_search_win(self):
+        # stock crypto info window
         with self.dpg.window(tag=configs.TICKER_SEARCH_CRYPTO_STOCK_WINDOW_ID,
                              label=configs.TICKER_SEARCH_CRYPTO_STOCK_WINDOW_TEXT,
                              width=configs.TICKER_SEARCH_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.TICKER_SEARCH_WINDOW_VIEWPORT_SIZE[1],
-                             on_close=self.cleanup,
+                             on_close=self.cleanup_aliases,
                              modal=True):
+
             if self.is_crypto:  # loads crypto info
                 self.create_search_win_crypto_items()
             else:  # loads stock info
                 self.create_search_win_stock_items()
 
     def create_search_win_crypto_items(self):
-        # needs to be lowercase
+        # needs to be lowercase (coingecko api)
         lower_ticker = self.ticker.lower()
 
         # display name + ticker
@@ -34,7 +37,8 @@ class CryptoStockInfo:
         self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_CURPRICE_TEXT + str(cgt.get_current_price(lower_ticker)))
 
         # change % 24 hrs
-        self.dpg.add_text(configs.TICKER_SEARCH_CHANGE_PERCENT_24H_TEXT + str(cgt.get_price_change_percentage_24h(lower_ticker)))
+        self.dpg.add_text(
+            configs.TICKER_SEARCH_CHANGE_PERCENT_24H_TEXT + str(cgt.get_price_change_percentage_24h(lower_ticker)))
 
         # market cap
         self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_MRKTCAPTEXT + str(cgt.get_market_cap(lower_ticker)))
@@ -82,5 +86,5 @@ class CryptoStockInfo:
         self.dpg.add_text(default_value=yft.get_long_business_summary(upper_ticker),
                           wrap=configs.TICKERS_SEARCH_WRAP_COUNT)
 
-    def cleanup(self):
+    def cleanup_aliases(self):
         self.dpg.remove_alias(configs.TICKER_SEARCH_CRYPTO_STOCK_WINDOW_ID)

@@ -137,7 +137,7 @@ class InputTrade:
             # todo add a dialogue
             print("Error: Ticker is Empty, cannot load current price")
 
-    # todo cleanup this code
+    # todo cleanup_aliases this code
     def add_callback(self):
         if self.validate_inputs():
             bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
@@ -233,7 +233,7 @@ class InputTrade:
         else:
             print("Error: Ticker field is empty")
 
-    # todo cleanup: might want to move this to a tools.py or something
+    # todo cleanup_aliases: might want to move this to a tools.py or something
     def validate_inputs(self):
         # todo also make sure to validate if the ticker is crypto or stock
         if self.investment_type != configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT:

@@ -304,7 +304,7 @@ class ViewTrade:
 
         valid_bought_price = bought_price > 0
 
-        # todo cleanup logic
+        # todo cleanup_aliases logic
         if self.is_options:
             if not valid_type or not valid_count or not valid_bought_price:
                 # todo display error message for corresponding errors (users want to know where they were wrong)
