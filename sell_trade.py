@@ -38,7 +38,7 @@ class SellTrade:
 
         # sell button
         self.dpg.add_button(tag=configs.SELL_TRADE_SELL_BTN_ID,
-                            label=configs.SELL_RADE_SELL_BTN_TEXT,
+                            label=configs.SELL_TRADE_SELL_BTN_TEXT,
                             callback=self.sell_trade_callback)
 
     def sell_trade_callback(self):
@@ -80,20 +80,36 @@ class SellTrade:
                         }
             firebase_conn.add_closed_trade_db(self.user_id, data, self.is_option)
             self.update_to_closed_table(data, self.is_option)
-            self.update_open_trades(trade)
+            self.update_open_trades(trade, data)
             print("Sold Successfully")
 
-    def update_open_trades(self, selling_trade):
+            # delete window and cleanup alias
+            self.dpg.delete_item(configs.SELL_TRADE_WINDOW_ID)
+            self.cleanup_alias()
+
+    def update_open_trades(self, selling_trade, sold_data):
+        current_holdings = selling_trade[configs.FIREBASE_COUNT]
+        sold_holdings = self.dpg.get_value(configs.SELL_TRADE_COUNT_ID)
+
         # update selling trade's count and remove if it is 0
-        if self.dpg.get_value(configs.SELL_TRADE_COUNT_ID) <= selling_trade[configs.FIREBASE_COUNT]:
+        if sold_holdings >= current_holdings:
             # remove trade from open table
             self.dpg.delete_item(self.row_tag)
 
             # update the firebase data
             firebase_conn.remove_open_trade_by_id(self.user_id, self.is_option, self.trade_id)
-        else: # user is selling a percentage of their holdings
-            # todo when you come back
-            pass
+        else:  # user is only selling a percentage of their holdings
+            current_holdings = current_holdings - sold_holdings
+
+            # update to the difference of counts
+            sold_data[configs.FIREBASE_COUNT] = current_holdings
+
+            # update the count in the open table
+            self.fintracker.update_table_row(self.row_tag, sold_data, self.is_option)
+
+            # update the firebase data
+            firebase_conn.update_open_trade_by_id_key(self.user_id, self.trade_id, configs.FIREBASE_COUNT,
+                                                      current_holdings, self.is_option)
 
     def update_to_closed_table(self, row_data, is_option):
         if is_option:
@@ -127,8 +143,17 @@ class SellTrade:
         return True
 
     def cleanup_alias(self):
-        self.dpg.remove_alias(configs.SELL_TRADE_COUNT_ID)
-        self.dpg.remove_alias(configs.SELL_TRADE_WINDOW_ID)
-        self.dpg.remove_alias(configs.SELL_TRADE_REASON_ID)
-        self.dpg.remove_alias(configs.SELL_TRADE_SOLD_PRICE_ID)
-        self.dpg.remove_alias(configs.SELL_TRADE_SELL_BTN_ID)
+        if self.dpg.does_alias_exist(configs.SELL_TRADE_WINDOW_ID):
+            self.dpg.remove_alias(configs.SELL_TRADE_WINDOW_ID)
+
+        if self.dpg.does_alias_exist(configs.SELL_TRADE_REASON_ID):
+            self.dpg.remove_alias(configs.SELL_TRADE_REASON_ID)
+
+        if self.dpg.does_alias_exist(configs.SELL_TRADE_COUNT_ID):
+            self.dpg.remove_alias(configs.SELL_TRADE_COUNT_ID)
+
+        if self.dpg.does_alias_exist(configs.SELL_TRADE_SOLD_PRICE_ID):
+            self.dpg.remove_alias(configs.SELL_TRADE_SOLD_PRICE_ID)
+
+        if self.dpg.does_alias_exist(configs.SELL_TRADE_SELL_BTN_ID):
+            self.dpg.remove_alias(configs.SELL_TRADE_SELL_BTN_ID)

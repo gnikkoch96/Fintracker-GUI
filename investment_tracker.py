@@ -439,20 +439,26 @@ class Fintracker:
                                     callback=self.closed_trade_remove_callback,
                                     user_data=(row_tag, is_option, closed_trade_id))
 
-    def update_table_row(self, row_tag, new_data, is_options):
+    def update_table_row(self, row_tag, new_data, is_options, for_open_table):
         row_cols = self.dpg.get_item_children(row_tag, 1)
 
         # data
-        new_date = new_data[configs.FIREBASE_DATE]
-        new_type = new_data[configs.FIREBASE_TYPE]
-        new_count = new_data[configs.FIREBASE_COUNT]
-        new_bought_price = new_data[configs.FIREBASE_BOUGHT_PRICE]
-
         if is_options:
             new_trade = new_data[configs.FIREBASE_CONTRACT]
         else:
             new_trade = new_data[configs.FIREBASE_TICKER]
 
+        new_date = new_data[configs.FIREBASE_DATE]
+        new_type = new_data[configs.FIREBASE_TYPE]
+        new_count = new_data[configs.FIREBASE_COUNT]
+        new_bought_price = new_data[configs.FIREBASE_BOUGHT_PRICE]
+
+        if not for_open_table:
+            new_sold_price = new_data[configs.FIREBASE_SOLD_PRICE]
+            new_net_profit = new_data[configs.FIREBASE_NET_PROFIT]
+            new_profit_per = new_data[configs.FIREBASE_PROFIT_PERCENTAGE]
+
+        # todo make this cleaner
         counter = 0
         for row_col_id in row_cols:
             row_col_items = self.dpg.get_item_children(row_col_id, 1)
@@ -468,6 +474,15 @@ class Fintracker:
                         self.dpg.set_value(item_id, new_count)
                     elif counter == 4:  # bought_price
                         self.dpg.set_value(item_id, new_bought_price)
+
+                    if not for_open_table:
+                        if counter == 5:  # sold_price
+                            self.dpg.set_value(item_id, new_sold_price)
+                        elif counter == 6:  # net_profit
+                            self.dpg.set_value(item_id, new_net_profit)
+                        elif counter == 7:  # profit_percentage
+                            self.dpg.set_value(item_id, new_profit_per)
+
                     counter += 1
 
     def view_trade_callback(self, sender, app_data, user_data):
@@ -482,6 +497,8 @@ class Fintracker:
             self.view_trade = ViewTrade(self.dpg, self, trade_id, is_option, row_tag)
 
     def sell_callback(self, sender, app_data, user_data):
+        self.close_view_trade_win()
+        
         is_option = user_data[0]
         trade_id = user_data[1]
         row_tag = user_data[2]

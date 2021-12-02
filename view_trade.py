@@ -39,6 +39,11 @@ class ViewTrade:
         bought_price = self.trade_data[configs.FIREBASE_BOUGHT_PRICE]
         reason = self.trade_data[configs.FIREBASE_REASON]
 
+        if configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT in self.row_tag:
+            net_profit = self.trade_data[configs.FIREBASE_NET_PROFIT]
+            profit_per = self.trade_data[configs.FIREBASE_PROFIT_PERCENTAGE]
+            sold_price = self.trade_data[configs.FIREBASE_SOLD_PRICE]
+
         # display contract or ticker
         with self.dpg.group(horizontal=True):
             self.dpg.add_text(configs.VIEW_TRADE_INPUT_TEXT)
@@ -77,6 +82,25 @@ class ViewTrade:
             self.dpg.add_input_float(tag=configs.VIEW_TRADE_BOUGHT_PRICE_ID,
                                      default_value=bought_price)
 
+        # if viewing closing trade
+        if configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT in self.row_tag:
+            # display sold price
+            with self.dpg.group(horizontal=True):
+                self.dpg.add_text(configs.VIEW_TRADE_SOLD_PRICE_TEXT)
+                self.dpg.add_input_int(tag=configs.VIEW_TRADE_SOLD_PRICE_ID,
+                                       default_value=sold_price)
+
+            # display net profit (not editable)
+            with self.dpg.group(horizontal=True):
+                self.dpg.add_text(configs.VIEW_TRADE_NET_PROFIT_TEXT)
+                self.dpg.add_input_float(tag=configs.VIEW_TRADE_NET_PROFIT_ID,
+                                         default_value=net_profit)
+
+            # display profit percentage (not editable)
+            with self.dpg.group(horizontal=True):
+                self.dpg.add_text(configs.VIEW_TRADE_PROFIT_PERCENTAGE_TEXT)
+                self.dpg.add_input_float(tag=configs.VIEW_TRADE_PROFIT_PERCENTAGE_ID,
+                                         default_value=profit_per)
         # display reason
         with self.dpg.group(horizontal=True):
             self.dpg.add_text(configs.VIEW_TRADE_REASON_TEXT)
@@ -115,6 +139,11 @@ class ViewTrade:
         self.dpg.disable_item(configs.VIEW_TRADE_DATE_ID)
         self.dpg.disable_item(configs.VIEW_TRADE_INPUT_ID)
 
+        if configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT in self.row_tag:
+            self.dpg.disable_item(configs.VIEW_TRADE_SOLD_PRICE_ID)
+            self.dpg.disable_item(configs.VIEW_TRADE_NET_PROFIT_ID)
+            self.dpg.disable_item(configs.VIEW_TRADE_PROFIT_PERCENTAGE_ID)
+
     def enable_items(self):
         if self.is_options:
             self.dpg.show_item(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
@@ -125,6 +154,9 @@ class ViewTrade:
         self.dpg.enable_item(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
         self.dpg.enable_item(configs.VIEW_TRADE_COUNT_ID)
         self.dpg.enable_item(configs.VIEW_TRADE_TYPE_ID)
+
+        if configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT in self.row_tag:
+            self.dpg.enable_item(configs.VIEW_TRADE_SOLD_PRICE_ID)
 
     def edit_callback(self):
         self.enable_items()
@@ -165,24 +197,58 @@ class ViewTrade:
             bought_price = round(self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID), 2)
             reason = self.dpg.get_value(configs.VIEW_TRADE_REASON_ID)
 
-            if self.is_options:
-                new_data = {configs.FIREBASE_DATE: date_val,
-                            configs.FIREBASE_CONTRACT: trade,
-                            configs.FIREBASE_TYPE: invest_type,
-                            configs.FIREBASE_COUNT: count,
-                            configs.FIREBASE_BOUGHT_PRICE: bought_price,
-                            configs.FIREBASE_REASON: reason
-                            }
-            else:
-                new_data = {configs.FIREBASE_DATE: date_val,
-                            configs.FIREBASE_TICKER: trade,
-                            configs.FIREBASE_TYPE: invest_type,
-                            configs.FIREBASE_COUNT: count,
-                            configs.FIREBASE_BOUGHT_PRICE: bought_price,
-                            configs.FIREBASE_REASON: reason
-                            }
+            # editing a closed trade
+            if configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT in self.row_tag:
+                sold_price = self.dpg.get_value(configs.VIEW_TRADE_SOLD_PRICE_ID)
+                net_profit = sold_price - bought_price
+                profit_per = net_profit / bought_price * 100
 
-            firebase_conn.update_open_trade_by_id(self.user_id, self.trade_id, new_data, self.is_options)
+                if self.is_options:
+                    new_data = {configs.FIREBASE_DATE: date_val,
+                                configs.FIREBASE_CONTRACT: trade,
+                                configs.FIREBASE_TYPE: invest_type,
+                                configs.FIREBASE_COUNT: count,
+                                configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                                configs.FIREBASE_SOLD_PRICE: sold_price,
+                                configs.FIREBASE_NET_PROFIT: net_profit,
+                                configs.FIREBASE_PROFIT_PERCENTAGE: profit_per,
+                                configs.FIREBASE_REASON: reason
+                                }
+                else:
+                    new_data = {configs.FIREBASE_DATE: date_val,
+                                configs.FIREBASE_TICKER: trade,
+                                configs.FIREBASE_TYPE: invest_type,
+                                configs.FIREBASE_COUNT: count,
+                                configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                                configs.FIREBASE_SOLD_PRICE: sold_price,
+                                configs.FIREBASE_NET_PROFIT: net_profit,
+                                configs.FIREBASE_PROFIT_PERCENTAGE: profit_per,
+                                configs.FIREBASE_REASON: reason
+                                }
+                firebase_conn.update_closed_trade_by_id(self.user_id, self.trade_id, new_data, self.is_options)
+                self.fintracker.update_table_row(self.row_tag, new_data, self.is_options, False)
+
+            # editing open trade
+            else:
+                if self.is_options:
+                    new_data = {configs.FIREBASE_DATE: date_val,
+                                configs.FIREBASE_CONTRACT: trade,
+                                configs.FIREBASE_TYPE: invest_type,
+                                configs.FIREBASE_COUNT: count,
+                                configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                                configs.FIREBASE_REASON: reason
+                                }
+                else:
+                    new_data = {configs.FIREBASE_DATE: date_val,
+                                configs.FIREBASE_TICKER: trade,
+                                configs.FIREBASE_TYPE: invest_type,
+                                configs.FIREBASE_COUNT: count,
+                                configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                                configs.FIREBASE_REASON: reason
+                                }
+
+                firebase_conn.update_open_trade_by_id(self.user_id, self.trade_id, new_data, self.is_options)
+                self.fintracker.update_table_row(self.row_tag, new_data, self.is_options, True)
 
             # todo create a dialog to display this notice
             print("Update Successful")
@@ -191,7 +257,6 @@ class ViewTrade:
             self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
             self.cleanup_alias()
 
-            self.fintracker.update_table_row(self.row_tag, new_data, self.is_options)
 
     def change_contract_callback(self):
         Options(self.dpg, configs.VIEW_TRADE_INPUT_ID)
@@ -223,6 +288,10 @@ class ViewTrade:
             ticker = self.dpg.get_value(configs.VIEW_TRADE_INPUT_ID)
             valid_ticker = yft.validate_ticker(ticker) or cgt.validate_coin(ticker)
 
+        if configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT in self.row_tag:
+            sold_price = self.dpg.get_value(configs.VIEW_TRADE_SOLD_PRICE_ID)
+            valid_sold_price = sold_price > 0
+
         trade_type = self.dpg.get_value(configs.VIEW_TRADE_TYPE_ID).capitalize()
         count = self.dpg.get_value(configs.VIEW_TRADE_COUNT_ID)
         bought_price = self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
@@ -235,35 +304,78 @@ class ViewTrade:
 
         valid_bought_price = bought_price > 0
 
-        # todo cleanup
+        # todo cleanup logic
         if self.is_options:
             if not valid_type or not valid_count or not valid_bought_price:
                 # todo display error message for corresponding errors (users want to know where they were wrong)
                 print("Error: Incorrect Format")
                 return False
+
+            if configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT in self.row_tag:
+                if not valid_sold_price:
+                    return False
         else:
-            if not valid_type or not valid_count or not valid_bought_price or valid_ticker:
+            if not valid_type or not valid_count or not valid_bought_price or not valid_ticker:
                 # todo display error message for corresponding errors (users want to know where they were wrong)
                 print("Error: Incorrect Format")
                 return False
 
+            if configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT in self.row_tag:
+                if not valid_sold_price:
+                    return False
+
         return True
 
     def load_trade_data(self):
+        # return closed trade info
+        if configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT in self.row_tag:
+            return firebase_conn.get_closed_trade_by_id_db(self.user_id, self.trade_id, self.is_options)
+
+        # return open trade info
         return firebase_conn.get_open_trade_by_id_db(self.user_id, self.trade_id, self.is_options)
 
     def cleanup_alias(self):
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
             self.dpg.remove_alias(configs.VIEW_TRADE_WINDOW_ID)
 
-        self.dpg.remove_alias(configs.VIEW_TRADE_INPUT_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_DATE_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_TYPE_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_COUNT_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_REASON_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_EDIT_BTN_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_SAVE_BTN_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_CANCEL_BTN_ID)
-        self.dpg.remove_alias(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID)
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_SOLD_PRICE_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_SOLD_PRICE_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_NET_PROFIT_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_NET_PROFIT_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_PROFIT_PERCENTAGE_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_PROFIT_PERCENTAGE_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_INPUT_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_INPUT_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_DATE_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_DATE_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_TYPE_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_TYPE_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_COUNT_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_COUNT_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_BOUGHT_PRICE_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_REASON_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_REASON_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_EDIT_BTN_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_EDIT_BTN_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_SAVE_BTN_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_SAVE_BTN_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_CANCEL_BTN_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_CANCEL_BTN_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID)

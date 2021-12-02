@@ -64,15 +64,6 @@ def remove_open_trade_by_id(user_id, is_option, trade_id):
             configs.FIREBASE_STOCK_CRYPTO_TEXT).child(trade_id).remove()
 
 
-def get_closed_trades_db(user_id):
-    if user_id is not None:
-        return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).get().val()
-
-
-def get_closed_trade_by_id_db(user_id, trade_id):
-    return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(trade_id).get().val()
-
-
 # todo combine with options method
 def get_open_trades_stock_crypto_db(user_id):
     if user_id is not None:
@@ -138,4 +129,23 @@ def update_open_trade_by_id(user_id, trade_id, new_data, is_options=False):
             configs.FIREBASE_OPTION_TEXT).child(trade_id).update(new_data)
     else:
         firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
+            configs.FIREBASE_STOCK_CRYPTO_TEXT).child(trade_id).update(new_data)
+
+
+# used when updating specific properties of a trade (i.e. count, ticker, etc...)
+def update_open_trade_by_id_key(user_id, trade_id, keyword, new_data, is_options=False):
+    if is_options:
+        firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
+            configs.FIREBASE_OPTION_TEXT).child(trade_id).update({keyword: new_data})
+    else:
+        firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES_TEXT).child(
+            configs.FIREBASE_STOCK_CRYPTO_TEXT).child(trade_id).update({keyword: new_data})
+
+
+def update_closed_trade_by_id(user_id, trade_id, new_data, is_options=False):
+    if is_options:
+        firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
+            configs.FIREBASE_OPTION_TEXT).child(trade_id).update(new_data)
+    else:
+        firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES_TEXT).child(
             configs.FIREBASE_STOCK_CRYPTO_TEXT).child(trade_id).update(new_data)

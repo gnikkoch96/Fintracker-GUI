@@ -72,6 +72,9 @@ VIEW_TRADE_CANCEL_BTN_ID = "View Trade Cancel Button"
 VIEW_TRADE_CHANGE_DATE_BTN_ID = "View Trade Change Date Button"
 VIEW_TRADE_DATE_PICKER_ID = "View Trade Date Picker"
 VIEW_TRADE_DATE_PICKER_WINDOW_ID = "View Trade Date Picker Window"
+VIEW_TRADE_SOLD_PRICE_ID = "View Trade Sold Price"
+VIEW_TRADE_NET_PROFIT_ID = "View Trade Net Profit"
+VIEW_TRADE_PROFIT_PERCENTAGE_ID = "View Trade Profit Percentage"
 
 LOGIN_WINDOW_ID = "Login Window"
 LOGIN_INPUT_EMAIL_ID = "Login E-Mail"
@@ -237,7 +240,7 @@ FINTRACKER_CLOSED_TRADES_ROW_TEXT = "closed_trade row "
 SELL_TRADE_WINDOW_TEXT = "Selling Trade"
 SELL_TRADE_COUNT_TEXT = "Number Sold: "
 SELL_TRADE_SOLD_PRICE_TEXT = "Sold Price"
-SELL_RADE_SELL_BTN_TEXT = "Sell Trade"
+SELL_TRADE_SELL_BTN_TEXT = "Sell Trade"
 SELL_TRADE_REASON_TEXT = "Reason"
 
 # view trade
@@ -254,6 +257,9 @@ VIEW_TRADE_REASON_TEXT = "Reason: "
 VIEW_TRADE_CANCEL_BTN_TEXT = "Cancel"
 VIEW_TRADE_CHANGE_DATE_BTN_TEXT = "Change Date"
 VIEW_TRADE_DATE_PICKER_WINDOW_TEXT = "Choose Date"
+VIEW_TRADE_SOLD_PRICE_TEXT = "Sold Price: "
+VIEW_TRADE_NET_PROFIT_TEXT = "Net Profit: "
+VIEW_TRADE_PROFIT_PERCENTAGE_TEXT = "Profit %: "
 
 # login
 LOGIN_WINDOW_TEXT = "(FinTracker) Login"

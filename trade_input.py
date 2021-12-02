@@ -235,7 +235,7 @@ class InputTrade:
         # todo think about putting this in a separate method
         if ticker != "":
             if self.investment_type == configs.TICKER_RADIO_BTN_CRYPTO_TEXT:
-                if cgt.validate_coin(ticker):
+                if cgt.validate_coin(ticker.lower()):
                     CryptoStockInfo(self.dpg, ticker, True)
                 else:
                     print("Error: Invalid Token")
