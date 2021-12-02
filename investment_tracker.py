@@ -7,6 +7,7 @@ from sell_trade import SellTrade
 
 
 class Fintracker:
+
     # user_id is none if the user chooses to go offline
     def __init__(self, dpg, is_offline=False, user_id=None):
         self.dpg = dpg
@@ -449,7 +450,7 @@ class Fintracker:
         # get the columns for the row (since no tag was given to them)
         row_cols = self.dpg.get_item_children(row_tag, 1)
 
-        # data
+        # new data
         if is_options:
             new_trade = new_data[configs.FIREBASE_CONTRACT]
         else:
@@ -493,9 +494,11 @@ class Fintracker:
                     counter += 1
 
     def add_callback(self):
+        # give focus back to the trade input window if present
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID):
             self.dpg.focus_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
         else:
+            # create a new trade input window
             InputTrade(self.dpg, self.user_id, self)
 
     def sell_callback(self, sender, app_data, user_data):
@@ -527,13 +530,13 @@ class Fintracker:
         open_trade_id = user_data[2]
         firebase_conn.remove_open_trade_by_id(self.user_id, is_option, open_trade_id)
 
-        # todo update the table once it has been removed
         self.dpg.delete_item(row_tag)
 
     # removing a trade from closed table will affect the total profit and win-rate
     def closed_trade_remove_callback(self, sender, app_data, user_data):
         pass
 
+    # deletes the view trade window if present and cleans up its aliases
     def close_view_trade_win(self):
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
             self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)

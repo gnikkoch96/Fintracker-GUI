@@ -79,7 +79,7 @@ class SellTrade:
                         configs.FIREBASE_REASON: reason
                         }
             firebase_conn.add_closed_trade_db(self.user_id, data, self.is_option)
-            self.update_to_closed_table(data, self.is_option)
+            self.update_closed_table(data, self.is_option)
             self.update_open_trades(trade, data)
             print("Sold Successfully")
 
@@ -111,7 +111,7 @@ class SellTrade:
             firebase_conn.update_open_trade_by_id_key(self.user_id, self.trade_id, configs.FIREBASE_COUNT,
                                                       current_holdings, self.is_option)
 
-    def update_to_closed_table(self, row_data, is_option):
+    def update_closed_table(self, row_data, is_option):
         if is_option:
             table_id = configs.FINTRACKER_CLOSED_TRADES_OPTION_TABLE_ID
         else:

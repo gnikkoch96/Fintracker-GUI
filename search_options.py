@@ -5,6 +5,11 @@ import threading
 
 # desc: search options gui that will display contracts to the user based on
 # ticker, call/put, and expiration date
+def create_option_type_combo_list():
+    option_types = [configs.OPTIONS_CALL_TEXT, configs.OPTIONS_PUT_TEXT]
+    return option_types
+
+
 class Options:
     # item_id refers to the component that will display the contract
     def __init__(self, dpg, item_id):
@@ -16,15 +21,16 @@ class Options:
         self.create_options_win()
 
     def create_options_win(self):
+        # optins window
         with self.dpg.window(tag=configs.OPTION_WINDOW_ID,
                              label=configs.OPTIONS_WINDOW_TEXT,
                              width=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[1],
                              on_close=self.cleanup_alias,
                              modal=True):
-            self.create_options_items()
+            self.create_options_win_items()
 
-    def create_options_items(self):
+    def create_options_win_items(self):
         # ticker input
         with self.dpg.group(horizontal=True):
             self.dpg.add_input_text(tag=configs.OPTION_WINDOW_TICKER_INPUT_ID,
@@ -33,14 +39,7 @@ class Options:
                                 label=configs.OPTION_SEARCH_BTN_TEXT,
                                 callback=self.search_callback)
 
-    def create_option_type_combo_list(self):
-        option_types = [configs.OPTIONS_CALL_TEXT, configs.OPTIONS_PUT_TEXT]
-        return option_types
 
-    def create_option_date_combo_list(self):
-        ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
-        option_dates = yft.get_options_date(ticker)
-        return option_dates
 
     def search_callback(self):
         self.search_options_thread = threading.Thread(target=self.load_option_combos,
@@ -57,7 +56,7 @@ class Options:
 
                 # call or put combo (user chooses)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
-                                   items=self.create_option_type_combo_list(),
+                                   items=create_option_type_combo_list(),
                                    width=configs.OPTIONS_WINDOW_COMBO_WIDTH,
                                    default_value=configs.OPTIONS_CALL_TEXT)
 
@@ -158,6 +157,11 @@ class Options:
         # todo think about putting this in a method
         self.dpg.delete_item(configs.OPTION_WINDOW_ID)
         self.cleanup_alias()
+
+    def create_option_date_combo_list(self):
+        ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
+        option_dates = yft.get_options_date(ticker)
+        return option_dates
 
     def cleanup_alias(self):
         if self.dpg.does_alias_exist(configs.OPTION_WINDOW_ID):
