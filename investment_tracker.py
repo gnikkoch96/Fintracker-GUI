@@ -315,11 +315,22 @@ class Fintracker:
         self.num_open_trade_rows += 1
 
         # data
-        date_val = row_data[0]
-        invest_type = row_data[1]
-        trade = row_data[2]
-        count = row_data[3]
-        bought_price = row_data[4]
+        # date_val = row_data[0]
+        # invest_type = row_data[1]
+        # trade = row_data[2]
+        # count = row_data[3]
+        # bought_price = row_data[4]
+
+        # data
+        date_val = row_data[configs.FIREBASE_DATE]
+        invest_type = row_data[configs.FIREBASE_TYPE]
+        if is_option:
+            trade = row_data[configs.FIREBASE_CONTRACT]
+        else:
+            trade = row_data[configs.FIREBASE_TICKER]
+
+        count = row_data[configs.FIREBASE_COUNT]
+        bought_price = row_data[configs.FIREBASE_BOUGHT_PRICE]
 
         # get the recent trade
         open_trade_keys = firebase_conn.get_open_trades_keys(self.user_id, is_option)

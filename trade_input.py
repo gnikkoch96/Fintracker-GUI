@@ -193,21 +193,12 @@ class InputTrade:
             self.reset_ticker_info_win_items()
 
     def update_to_open_table(self, data, is_option):
-        date_val = data[configs.FIREBASE_DATE]
-        invest_type = data[configs.FIREBASE_TYPE]
-        count = data[configs.FIREBASE_COUNT]
-        bought_price = data[configs.FIREBASE_BOUGHT_PRICE]
-
-        if is_option: # update to options table
+        if is_option:  # update to options table
             table_id = configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID
-            trade = data[configs.FIREBASE_CONTRACT]
-
-        else: # update to crypto/stock table
+        else:  # update to crypto/stock table
             table_id = configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID
-            trade = data[configs.FIREBASE_TICKER]
 
-        row_data = (date_val, invest_type, trade, count, bought_price)
-        self.fintracker.add_to_open_table(table_id, row_data, is_option)
+        self.fintracker.add_to_open_table(table_id, data, is_option)
 
     def open_trade_callback(self, sender, app_data, user_data):
         print(sender, app_data, user_data)
