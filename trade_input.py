@@ -1,5 +1,4 @@
 import configs
-import investment_tracker
 import yfinance_tool as yft
 import cngko_tool as cgt
 import firebase_conn
@@ -15,11 +14,13 @@ class InputTrade:
         self.user_id = user_id
         self.fintracker = fintracker_gui
 
+        # default will be on Crypto
         self.investment_types = [configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT,
                                  configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT,
                                  configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT]
-        # default will be on Crypto
         self.investment_type = configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT
+
+        # stores option obj for contract reference
         self.option = None
 
         # threading to make gui responsive
@@ -28,6 +29,7 @@ class InputTrade:
         self.create_trade_input_win()
 
     def create_trade_input_win(self):
+        # trade input window
         with self.dpg.window(tag=configs.TRADE_INPUT_WINDOW_ID,
                              label=configs.TRADE_INPUT_WINDOW_TEXT,
                              width=configs.TRADE_INPUT_WINDOW_VIEWPORT_SIZE[0],
@@ -37,7 +39,7 @@ class InputTrade:
             self.create_trade_input_win_items()
 
     def create_trade_input_win_items(self):
-        # type of investment (i.e. crypto, stocks, options)
+        # radio buttons - type of investment (i.e. crypto, stocks, options)
         self.dpg.add_radio_button(tag=configs.TRADE_INPUT_RADIO_BTNS_ID,
                                   items=self.investment_types,
                                   horizontal=True,
@@ -48,34 +50,14 @@ class InputTrade:
                                    width=configs.TRADE_INPUT_INFO_WINDOW_VIEWPORT_SIZE[0],
                                    height=configs.TRADE_INPUT_INFO_WINDOW_VIEWPORT_SIZE[1],
                                    parent=configs.TRADE_INPUT_WINDOW_ID):
-            self.create_add_investment_info_items()
+            self.create_add_trade_info_items()
 
-        # add button
+        # add trade button
         self.dpg.add_button(tag=configs.TRADE_INPUT_ADD_BTN_ID,
                             label=configs.TRADE_INPUT_ADD_BTN_TEXT,
                             callback=self.add_callback)
 
-    def define_investment_type(self, sender, app_data, user_data):
-        self.reset_ticker_info_win_items()
-        self.investment_type = app_data
-
-        # display corresponding items depending on investment type
-        if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT:
-            self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
-            self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
-            self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
-
-            self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
-            self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
-        else:
-            self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
-            self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
-
-            self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
-            self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
-            self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
-
-    def create_add_investment_info_items(self):
+    def create_add_trade_info_items(self):
         # ticker input
         with self.dpg.group(horizontal=True):
             self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID,
@@ -85,16 +67,14 @@ class InputTrade:
                                 label=configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_TEXT,
                                 callback=self.search_callback)
 
-        # options input
+        # options input (hidden in the beginning)
         with self.dpg.group(horizontal=True):
             self.dpg.add_button(tag=configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID,
                                 label=configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_TEXT,
                                 callback=self.contract_callback)
-            self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
 
             # show this text once the user has chosen a contract
             self.dpg.add_text(tag=configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
-            self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
 
         # count input
         # todo add hints
@@ -114,8 +94,51 @@ class InputTrade:
         self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_REASON_ID,
                                 hint=configs.TRADE_INPUT_INFO_WINDOW_REASON_TEXT)
 
+        self.hide_option_items()
+
+    # defines the investment type depending on current radio button
+    def define_investment_type(self, sender, app_data, user_data):
+        self.reset_ticker_info_win_items()
+        self.investment_type = app_data
+
+        self.display_correct_investment_type_items()
+
+    # display corresponding items depending on investment type
+    def display_correct_investment_type_items(self):
+        if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT:
+            # hide: ticker input, search, current price
+            # show: contract btn, show contract text
+            self.hide_stock_crypto_items()
+            self.show_option_items()
+        else:
+            # hide: contract btn, show contract text
+            # show: ticker input, search, current price
+            self.hide_option_items()
+            self.show_stock_crypto_items()
+
+    def hide_stock_crypto_items(self):
+        self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+        self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
+        self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
+
+    def show_stock_crypto_items(self):
+        self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+        self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
+        self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
+
+    def hide_option_items(self):
+        self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
+        self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
+
+    def show_option_items(self):
+        self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
+        self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
+
+    def is_ticker_empty(self):
+        return self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID) == ""
+
     def get_current_price(self):
-        if self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID) != "":
+        if not self.is_ticker_empty():
             ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
             curr_price = 0
 
