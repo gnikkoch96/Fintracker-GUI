@@ -9,10 +9,10 @@ from datetime import date
 
 
 class InputTrade:
-    def __init__(self, dpg, user_id, fintracker_gui):
+    def __init__(self, dpg, user_id, fintracker):
         self.dpg = dpg
         self.user_id = user_id
-        self.fintracker = fintracker_gui
+        self.fintracker = fintracker
 
         # default will be on Crypto
         self.investment_types = [configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT,
@@ -69,11 +69,12 @@ class InputTrade:
 
         # options input (hidden in the beginning)
         with self.dpg.group(horizontal=True):
+            # choose contract btn
             self.dpg.add_button(tag=configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID,
                                 label=configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_TEXT,
                                 callback=self.contract_callback)
 
-            # show this text once the user has chosen a contract
+            # displays contract
             self.dpg.add_text(tag=configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
 
         # count input
@@ -88,13 +89,171 @@ class InputTrade:
             # current price button
             self.dpg.add_button(tag=configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID,
                                 label=configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT,
-                                callback=self.get_current_price)
+                                callback=self.current_price_callback)
 
         # reason input
         self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_REASON_ID,
                                 hint=configs.TRADE_INPUT_INFO_WINDOW_REASON_TEXT)
 
         self.hide_option_items()
+
+    def current_price_callback(self):
+        if not self.is_ticker_empty():
+            ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+            curr_price = 0
+
+            # get stock price
+            if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
+                if yft.validate_ticker(ticker):
+                    curr_price = yft.get_stock_price(ticker)
+                else:
+                    # todo display an error message
+                    pass
+            else:  # get crypto price
+                if cgt.validate_coin(ticker):
+                    curr_price = cgt.get_current_price(ticker)
+                else:
+                    # todo display an error message
+                    pass
+
+            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
+
+        else:
+            # todo add a dialogue
+            print("Error: Ticker is Empty, cannot load current price")
+
+    def add_callback(self):
+        if self.validate_inputs():
+            bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
+            count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
+            invest_type = self.investment_type.upper()
+            date_val = str(date.today())
+            reason = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_REASON_ID).capitalize()
+
+            # stock and crypto
+            if not self.is_option():
+                ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID).upper()
+
+                # round price of bought price for stock
+                if self.is_stock():
+                    bought_price = round(bought_price, 2)
+
+                # store the symbol of crypto as opposed to their name
+                if self.is_crypto():
+                    ticker = cgt.get_symbol(ticker.lower())
+
+                data = {configs.FIREBASE_DATE: date_val,
+                        configs.FIREBASE_TICKER: ticker,
+                        configs.FIREBASE_TYPE: invest_type,
+                        configs.FIREBASE_COUNT: count,
+                        configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                        configs.FIREBASE_REASON: reason
+                        }
+
+                firebase_conn.add_open_trade_db(self.user_id, data, False)
+                self.update_to_open_table(data, False)
+
+            # options
+            else:
+                # get contract
+                contract = self.option.contract
+                contract_format = f"{contract[configs.OPTIONS_EXPIRATION_DATE]} | {contract[configs.OPTIONS_TICKER]} | {contract[configs.OPTIONS_TYPE]} | {contract[configs.OPTIONS_STRIKE_PRICE]} "
+
+                # round contract price if necessary
+                bought_price = round(bought_price, 2)
+
+                # trade data
+                data = {configs.FIREBASE_DATE: date_val,
+                        configs.FIREBASE_CONTRACT: contract_format,
+                        configs.FIREBASE_TYPE: invest_type,
+                        configs.FIREBASE_COUNT: count,
+                        configs.FIREBASE_BOUGHT_PRICE: bought_price,
+                        configs.FIREBASE_REASON: reason
+                        }
+
+                firebase_conn.add_open_trade_db(self.user_id, data, True)
+                self.update_to_open_table(data, True)
+
+            # todo make this message a dialog to the player
+            print("Successfully added to database")
+
+            # reset the input fields
+            self.reset_ticker_info_win_items()
+
+    # choose the options contract
+    def contract_callback(self):
+        self.option = Options(self.dpg, configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
+
+    def search_callback(self):
+        self.ticker_search_thread = threading.Thread(target=self.load_stock_info,
+                                                     daemon=True)
+        self.ticker_search_thread.start()
+
+    def load_stock_info(self):
+        # todo this is where we will call the respective api to get the information
+        ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+
+        # todo think about putting this in a separate method
+        if not self.is_ticker_empty():
+            if self.is_crypto():
+                if cgt.validate_coin(ticker.lower()):
+                    CryptoStockInfo(self.dpg, ticker, True)
+                else:
+                    print("Error: Invalid Token")
+            elif self.is_stock():
+                if yft.validate_ticker(ticker):
+                    CryptoStockInfo(self.dpg, ticker)
+                else:
+                    print("Error: Invalid Ticker")
+        else:
+            print("Error: Ticker field is empty")
+
+    # add trade to open trades table
+    def update_to_open_table(self, data, is_option):
+        if is_option:  # update to options table
+            table_id = configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID
+        else:  # update to crypto/stock table
+            table_id = configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID
+
+        self.fintracker.add_to_open_table(table_id, data, is_option)
+
+    def validate_inputs(self):
+        if not self.is_option():
+            ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+
+            if self.is_stock():
+                # ticker is empty or did not return a result
+                invalid_ticker = not yft.validate_ticker(ticker) or self.is_ticker_empty()
+
+            else:  # crypto
+                # ticker is empty or did not return a result
+                invalid_ticker = not cgt.validate_coin(ticker) or self.is_ticker_empty()
+        else:
+            # they did not choose a contract
+            invalid_ticker = self.is_contract_empty()
+
+        # no negative or 0 count values and no negative bought price values
+        invalid_count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID) <= 0
+
+        # no negative bought price values
+        invalid_bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID) <= 0
+
+        if invalid_count or invalid_bought_price or invalid_ticker:
+            if invalid_ticker:
+                # todo display an error message (mention the rules for each radio button)
+                print("Error: Invalid Ticker (It has to be the ticker name and not the full name)")
+
+            if invalid_count:
+                # todo display an error message
+                print("Error: You can't have negative or 0 for count")
+
+            if invalid_bought_price:
+                # todo display an error message
+                print("Error: You can't have negative or 0 for bought price")
+
+            return False
+
+        return True
 
     # defines the investment type depending on current radio button
     def define_investment_type(self, sender, app_data, user_data):
@@ -134,168 +293,27 @@ class InputTrade:
         self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
         self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
 
+    # checks if user highlights option radio button
+    def is_option(self):
+        return self.investment_type == configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT
+
+    # checks if user highlights stock radio button
+    def is_stock(self):
+        return self.investment_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT
+
+    # checks if user highlights crypto radio button
+    def is_crypto(self):
+        return self.investment_type == configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT
+
+    # checks if ticker input is empty
     def is_ticker_empty(self):
         return self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID) == ""
 
-    def get_current_price(self):
-        if not self.is_ticker_empty():
-            ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
-            curr_price = 0
+    # checks if the show contract field is empty
+    def is_contract_empty(self):
+        return self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID) == ""
 
-            if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
-                if yft.validate_ticker(ticker):
-                    curr_price = yft.get_stock_price(ticker)
-                else:
-                    # todo display an error message
-                    pass
-            else:
-                if cgt.validate_coin(ticker):
-                    curr_price = cgt.get_current_price(ticker)
-                else:
-                    # todo display an error message
-                    pass
-
-            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
-        else:
-            # todo add a dialogue
-            print("Error: Ticker is Empty, cannot load current price")
-
-    # todo cleanup_aliases this code
-    def add_callback(self):
-        if self.validate_inputs():
-            bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
-            count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
-            invest_type = self.investment_type.upper()
-            date_val = str(date.today())
-            reason = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_REASON_ID).capitalize()
-
-            # stock and crypto
-            if self.investment_type != configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT:
-                ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID).upper()
-
-                if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
-                    bought_price = round(bought_price, 2)
-
-                # store the symbol of crypto as opposed to their name
-                if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT:
-                    ticker = cgt.get_symbol(ticker.lower())
-
-                data = {configs.FIREBASE_DATE: date_val,
-                        configs.FIREBASE_TICKER: ticker,
-                        configs.FIREBASE_TYPE: invest_type,
-                        configs.FIREBASE_COUNT: count,
-                        configs.FIREBASE_BOUGHT_PRICE: bought_price,
-                        configs.FIREBASE_REASON: reason
-                        }
-                firebase_conn.add_open_trade_db(self.user_id, data, False)
-                self.update_to_open_table(data, False)
-
-            # options
-            else:
-                # get contract
-                contract = self.option.contract
-                contract_format = f"{contract[configs.OPTIONS_EXPIRATION_DATE]} | {contract[configs.OPTIONS_TICKER]} | {contract[configs.OPTIONS_TYPE]} | {contract[configs.OPTIONS_STRIKE_PRICE]} "
-
-                # round contract price if necessary
-                bought_price = round(bought_price, 2)
-
-                # trade data
-                data = {configs.FIREBASE_DATE: date_val,
-                        configs.FIREBASE_CONTRACT: contract_format,
-                        configs.FIREBASE_TYPE: invest_type,
-                        configs.FIREBASE_COUNT: count,
-                        configs.FIREBASE_BOUGHT_PRICE: bought_price,
-                        configs.FIREBASE_REASON: reason
-                        }
-
-                firebase_conn.add_open_trade_db(self.user_id, data, True)
-                self.update_to_open_table(data, True)
-
-            # todo make this message a dialog to the player
-            print("Successfully added to database")
-
-            # reset the input fields
-            self.reset_ticker_info_win_items()
-
-    def update_to_open_table(self, data, is_option):
-        if is_option:  # update to options table
-            table_id = configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID
-        else:  # update to crypto/stock table
-            table_id = configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID
-
-        self.fintracker.add_to_open_table(table_id, data, is_option)
-
-    def open_trade_callback(self, sender, app_data, user_data):
-        print(sender, app_data, user_data)
-
-    # choose the options contract
-    def contract_callback(self):
-        self.option = Options(self.dpg, configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
-
-    def search_callback(self):
-        self.ticker_search_thread = threading.Thread(target=self.load_stock_info,
-                                                     daemon=True)
-        self.ticker_search_thread.start()
-
-    def load_stock_info(self):
-        # todo this is where we will call the respective api to get the information
-        ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
-
-        # todo think about putting this in a separate method
-        if ticker != "":
-            if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT:
-                if cgt.validate_coin(ticker.lower()):
-                    CryptoStockInfo(self.dpg, ticker, True)
-                else:
-                    print("Error: Invalid Token")
-            elif self.investment_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
-                if yft.validate_ticker(ticker):
-                    CryptoStockInfo(self.dpg, ticker)
-                else:
-                    print("Error: Invalid Ticker")
-        else:
-            print("Error: Ticker field is empty")
-
-    # todo cleanup_aliases: might want to move this to a tools.py or something
-    def validate_inputs(self):
-        # todo also make sure to validate if the ticker is crypto or stock
-        if self.investment_type != configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT:
-            ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
-
-            if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
-                # ticker is empty or did not return a result
-                invalid_ticker = not yft.validate_ticker(ticker) or ticker == ""
-
-            else:  # crypto
-                # ticker is empty or did not return a result
-                invalid_ticker = not cgt.validate_coin(ticker) or ticker == ""
-        else:
-            # they did not choose a contract
-            invalid_ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID) == ""
-
-        # no negative or 0 count values and no negative bought price values
-        invalid_count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID) <= 0
-
-        # no negative bought price values
-        invalid_bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID) <= 0
-
-        if invalid_count or invalid_bought_price or invalid_ticker:
-            if invalid_ticker:
-                # todo display an error message (mention the rules for each radio button)
-                print("Error: Invalid Ticker (It has to be the ticker name and not the full name)")
-
-            if invalid_count:
-                # todo display an error message
-                print("Error: You can't have negative or 0 for count")
-
-            if invalid_bought_price:
-                # todo display an error message
-                print("Error: You can't have negative or 0 for bought price")
-
-            return False
-
-        return True
-
+    # clears the input fields
     def reset_ticker_info_win_items(self):
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID):
             self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID, "")
@@ -312,19 +330,10 @@ class InputTrade:
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID):
             self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID, "")
 
-    # todo this might get fixed in future updates
+    # cleanup alias usage - might be fixed in next update (1.1.1)
     def cleanup_alias(self):
-        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
-        self.dpg.remove_alias(configs.TRADE_INPUT_WINDOW_ID)
-        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_ID)
-        self.dpg.remove_alias(configs.TRADE_INPUT_ADD_BTN_ID)
-        self.dpg.remove_alias(configs.TRADE_INPUT_RADIO_BTNS_ID)
-
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID):
             self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
-        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
-        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
-        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_REASON_ID)
 
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID):
             self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
@@ -334,3 +343,12 @@ class InputTrade:
 
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID):
             self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
+
+        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
+        self.dpg.remove_alias(configs.TRADE_INPUT_WINDOW_ID)
+        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_ID)
+        self.dpg.remove_alias(configs.TRADE_INPUT_ADD_BTN_ID)
+        self.dpg.remove_alias(configs.TRADE_INPUT_RADIO_BTNS_ID)
+        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
+        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
+        self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_REASON_ID)
