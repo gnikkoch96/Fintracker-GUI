@@ -318,7 +318,8 @@ class ViewTrade:
         else:
             if not valid_type or not valid_count or not valid_bought_price or not valid_ticker:
                 # todo display error message for corresponding errors (users want to know where they were wrong)
-                print("Error: Incorrect Format")
+                print("[Stock-Crypto] Error: Incorrect Format")
+                print("Valid Ticker: ", valid_ticker)
                 return False
 
             if not self.for_open_table():
