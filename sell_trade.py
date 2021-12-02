@@ -78,7 +78,7 @@ class SellTrade:
                         configs.FIREBASE_PROFIT_PERCENTAGE: profit_per,
                         configs.FIREBASE_REASON: reason
                         }
-            firebase_conn.add_closed_trade_db(self.user_id, data, self.is_option, False)
+            firebase_conn.add_closed_trade_db(self.user_id, data, self.is_option)
             self.update_to_closed_table(data, self.is_option)
             self.update_open_trades(trade, data)
             print("Sold Successfully")
@@ -105,7 +105,7 @@ class SellTrade:
             sold_data[configs.FIREBASE_COUNT] = current_holdings
 
             # update the count in the open table
-            self.fintracker.update_table_row(self.row_tag, sold_data, self.is_option)
+            self.fintracker.update_table_row(self.row_tag, sold_data, self.is_option, True)
 
             # update the firebase data
             firebase_conn.update_open_trade_by_id_key(self.user_id, self.trade_id, configs.FIREBASE_COUNT,
