@@ -169,18 +169,22 @@ class InputTrade:
 
             # options
             else:
-                # todo remove hardcode
-                contract = f"{self.option.contract[0]} | {self.option.contract[1]} | {self.option.contract[2]} | {self.option.contract[3]}"
+                # get contract
+                contract = self.option.contract
+                contract_format = f"{contract[configs.OPTIONS_EXPIRATION_DATE]} | {contract[configs.OPTIONS_TICKER]} | {contract[configs.OPTIONS_TYPE]} | {contract[configs.OPTIONS_STRIKE_PRICE]} "
 
+                # round contract price if necessary
                 bought_price = round(bought_price, 2)
 
+                # trade data
                 data = {configs.FIREBASE_DATE: date_val,
-                        configs.FIREBASE_CONTRACT: contract,
+                        configs.FIREBASE_CONTRACT: contract_format,
                         configs.FIREBASE_TYPE: invest_type,
                         configs.FIREBASE_COUNT: count,
                         configs.FIREBASE_BOUGHT_PRICE: bought_price,
                         configs.FIREBASE_REASON: reason
                         }
+
                 firebase_conn.add_open_trade_db(self.user_id, data, True)
                 self.update_to_open_table(data, True)
 

@@ -156,6 +156,12 @@ FIREBASE_SOLD_PRICE = "sold_price"
 FIREBASE_NET_PROFIT = "net_profit"
 FIREBASE_PROFIT_PERCENTAGE = "profit_per"
 
+# options keywords (used for creating dicts of contract objs)
+OPTIONS_EXPIRATION_DATE = "expiry_date"
+OPTIONS_TICKER = "option_ticker"
+OPTIONS_TYPE = "option_type"
+OPTIONS_STRIKE_PRICE = "strike_price"
+
 # coingecko keywords
 COINGECKO_SYMBOL = "symbol"
 COINGECKO_NAME = "name"
