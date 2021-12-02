@@ -82,7 +82,7 @@ class Fintracker:
             self.load_closed_table(False)
 
             # options table
-            self.dpg.add_text(default_value=configs.FIREBASE_OPTION_TEXT,
+            self.dpg.add_text(default_value=configs.FIREBASE_OPTION,
                               parent=configs.FINTRACKER_CLOSED_TRADES_ID)
             self.load_closed_table(True)
 
@@ -211,7 +211,7 @@ class Fintracker:
             self.load_open_table(False)
 
             # options table
-            self.dpg.add_text(default_value=configs.FIREBASE_OPTION_TEXT,
+            self.dpg.add_text(default_value=configs.FIREBASE_OPTION,
                               parent=configs.FINTRACKER_OPEN_TRADES_ID)
             self.load_open_table(True)
 
@@ -311,9 +311,10 @@ class Fintracker:
 
     # used by other classes to add to the fintracker tables
     # todo cleanup this contains code that is similar to load_open_table()
-    def add_to_open_table(self, table_id, row_data, is_option=False):
+    def add_to_open_table(self, table_id, row_data, is_option):
         self.num_open_trade_rows += 1
 
+        # data
         date_val = row_data[0]
         invest_type = row_data[1]
         trade = row_data[2]

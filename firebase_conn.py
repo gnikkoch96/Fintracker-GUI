@@ -40,7 +40,7 @@ def add_open_trade_db(user_id, data, is_option):
     if user_id is not None:
         if is_option:
             firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
-                configs.FIREBASE_OPTION_TEXT).push(data)
+                configs.FIREBASE_OPTION).push(data)
         else:
             firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
                 configs.FIREBASE_STOCK_CRYPTO).push(data)
@@ -50,7 +50,7 @@ def add_open_trade_db(user_id, data, is_option):
 def remove_open_trade_by_id(user_id, is_option, trade_id):
     if is_option:
         firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
-            configs.FIREBASE_OPTION_TEXT).child(trade_id).remove()
+            configs.FIREBASE_OPTION).child(trade_id).remove()
     else:
         firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
             configs.FIREBASE_STOCK_CRYPTO).child(trade_id).remove()
@@ -61,7 +61,7 @@ def get_open_trades_db(user_id, is_option):
     if user_id is not None:
         if is_option:
             return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
-                configs.FIREBASE_OPTION_TEXT).get().val()
+                configs.FIREBASE_OPTION).get().val()
         else:
             return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
                 configs.FIREBASE_STOCK_CRYPTO).get().val()
@@ -71,7 +71,7 @@ def get_open_trades_db(user_id, is_option):
 def get_open_trade_by_id(user_id, trade_id, is_option):
     if is_option:
         return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
-            configs.FIREBASE_OPTION_TEXT).child(trade_id).get().val()
+            configs.FIREBASE_OPTION).child(trade_id).get().val()
     else:
         return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
             configs.FIREBASE_STOCK_CRYPTO).child(trade_id).get().val()
@@ -81,7 +81,7 @@ def get_open_trade_by_id(user_id, trade_id, is_option):
 def get_open_trades_keys(user_id, is_option):
     if is_option:
         return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
-            configs.FIREBASE_OPTION_TEXT).get().val().keys()
+            configs.FIREBASE_OPTION).get().val().keys()
     else:
         return firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
             configs.FIREBASE_STOCK_CRYPTO).get().val().keys()
@@ -91,7 +91,7 @@ def get_open_trades_keys(user_id, is_option):
 def update_open_trade_by_id(user_id, trade_id, new_data, is_options):
     if is_options:
         firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
-            configs.FIREBASE_OPTION_TEXT).child(trade_id).update(new_data)
+            configs.FIREBASE_OPTION).child(trade_id).update(new_data)
     else:
         firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
             configs.FIREBASE_STOCK_CRYPTO).child(trade_id).update(new_data)
@@ -101,7 +101,7 @@ def update_open_trade_by_id(user_id, trade_id, new_data, is_options):
 def update_open_trade_by_id_key(user_id, trade_id, keyword, new_data, is_options):
     if is_options:
         firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
-            configs.FIREBASE_OPTION_TEXT).child(trade_id).update({keyword: new_data})
+            configs.FIREBASE_OPTION).child(trade_id).update({keyword: new_data})
     else:
         firebase_db.child(user_id).child(configs.FIREBASE_OPEN_TRADES).child(
             configs.FIREBASE_STOCK_CRYPTO).child(trade_id).update({keyword: new_data})
@@ -112,7 +112,7 @@ def add_closed_trade_db(user_id, data, is_option):
     if user_id is not None:
         if is_option:
             firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
-                configs.FIREBASE_OPTION_TEXT).push(data)
+                configs.FIREBASE_OPTION).push(data)
         else:
             firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
                 configs.FIREBASE_STOCK_CRYPTO).push(data)
@@ -123,7 +123,7 @@ def get_closed_trades_db(user_id, is_option):
     if user_id is not None:
         if is_option:
             return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
-                configs.FIREBASE_OPTION_TEXT).get().val()
+                configs.FIREBASE_OPTION).get().val()
         else:
             return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
                 configs.FIREBASE_STOCK_CRYPTO).get().val()
@@ -133,7 +133,7 @@ def get_closed_trades_db(user_id, is_option):
 def get_closed_trade_by_id_db(user_id, trade_id, is_option):
     if is_option:
         return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
-            configs.FIREBASE_OPTION_TEXT).child(trade_id).get().val()
+            configs.FIREBASE_OPTION).child(trade_id).get().val()
     else:
         return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
             configs.FIREBASE_STOCK_CRYPTO).child(trade_id).get().val()
@@ -143,7 +143,7 @@ def get_closed_trade_by_id_db(user_id, trade_id, is_option):
 def get_closed_trades_keys(user_id, is_option):
     if is_option:
         return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
-            configs.FIREBASE_OPTION_TEXT).get().val().keys()
+            configs.FIREBASE_OPTION).get().val().keys()
     else:
         return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
             configs.FIREBASE_STOCK_CRYPTO).get().val().keys()
@@ -153,7 +153,7 @@ def get_closed_trades_keys(user_id, is_option):
 def update_closed_trade_by_id(user_id, trade_id, new_data, is_options=False):
     if is_options:
         firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
-            configs.FIREBASE_OPTION_TEXT).child(trade_id).update(new_data)
+            configs.FIREBASE_OPTION).child(trade_id).update(new_data)
     else:
         firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
             configs.FIREBASE_STOCK_CRYPTO).child(trade_id).update(new_data)

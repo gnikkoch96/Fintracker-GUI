@@ -165,7 +165,8 @@ class InputTrade:
                         configs.FIREBASE_REASON: reason
                         }
                 firebase_conn.add_open_trade_db(self.user_id, data, False)
-                self.update_stock_crypto_to_table(date_val, invest_type, ticker, count, bought_price)
+                self.update_to_open_table(data, False)
+                # self.update_stock_crypto_to_table(date_val, invest_type, ticker, count, bought_price)
 
             # options
             else:
@@ -182,7 +183,8 @@ class InputTrade:
                         configs.FIREBASE_REASON: reason
                         }
                 firebase_conn.add_open_trade_db(self.user_id, data, True)
-                self.update_option_to_table(date_val, invest_type, contract, count, bought_price)
+                self.update_to_open_table(data, True)
+                # self.update_option_to_table(date_val, invest_type, contract, count, bought_price)
 
             # todo make this message a dialog to the player
             print("Successfully added to database")
@@ -190,32 +192,22 @@ class InputTrade:
             # reset the input fields
             self.reset_ticker_info_win_items()
 
-    def reset_ticker_info_win_items(self):
-        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID):
-            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID, "")
+    def update_to_open_table(self, data, is_option):
+        date_val = data[configs.FIREBASE_DATE]
+        invest_type = data[configs.FIREBASE_TYPE]
+        count = data[configs.FIREBASE_COUNT]
+        bought_price = data[configs.FIREBASE_BOUGHT_PRICE]
 
-        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID):
-            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID, 0)
+        if is_option: # update to options table
+            table_id = configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID
+            trade = data[configs.FIREBASE_CONTRACT]
 
-        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID):
-            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID, 0)
+        else: # update to crypto/stock table
+            table_id = configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID
+            trade = data[configs.FIREBASE_TICKER]
 
-        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_REASON_ID):
-            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_REASON_ID, "")
-
-        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID):
-            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID, "")
-
-    # todo (cleanup) merge this with other method
-    def update_stock_crypto_to_table(self, date_val, invest_type, ticker, count, bought_price):
-        table_id = configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID
-        row_data = (date_val, invest_type, ticker, count, bought_price)
-        self.fintracker.add_to_open_table(table_id, row_data, False)
-
-    def update_option_to_table(self, date_val, invest_type, contract, count, bought_price):
-        table_id = configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID
-        row_data = (date_val, invest_type, contract, count, bought_price)
-        self.fintracker.add_to_open_table(table_id, row_data, True)
+        row_data = (date_val, invest_type, trade, count, bought_price)
+        self.fintracker.add_to_open_table(table_id, row_data, is_option)
 
     def open_trade_callback(self, sender, app_data, user_data):
         print(sender, app_data, user_data)
@@ -287,6 +279,22 @@ class InputTrade:
             return False
 
         return True
+
+    def reset_ticker_info_win_items(self):
+        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID):
+            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID, "")
+
+        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID):
+            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID, 0)
+
+        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID):
+            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID, 0)
+
+        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_REASON_ID):
+            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_REASON_ID, "")
+
+        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID):
+            self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID, "")
 
     # todo this might get fixed in future updates
     def cleanup_alias(self):
