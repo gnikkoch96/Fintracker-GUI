@@ -7,7 +7,7 @@ def validate_ticker(ticker):
     stock = yf.Ticker(ticker)
 
     # if it doesn't have a regular market price then it is invalid (all stocks do)
-    return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is None
+    return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is not None
 
 
 def get_stock_price(ticker):
