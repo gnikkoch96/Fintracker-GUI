@@ -77,13 +77,14 @@ class InputTrade:
             # displays contract
             self.dpg.add_text(tag=configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
 
-        # count input
-        # todo add hints
-        self.dpg.add_input_int(tag=configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
-
-        # bought_price input
-        # todo add hints
         with self.dpg.group(horizontal=True):
+            # count input
+            self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_COUNT_TEXT)
+            self.dpg.add_input_int(tag=configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
+
+        with self.dpg.group(horizontal=True):
+            # bought_price input
+            self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_TEXT)
             self.dpg.add_input_float(tag=configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
 
             # current price button
@@ -109,6 +110,7 @@ class InputTrade:
                 else:
                     # todo display an error message
                     pass
+
             else:  # get crypto price
                 if cgt.validate_coin(ticker):
                     curr_price = cgt.get_current_price(ticker)
