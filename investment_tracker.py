@@ -37,6 +37,7 @@ class Fintracker:
                              width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1],
                              no_resize=True):
+            self.dpg.set_primary_window(configs.FINTRACKER_WINDOW_ID, True)
             self.create_fintracker_win_menu()
             self.create_fintracker_win_items()
 

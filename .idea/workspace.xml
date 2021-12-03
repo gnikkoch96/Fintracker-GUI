@@ -2,16 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ff56f13a-af49-4716-9548-457a8147bcdf" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/dialog_win.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing/dialog_testing.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing/menu_bar_testing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cleanup.py" beforeDir="false" afterPath="$PROJECT_DIR$/cleanup.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dialog_win.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialog_win.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/investment_tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/investment_tracker.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/search_options.py" beforeDir="false" afterPath="$PROJECT_DIR$/search_options.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sell_trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/sell_trade.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trade_input.py" beforeDir="false" afterPath="$PROJECT_DIR$/trade_input.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yfinance_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/yfinance_tool.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/view_trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/view_trade.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

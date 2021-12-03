@@ -25,17 +25,21 @@ class DialogWin:
 
     def confirmation_callback(self):
         self.close_dialog_win()
-
-        # close previous window for success messages
         self.close_prev_win()
 
+    # close previous window for success messages
     def close_prev_win(self):
         # close the previous window if it was a success message
-        if "Success" in self.message:
+        if configs.DIALOG_SUCCESS_TEXT in self.message:
             if self.dpg.does_alias_exist(configs.SELL_TRADE_WINDOW_ID):
                 self.dpg.delete_item(configs.SELL_TRADE_WINDOW_ID)
 
-            self.prev_win.cleanup_alias()
+            if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
+                self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
+
+            # leave the trade input window alone as users might want to add multiple trades at once
+            if not self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_ID):
+                self.prev_win.cleanup_alias()
 
     def close_dialog_win(self):
         self.dpg.delete_item(configs.DIALOG_WINDOW_ID)

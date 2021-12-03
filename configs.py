@@ -197,6 +197,7 @@ YFINANCE_MARKETCAP = "marketCap"
 
 # dialog
 DIALOG_CONFIRMATION_BTN_TEXT = "Confirm"
+DIALOG_SUCCESS_TEXT = "SUCCESS"
 
 # options
 OPTIONS_WINDOW_TEXT = "Choose Option Contract"
@@ -225,6 +226,11 @@ TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT = "Crypto"
 TRADE_INPUT_RADIO_BTN_STOCK_TEXT = "Stock"
 TRADE_INPUT_RADIO_BTN_OPTION_TEXT = "Option"
 TRADE_INPUT_INVALID_INPUT_MSG_TEXT = "[ERROR] Invalid Ticker (Crypto has to be full name) / Invalid Count \n / Invalid Bought Price"
+TRADE_INPUT_TICKER_INPUT_EMPTY_MSG_TEXT = "[ERROR] Ticker Field is Empty"
+TRADE_INPUT_INVALID_TICKER_MSG_TEXT = "[ERROR] Invalid Ticker"
+TRADE_INPUT_INVALID_TOKEN_MSG_TEXT = "[ERROR] Invalid Token (Type Full Name i.e. Bitcoin, Cardano, etc...)"
+TRADE_INPUT_SUCCESS_ADD_MSG_TEXT = "[SUCCESS] Successfully Added!"
+
 # ticker search
 TICKER_SEARCH_CRYPTO_STOCK_WINDOW_TEXT = "Search Crypto/Stock Info"
 TICKER_SEARCH_TICKER_TEXT = "Ticker: "
@@ -293,6 +299,7 @@ VIEW_TRADE_DATE_PICKER_WINDOW_TEXT = "Choose Date"
 VIEW_TRADE_SOLD_PRICE_TEXT = "Sold Price: "
 VIEW_TRADE_NET_PROFIT_TEXT = "Net Profit: "
 VIEW_TRADE_PROFIT_PERCENTAGE_TEXT = "Profit %: "
+VIEW_TRADE_SUCCESS_EDIT_MSG_TEXT = "[SUCCESS] Updated Trade!"
 
 # login
 LOGIN_WINDOW_TEXT = "(FinTracker) Login"

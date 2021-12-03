@@ -178,8 +178,8 @@ class InputTrade:
                 firebase_conn.add_open_trade_db(self.user_id, data, True)
                 self.update_to_open_table(data, True)
 
-            # todo make this message a dialog to the player
-            print("Successfully added to database")
+            # success add message
+            DialogWin(self.dpg, configs.TRADE_INPUT_SUCCESS_ADD_MSG_TEXT, self)
 
             # reset the input fields
             self.reset_ticker_info_win_items()
@@ -196,7 +196,6 @@ class InputTrade:
         self.ticker_search_thread.start()
 
     def load_stock_info(self):
-        # todo this is where we will call the respective api to get the information
         ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
 
         # todo think about putting this in a separate method
@@ -205,14 +204,18 @@ class InputTrade:
                 if cgt.validate_coin(ticker.lower()):
                     CryptoStockInfo(self.dpg, ticker, True)
                 else:
-                    print("Error: Invalid Token")
+                    # invalid token msg
+                    DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_TOKEN_MSG_TEXT, self)
             elif self.is_stock():
                 if yft.validate_ticker(ticker):
                     CryptoStockInfo(self.dpg, ticker)
                 else:
-                    print("Error: Invalid Ticker")
+                    # invalid ticker msg
+                    DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_TICKER_MSG_TEXT, self)
+
         else:
-            print("Error: Ticker field is empty")
+            # empty input msg
+            DialogWin(self.dpg, configs.TRADE_INPUT_TICKER_INPUT_EMPTY_MSG_TEXT, self)
 
     # add trade to open trades table
     def update_to_open_table(self, data, is_option):
@@ -245,6 +248,7 @@ class InputTrade:
         invalid_bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID) <= 0
 
         if invalid_count or invalid_bought_price or invalid_ticker:
+            # invalid input dialog
             DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_INPUT_MSG_TEXT, self)
             return False
 
