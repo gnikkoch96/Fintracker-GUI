@@ -1,7 +1,7 @@
 import configs
 import yfinance_tool as yft
 import threading
-
+from dialog_win import DialogWin
 
 # desc: search options gui that will display contracts to the user based on
 # ticker, call/put, and expiration date
@@ -46,8 +46,7 @@ class Options:
                              label=configs.OPTIONS_WINDOW_TEXT,
                              width=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[1],
-                             on_close=self.cleanup_alias,
-                             modal=True):
+                             on_close=self.cleanup_alias):
             self.create_options_win_items()
 
     def create_options_win_items(self):
@@ -94,9 +93,7 @@ class Options:
                                     label=configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_TEXT,
                                     callback=self.load_options)
         else:
-            # todo add a dialog that says invalid ticker
-            print("Error: Ticker is invalid or does not support options")
-            pass
+            DialogWin(self.dpg, configs.OPTION_INVALID_TICKER_MSG_TEXT)
 
     # displays table listing all strike prices corresponding to call/put and expiration date
     def load_options(self):
@@ -166,9 +163,13 @@ class Options:
         valid_ticker = yft.validate_ticker(ticker)
 
         # there has to be at least one option
-        has_options = len(self.create_option_date_combo_list()) > 0
+        if valid_ticker:
+            has_options = len(self.create_option_date_combo_list()) > 0
 
-        if not valid_ticker or not has_options:
+            if not has_options:
+                return False
+
+        if not valid_ticker:
             return False
 
         return True
@@ -202,6 +203,8 @@ class Options:
 
     # removes aliases - might get fixed in the next update
     def cleanup_alias(self):
+        self.dpg.enable_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
+
         if self.dpg.does_alias_exist(configs.OPTION_WINDOW_ID):
             self.dpg.remove_alias(configs.OPTION_WINDOW_ID)
 

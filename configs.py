@@ -14,6 +14,10 @@ FIREBASE_CONFIG = {
 
 # ids======================================================================
 
+# dialog
+DIALOG_WINDOW_ID = "Dialog Window"
+DIALOG_CONFIRMATION_BTN_ID = "Dialog Window Confirmation Button"
+
 # option window
 OPTION_WINDOW_ID = "Options Window"
 OPTION_WINDOW_TICKER_INPUT_ID = "Options Ticker Input"
@@ -41,7 +45,6 @@ TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID = "Ticker Info Current Price Button
 # fintracker window
 FINTRACKER_WINDOW_ID = "Fintracker Window"
 FINTRACKER_CLOSED_TRADES_ID = "Fintracker Closed Trades"
-FINTRACKER_OPEN_TRADES_CONTAINER_ID = "Fintracker Open Trades Container"
 FINTRACKER_OPEN_TRADES_ID = "Fintracker Open Trades"
 FINTRACKER_OPEN_TRADES_BUTTONS_ID = "Fintracker Open Trades Buttons"
 FINTRACKER_ADD_BTN_ID = "Fintracker Add Button"
@@ -192,6 +195,9 @@ YFINANCE_SHARESHORTPRIORMONTH = "sharesShortPriorMonth"
 YFINANCE_SHORTPERCENTFLOAT = "shortPercentOfFloat"
 YFINANCE_MARKETCAP = "marketCap"
 
+# dialog
+DIALOG_CONFIRMATION_BTN_TEXT = "Confirm"
+
 # options
 OPTIONS_WINDOW_TEXT = "Choose Option Contract"
 OPTIONS_CALL_TEXT = "Call"
@@ -203,6 +209,7 @@ OPTION_VOLUME_LABEL_TEXT = "Volume"
 OPTION_OPEN_INTEREST_LABEL_TEXT = "Open Interest"
 OPTION_IV_LABEL_TEXT = "Implied Volatility"
 OPTION_SEARCH_BTN_TEXT = "Enter Ticker"
+OPTION_INVALID_TICKER_MSG_TEXT = "[Error] Invalid Ticker / Ticker Doesn't Support Options"
 
 # trade input
 TRADE_INPUT_WINDOW_TEXT = "(Fintracker) Add Trade"
@@ -217,7 +224,7 @@ TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_TEXT = "Bought Price: "
 TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT = "Crypto"
 TRADE_INPUT_RADIO_BTN_STOCK_TEXT = "Stock"
 TRADE_INPUT_RADIO_BTN_OPTION_TEXT = "Option"
-
+TRADE_INPUT_INVALID_INPUT_MSG_TEXT = "[ERROR] Invalid Ticker (Crypto has to be full name) / Invalid Count \n / Invalid Bought Price"
 # ticker search
 TICKER_SEARCH_CRYPTO_STOCK_WINDOW_TEXT = "Search Crypto/Stock Info"
 TICKER_SEARCH_TICKER_TEXT = "Ticker: "
@@ -256,6 +263,9 @@ FINTRACKER_CLOSED_TRADES_ROW_TEXT = "closed_trade row "
 FINTRACKER_SELL_TEXT = "sell"
 FINTRACKER_REMOVE_TEXT = "X"
 FINTRACKER_ADD_BTN_TEXT = "Add"
+FINTRACKER_MENU_SYSTEM_TEXT = "System"
+FINTRACKER_MENU_LOGOUT_TEXT = "Logout"
+FINTRACKER_MENU_EXIT_TEXT = "Exit App"
 
 # sell trade
 SELL_TRADE_WINDOW_TEXT = "Selling Trade"
@@ -263,6 +273,8 @@ SELL_TRADE_COUNT_TEXT = "Number Sold: "
 SELL_TRADE_SOLD_PRICE_TEXT = "Sold Price"
 SELL_TRADE_SELL_BTN_TEXT = "Sell Trade"
 SELL_TRADE_REASON_TEXT = "Reason"
+SELL_TRADE_SOLD_SUCCESS_MSG_TEXT = "[SUCCESS] Trade Sold Successfully"
+SELL_TRADE_INVALID_INPUT_MSG_TEXT = "[ERROR] Invalid Sold Count / Invalid Sold Price"
 
 # view trade
 VIEW_TRADE_WINDOW_TEXT = "View Trade"

@@ -2,9 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ff56f13a-af49-4716-9548-457a8147bcdf" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/dialog_win.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testing/dialog_testing.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testing/menu_bar_testing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/firebase_conn.py" beforeDir="false" afterPath="$PROJECT_DIR$/firebase_conn.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/investment_tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/investment_tracker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search_options.py" beforeDir="false" afterPath="$PROJECT_DIR$/search_options.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sell_trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/sell_trade.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trade_input.py" beforeDir="false" afterPath="$PROJECT_DIR$/trade_input.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yfinance_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/yfinance_tool.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,30 +46,9 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/testing/child-containers.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/testing/dialog_testing.py" />
   </component>
   <component name="RunManager" selected="Python.main">
-    <configuration name="child-containers" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
-      <module name="Fintracker-GUI" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="D:\Github\Fintracker-GUI\venv\Scripts\python.exe" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/testing" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testing/child-containers.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="cngko-api-test" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Fintracker-GUI" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -76,6 +62,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testing/cngko-api-test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="dialog_testing" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="Fintracker-GUI" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="D:\Github\Fintracker-GUI\venv\Scripts\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/testing" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testing/dialog_testing.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -105,7 +112,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="mult_modal_test" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+    <configuration name="menu_bar_testing" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Fintracker-GUI" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -117,7 +124,7 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testing/mult_modal_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testing/menu_bar_testing.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -169,10 +176,10 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.child-containers" />
+      <item itemvalue="Python.menu_bar_testing" />
       <item itemvalue="Python.cngko-api-test" />
       <item itemvalue="Python.main" />
-      <item itemvalue="Python.mult_modal_test" />
+      <item itemvalue="Python.dialog_testing" />
       <item itemvalue="Python.table-testing" />
       <item itemvalue="Python.yf-api-test" />
     </list>

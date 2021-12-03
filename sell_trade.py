@@ -1,7 +1,7 @@
 import configs
 import firebase_conn
 from datetime import date
-
+from dialog_win import DialogWin
 
 class SellTrade:
     def __init__(self, dpg, fintracker, trade_id, is_option, row_tag):
@@ -22,8 +22,7 @@ class SellTrade:
                              label=configs.SELL_TRADE_WINDOW_TEXT,
                              width=configs.SELL_TRADE_WINDOW_SIZE[0],
                              height=configs.SELL_TRADE_WINDOW_SIZE[1],
-                             on_close=self.cleanup_alias,
-                             modal=True):
+                             on_close=self.cleanup_alias):
             self.create_sell_trade_win_items()
 
     def create_sell_trade_win_items(self):
@@ -87,10 +86,8 @@ class SellTrade:
             self.update_closed_table(data)
             self.update_open_trades(trade, data)
 
-            # todo create a dialog for this message
-            print("Sold Successfully")
-
-            self.close_sell_trade_win()
+            # display success message
+            DialogWin(self.dpg, configs.SELL_TRADE_SOLD_SUCCESS_MSG_TEXT, self)
 
     # delete window and cleanup_aliases alias
     def close_sell_trade_win(self):
@@ -144,15 +141,8 @@ class SellTrade:
         valid_sold_price = self.dpg.get_value(configs.SELL_TRADE_SOLD_PRICE_ID) > 0
 
         if not valid_count or not valid_sold_price:
-            # todo add an error dialog
-            if not valid_count:
-                print("[ERROR-SELL] Invalid Count (Make sure you sell only what you have)")
-                pass
-
-            if not valid_sold_price:
-                print("[ERROR-SELL] Invalid Sold Price")
-                pass
-
+            # display invalid input message
+            DialogWin(self.dpg, configs.SELL_TRADE_INVALID_INPUT_MSG_TEXT, self)
             return False
 
         return True

@@ -21,7 +21,7 @@ def get_stock_price(ticker):
 
 def get_options_date(ticker):
     # stock doesn't exist
-    if validate_ticker(ticker):
+    if not validate_ticker(ticker):
         return
 
     stock = yf.Ticker(ticker)
@@ -30,7 +30,7 @@ def get_options_date(ticker):
 
 def get_options(ticker, contract_type, date):
     # stock doesn't exist
-    if validate_ticker(ticker):
+    if not validate_ticker(ticker):
         return
 
     stock = yf.Ticker(ticker)

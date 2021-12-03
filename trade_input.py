@@ -6,7 +6,7 @@ import threading
 from search_options import Options
 from ticker_search_info import CryptoStockInfo
 from datetime import date
-
+from dialog_win import DialogWin
 
 class InputTrade:
     def __init__(self, dpg, user_id, fintracker):
@@ -186,6 +186,8 @@ class InputTrade:
 
     # choose the options contract
     def contract_callback(self):
+        self.dpg.disable_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
+
         self.option = Options(self.dpg, configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
 
     def search_callback(self):
@@ -243,18 +245,7 @@ class InputTrade:
         invalid_bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID) <= 0
 
         if invalid_count or invalid_bought_price or invalid_ticker:
-            if invalid_ticker:
-                # todo display an error message (mention the rules for each radio button)
-                print("Error: Invalid Ticker (It has to be the ticker name and not the full name)")
-
-            if invalid_count:
-                # todo display an error message
-                print("Error: You can't have negative or 0 for count")
-
-            if invalid_bought_price:
-                # todo display an error message
-                print("Error: You can't have negative or 0 for bought price")
-
+            DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_INPUT_MSG_TEXT, self)
             return False
 
         return True

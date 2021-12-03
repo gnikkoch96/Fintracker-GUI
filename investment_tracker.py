@@ -13,6 +13,7 @@ class Fintracker:
         self.dpg = dpg
         self.user_id = user_id
         self.view_trade = None  # stores reference to currently viewed trade
+        self.sell_trade = None  # stores reference to currently selling trade
 
         # open trades thread
         self.num_open_trade_rows = 0  # int value used for generating tag rows
@@ -36,7 +37,19 @@ class Fintracker:
                              width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1],
                              no_resize=True):
+            self.create_fintracker_win_menu()
             self.create_fintracker_win_items()
+
+    def create_fintracker_win_menu(self):
+        # menu bar
+        with self.dpg.menu_bar(label=configs.FINTRACKER_MENU_SYSTEM_TEXT):
+            # logout menu choice
+            self.dpg.add_menu_item(label=configs.FINTRACKER_MENU_LOGOUT_TEXT,
+                                   callback=self.logout_menu_callback)
+
+            # exit app menu choice
+            self.dpg.add_menu_item(label=configs.FINTRACKER_MENU_EXIT_TEXT,
+                                   callback=self.exit_menu_callback)
 
     def create_fintracker_win_items(self):
         # profit, win-rate, news and add new trade button
@@ -75,9 +88,9 @@ class Fintracker:
                                    width=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[0],
                                    height=configs.FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE[1],
                                    parent=configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_ID):
-
             # closed trades text
             self.dpg.add_text(configs.FINTRACKER_CLOSED_TRADES_TEXT)
+            self.dpg.add_separator()
 
             # stock/crypto table
             self.dpg.add_text(default_value=configs.FIREBASE_STOCK_CRYPTO,
@@ -151,6 +164,13 @@ class Fintracker:
                     bought_price = round(bought_price, 2)
 
                 # table row
+
+                # used to cleanup alias when logging out
+                # todo make this cleaner
+                if self.dpg.does_alias_exist(
+                        configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_closed_trade_rows)):
+                    self.dpg.remove_alias(configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_closed_trade_rows))
+
                 row_tag = configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_closed_trade_rows)
                 with self.dpg.table_row(tag=row_tag,
                                         parent=table_tag):
@@ -205,7 +225,9 @@ class Fintracker:
                                    width=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[0],
                                    height=configs.FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE[1],
                                    parent=configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_ID):
+            # open trades text
             self.dpg.add_text(configs.FINTRACKER_OPEN_TRADES_TEXT)
+            self.dpg.add_separator()
 
             # stock/crypto table
             self.dpg.add_text(default_value=configs.FIREBASE_STOCK_CRYPTO,
@@ -270,6 +292,11 @@ class Fintracker:
                 # crypto is not rounded
                 if invest_type != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT:
                     bought_price = round(bought_price, 2)
+
+                # used to cleanup alias when logging out
+                # todo make this cleaner
+                if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_ROW_TEXT + str(self.num_open_trade_rows)):
+                    self.dpg.remove_alias(configs.FINTRACKER_OPEN_TRADES_ROW_TEXT + str(self.num_open_trade_rows))
 
                 # row
                 row_tag = configs.FINTRACKER_OPEN_TRADES_ROW_TEXT + str(self.num_open_trade_rows)
@@ -493,6 +520,9 @@ class Fintracker:
 
                     counter += 1
 
+    def exit_menu_callback(self):
+        self.dpg.stop_dearpygui()
+
     def add_callback(self):
         # give focus back to the trade input window if present
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID):
@@ -507,7 +537,13 @@ class Fintracker:
         is_option = user_data[0]
         trade_id = user_data[1]
         row_tag = user_data[2]
-        SellTrade(self.dpg, self, trade_id, is_option, row_tag)
+
+        if not self.dpg.does_alias_exist(configs.SELL_TRADE_WINDOW_ID):
+            self.sell_trade = SellTrade(self.dpg, self, trade_id, is_option, row_tag)
+
+        else:
+            self.close_sell_trade_win()
+            self.sell_trade = SellTrade(self.dpg, self, trade_id, is_option, row_tag)
 
     def view_trade_callback(self, sender, app_data, user_data):
         trade_id = user_data[0]
@@ -543,11 +579,70 @@ class Fintracker:
         firebase_conn.remove_closed_trade_by_id(self.user_id, is_option, close_trade_id)
 
         # todo update the total profit and win-rate
-        
+
         self.dpg.delete_item(row_tag)
+
+    def logout_menu_callback(self):
+        # close the fintracker window
+        self.close_fintracker_win()
+
+        # display login screen
+        self.dpg.show_item(configs.LOGIN_WINDOW_ID)
 
     # deletes the view trade window if present and cleans up its aliases
     def close_view_trade_win(self):
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
             self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
             self.view_trade.cleanup_alias()
+
+    def close_sell_trade_win(self):
+        if self.dpg.does_alias_exist(configs.SELL_TRADE_WINDOW_ID):
+            self.dpg.delete_item(configs.SELL_TRADE_WINDOW_ID)
+            self.sell_trade.cleanup_alias()
+
+    def close_fintracker_win(self):
+        self.dpg.delete_item(configs.FINTRACKER_WINDOW_ID)
+        self.cleanup_alias()
+
+    def cleanup_alias(self):
+        if self.dpg.does_alias_exist(configs.FINTRACKER_CLOSED_TRADES_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_CLOSED_TRADES_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_OPEN_TRADES_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_BUTTONS_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_OPEN_TRADES_BUTTONS_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_ADD_BTN_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_ADD_BTN_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_NEWS_BTN_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_NEWS_BTN_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_PROFIT_PERCENT_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_PROFIT_PERCENT_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_PROFIT_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_PROFIT_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_OPEN_TRADES_OPTION_TABLE_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_TEXT_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_OPTIONS_TABLE_TEXT_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_OPEN_TRADES_OPTIONS_TABLE_TEXT_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_CLOSED_TRADES_OPTION_TABLE_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_CLOSED_TRADES_OPTION_TABLE_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_CLOSED_TRADES_CRYPTO_STOCK_TABLE_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_CLOSED_TRADES_CRYPTO_STOCK_TABLE_ID)
+
+        if self.dpg.does_alias_exist(configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_ID)
