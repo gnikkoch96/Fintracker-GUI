@@ -193,8 +193,8 @@ class ViewTrade:
                 sold_price = self.dpg.get_value(configs.VIEW_TRADE_SOLD_PRICE_ID)
 
                 # recalculate net profit and profit percentage after edit
-                net_profit = sold_price - bought_price
-                profit_per = net_profit / bought_price * 100
+                net_profit = round(sold_price - bought_price, 2)
+                profit_per = round(net_profit / bought_price * 100, 2)
 
                 if self.is_option:
                     new_data = {configs.FIREBASE_DATE: date_val,
@@ -282,7 +282,7 @@ class ViewTrade:
             ticker = self.dpg.get_value(configs.VIEW_TRADE_TICKER_CONTRACT_ID)
 
             # ticker has to exist
-            valid_ticker = yft.validate_ticker(ticker) or cgt.validate_coin(ticker)
+            valid_ticker = yft.validate_ticker(ticker) or cgt.validate_coin(ticker.lower())
 
         if not self.for_open_table():
             sold_price = self.dpg.get_value(configs.VIEW_TRADE_SOLD_PRICE_ID)
@@ -318,8 +318,6 @@ class ViewTrade:
         else:
             if not valid_type or not valid_count or not valid_bought_price or not valid_ticker:
                 # todo display error message for corresponding errors (users want to know where they were wrong)
-                print("[Stock-Crypto] Error: Incorrect Format")
-                print("Valid Ticker: ", valid_ticker)
                 return False
 
             if not self.for_open_table():

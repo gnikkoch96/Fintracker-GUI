@@ -140,9 +140,11 @@ class InputTrade:
                 if self.is_stock():
                     bought_price = round(bought_price, 2)
 
+                # edit: removed because it was causing issues when editing the crypto trades
+                # due to the api using full names as opposed to their symbol
                 # store the symbol of crypto as opposed to their name
-                if self.is_crypto():
-                    ticker = cgt.get_symbol(ticker.lower())
+                # if self.is_crypto():
+                #     ticker = cgt.get_symbol(ticker.lower())
 
                 data = {configs.FIREBASE_DATE: date_val,
                         configs.FIREBASE_TICKER: ticker,
