@@ -522,7 +522,7 @@ class Fintracker:
 
     # removing a trade from open table
     def open_trade_remove_callback(self, sender, app_data, user_data):
-        # close the window of the removed trade
+        # close the window of the removed trade if possible
         self.close_view_trade_win()
 
         row_tag = user_data[0]
@@ -534,7 +534,17 @@ class Fintracker:
 
     # removing a trade from closed table will affect the total profit and win-rate
     def closed_trade_remove_callback(self, sender, app_data, user_data):
-        pass
+        # close the window of the removed trade if possible
+        self.close_view_trade_win()
+
+        row_tag = user_data[0]
+        is_option = user_data[1]
+        close_trade_id = user_data[2]
+        firebase_conn.remove_closed_trade_by_id(self.user_id, is_option, close_trade_id)
+
+        # todo update the total profit and win-rate
+        
+        self.dpg.delete_item(row_tag)
 
     # deletes the view trade window if present and cleans up its aliases
     def close_view_trade_win(self):

@@ -118,6 +118,15 @@ def add_closed_trade_db(user_id, data, is_option):
                 configs.FIREBASE_STOCK_CRYPTO).push(data)
 
 
+# removes a trade from the db with the corresponding trade_id
+def remove_closed_trade_by_id(user_id, is_option, trade_id):
+    if is_option:
+        firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
+            configs.FIREBASE_OPTION).child(trade_id).remove()
+    else:
+        firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
+            configs.FIREBASE_STOCK_CRYPTO).child(trade_id).remove()
+
 # retrieves all closed trades corresponding to user id
 def get_closed_trades_db(user_id, is_option):
     if user_id is not None:
