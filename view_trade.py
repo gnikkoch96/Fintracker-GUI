@@ -1,7 +1,5 @@
 import configs
 import firebase_conn
-import yfinance_tool as yft
-import cngko_tool as cgt
 import validations
 from search_options import Options
 from dialog_win import DialogWin
@@ -45,6 +43,7 @@ class ViewTrade:
         bought_price = self.trade_data[configs.FIREBASE_BOUGHT_PRICE]
         reason = self.trade_data[configs.FIREBASE_REASON]
 
+        # retrieve net profit, profit percentage, and sold price for closed trades
         if not self.for_open_table():
             net_profit = self.trade_data[configs.FIREBASE_NET_PROFIT]
             profit_per = self.trade_data[configs.FIREBASE_PROFIT_PERCENTAGE]

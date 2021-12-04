@@ -57,13 +57,13 @@ class Fintracker:
         with self.dpg.group(horizontal=True):
             # profit
             self.dpg.add_text(configs.FINTRACKER_PROFIT_LABEL_TEXT)
-            self.dpg.add_text(tag=configs.FINTRACKER_PROFIT_ID,
-                              default_value=configs.FINTRACKER_PROFIT_TEXT)
+            self.dpg.add_input_float(tag=configs.FINTRACKER_PROFIT_ID,
+                                     default_value=0.00)
 
             # win-rate
             self.dpg.add_text(configs.FINTRACKER_PROFIT_PERCENT_LABEL_TEXT)
-            self.dpg.add_text(tag=configs.FINTRACKER_PROFIT_PERCENT_ID,
-                              default_value=configs.FINTRACKER_PROFIT_PERCENT_TEXT)
+            self.dpg.add_input_float(tag=configs.FINTRACKER_PROFIT_PERCENT_ID,
+                                     default_value=0.00)
 
             # news button
             self.dpg.add_button(tag=configs.FINTRACKER_NEWS_BTN_ID,
