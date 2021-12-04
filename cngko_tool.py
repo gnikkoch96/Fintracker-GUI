@@ -5,6 +5,11 @@ coin_gecko = CoinGeckoAPI()
 
 
 def validate_coin(ticker):
+    # empty ticker (coin gecko sets search to bitcoin for empty strings)
+    # todo cleanup
+    if ticker == "":
+        return False
+
     try:
         coin_gecko.get_coin_by_id(id=ticker)
         return True

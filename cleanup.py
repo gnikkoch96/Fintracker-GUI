@@ -36,16 +36,18 @@ def validate_bought_price():
     return True, ""
 
 
-def validate_ticker():
-    ticker = self.dpg.get_value(configs.VIEW_TRADE_TICKER_CONTRACT_ID)
+def validate_ticker(self):
+    ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
 
     # ticker has to exist
     valid_ticker = yft.validate_ticker(ticker) or cgt.validate_coin(ticker.lower())
 
-    if not valid_ticker:
+    if not valid_ticker or self.is_ticker_empty():
         return False, "Invalid Ticker (For Crypto, type full name i.e. Bitcoin)\n"
 
     return True, ""  # return nothing
+
+def validate_options():
 
 
 def validate_sold_price():

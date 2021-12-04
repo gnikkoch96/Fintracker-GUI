@@ -2,6 +2,7 @@ import configs
 import firebase_conn
 import yfinance_tool as yft
 import cngko_tool as cgt
+import validations
 from search_options import Options
 from dialog_win import DialogWin
 
@@ -275,99 +276,48 @@ class ViewTrade:
 
     # makes sure the user is inputting valid data
     def validate_edit(self):
-        # todo cleanup remove hardcode (using a dict possibly instead of tuple)
+        trade_type = self.dpg.get_value(configs.VIEW_TRADE_TYPE_ID).lower().capitalize()
+        count = self.dpg.get_value(configs.VIEW_TRADE_COUNT_ID)
+        bought_price = self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
+        ticker = self.dpg.get_value(configs.VIEW_TRADE_TICKER_CONTRACT_ID)
+        sold_price = self.dpg.get_value(configs.VIEW_TRADE_SOLD_PRICE_ID)
 
+        # todo cleanup remove hardcode (using a dict possibly instead of tuple)
         # 0 - True or False
         # 1 - error message
-        if not self.validate_type()[0] or not self.validate_count()[0] or not self.validate_bought_price()[0] \
-                or not self.validate_ticker(self.is_option)[0] or not self.validate_sold_price(self.for_open_table())[
-            0]:
+        if not validations.validate_type(trade_type)[0] \
+                or not validations.validate_count(count)[0] \
+                or not validations.validate_bought_price(bought_price)[0] \
+                or not validations.validate_ticker(ticker, self.is_option)[0] \
+                or not validations.validate_sold_price(sold_price, self.for_open_table())[0]:
+
             message = "[ERROR]\n"
 
-            if not self.validate_type()[0]:
-                message += self.validate_type()[1]
+            # invalid type
+            if not validations.validate_type(trade_type)[0]:
+                message += validations.validate_type(trade_type)[1]
 
-            if not self.validate_count()[0]:
-                message += self.validate_count()[1]
+            # invalid count
+            if not validations.validate_count(count)[0]:
+                message += validations.validate_count(count)[1]
 
-            if not self.validate_bought_price()[0]:
-                message += self.validate_bought_price()[1]
+            # invalid bought price
+            if not validations.validate_bought_price(bought_price)[0]:
+                message += validations.validate_bought_price(bought_price)[1]
 
-            if not self.validate_ticker(self.is_option)[0]:
-                message += self.validate_ticker(self.is_option)[1]
+            # invalid ticker
+            if not validations.validate_ticker(ticker, self.is_option)[0]:
+                message += validations.validate_ticker(ticker, self.is_option)[1]
 
-            if not self.validate_sold_price(self.for_open_table())[0]:
-                message += self.validate_sold_price(self.for_open_table())[1]
+            # invalid sold price
+            if not validations.validate_sold_price(sold_price, self.for_open_table())[0]:
+                message += validations.validate_sold_price(sold_price, self.for_open_table())[1]
 
             # error message
             DialogWin(self.dpg, message, self)
             return False
 
         return True
-
-    # todo cleanup
-    def validate_type(self):
-        trade_type = self.dpg.get_value(configs.VIEW_TRADE_TYPE_ID).lower().capitalize()
-
-        # has to be Crypto, Stock, or Option
-        valid_type = (trade_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT or
-                      trade_type == configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT or
-                      trade_type == configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT)
-
-        if not valid_type:
-            return False, "Invalid Type (Crypto, Stock, or Option)\n"
-
-        return True, ""
-
-    # todo cleanup
-    def validate_count(self):
-        count = self.dpg.get_value(configs.VIEW_TRADE_COUNT_ID)
-
-        # count should be greater than 0
-        valid_count = count > 0
-
-        if not valid_count:
-            return False, "Invalid Count (Can't be below 0)\n"
-
-        return True, ""
-
-    # todo cleanup
-    def validate_bought_price(self):
-        bought_price = self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
-
-        # bought_price should be greater than 0
-        valid_bought_price = bought_price > 0
-
-        if not valid_bought_price:
-            return False, "Invalid Bought Price (Can't be below 0)\n"
-
-        return True, ""
-
-    # todo cleanup
-    def validate_ticker(self, is_option):
-        if not is_option:
-            ticker = self.dpg.get_value(configs.VIEW_TRADE_TICKER_CONTRACT_ID)
-
-            # ticker has to exist
-            valid_ticker = yft.validate_ticker(ticker) or cgt.validate_coin(ticker.lower())
-
-            if not valid_ticker:
-                return False, "Invalid Ticker (For Crypto, type full name i.e. Bitcoin)\n"
-
-        return True, ""
-
-    # todo cleanup
-    def validate_sold_price(self, for_open):
-        if not for_open:
-            sold_price = self.dpg.get_value(configs.VIEW_TRADE_SOLD_PRICE_ID)
-
-            # sold price greater than 0
-            valid_sold_price = sold_price > 0
-
-            if not valid_sold_price:
-                return False, "Invalid Sold Price (Can't be below 0)\n"
-
-        return True, ""
 
     # checks if we are viewing a trade from open table
     def for_open_table(self):

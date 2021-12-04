@@ -3,10 +3,12 @@ import yfinance_tool as yft
 import cngko_tool as cgt
 import firebase_conn
 import threading
+import validations
 from search_options import Options
 from ticker_search_info import CryptoStockInfo
 from datetime import date
 from dialog_win import DialogWin
+
 
 class InputTrade:
     def __init__(self, dpg, user_id, fintracker):
@@ -227,31 +229,40 @@ class InputTrade:
         self.fintracker.add_to_open_table(table_id, data, is_option)
 
     def validate_inputs(self):
-        if not self.is_option():
-            ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+        ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+        contract = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
+        count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
+        bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
 
-            if self.is_stock():
-                # ticker is empty or did not return a result
-                invalid_ticker = not yft.validate_ticker(ticker) or self.is_ticker_empty()
+        check_ticker = validations.validate_trade_ticker(ticker, self.investment_type, self.is_option())
+        check_contract_empty = validations.is_contract_empty(contract, self.is_option())
+        check_count = validations.validate_count(count)
+        check_bought_price = validations.validate_bought_price(bought_price)
 
-            else:  # crypto
-                # ticker is empty or did not return a result
-                invalid_ticker = not cgt.validate_coin(ticker) or self.is_ticker_empty()
-        else:
-            # they did not choose a contract
-            invalid_ticker = self.is_contract_empty()
+        # 0 - True or False
+        # 1 - Error Message
+        if not check_ticker[0] or not check_contract_empty[0] or not check_count[0] or not check_bought_price[0]:
+            message = "[ERROR]\n"
 
-        # no negative or 0 count values and no negative bought price values
-        invalid_count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID) <= 0
+            # invalid ticker
+            if not check_ticker[0]:
+                message += check_ticker[1]
 
-        # no negative bought price values
-        invalid_bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID) <= 0
+            # empty contract
+            if not check_contract_empty[0]:
+                message += check_contract_empty[1]
 
-        if invalid_count or invalid_bought_price or invalid_ticker:
-            # invalid input dialog
-            DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_INPUT_MSG_TEXT, self)
+            # invalid count
+            if not check_count[0]:
+                message += check_count[1]
+
+            # invalid bought_price
+            if not check_bought_price[0]:
+                message += check_bought_price[1]
+
+            # error message
+            DialogWin(self.dpg, message, self)
             return False
-
         return True
 
     # defines the investment type depending on current radio button
