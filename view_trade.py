@@ -191,7 +191,7 @@ class ViewTrade:
 
                 # recalculate net profit and profit percentage after edit
                 net_profit = round(sold_price - bought_price, 2)
-                profit_per = round(net_profit / bought_price * 100, 2)
+                profit_per = round((net_profit / (count * bought_price)) * 100, 2)
 
                 if self.is_option:
                     new_data = {configs.FIREBASE_DATE: date_val,

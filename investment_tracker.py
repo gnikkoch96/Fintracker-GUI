@@ -18,7 +18,7 @@ class Fintracker:
         # calculate total profit and win-rate thread
         self.total_profit = 0
         self.win_rate = 0
-        self.load_total_profit_win_rate_thread = threading.Thread(target=self.load_profit_win_rate)
+        self.load_total_profit_win_rate_thread = None
 
         # open trades thread
         self.num_open_trade_rows = 0  # int value used for generating tag rows
@@ -61,9 +61,8 @@ class Fintracker:
         # profit, win-rate, news and add new trade button
         with self.dpg.group(horizontal=True,
                             parent=configs.FINTRACKER_WINDOW_ID):
-
             # start the thread to calculate the total profit and win-rate
-            self.load_total_profit_win_rate_thread.start()
+            self.calculate_total_profit_win_rate_thread()
 
             # profit
             self.dpg.add_text(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_TEXT)
@@ -597,7 +596,8 @@ class Fintracker:
         close_trade_id = user_data[2]
         firebase_conn.remove_closed_trade_by_id(self.user_id, is_option, close_trade_id)
 
-        # todo update the total profit and win-rate
+        # update the total profit and win-rate
+        self.calculate_total_profit_win_rate_thread()
 
         self.dpg.delete_item(row_tag)
 
@@ -618,6 +618,11 @@ class Fintracker:
         self.dpg.set_value(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_ID, self.total_profit)
         self.dpg.set_value(configs.FINTRACKER_DISPLAY_WIN_RATE_ID, self.win_rate)
 
+    # thread to start/update the total profit and win-rate
+    def calculate_total_profit_win_rate_thread(self):
+        self.load_total_profit_win_rate_thread = threading.Thread(target=self.load_profit_win_rate)
+        self.load_total_profit_win_rate_thread.start()
+
     # calculates the total profit
     def calculate_total_profit(self):
         # get all closed trades
@@ -626,16 +631,18 @@ class Fintracker:
 
         # sum the net profit column for crypto stock table
         total_profit = 0
-        for closed_trade_id in closed_trades_crypto_stock:
-            closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, False)
+        if closed_trades_crypto_stock is not None:
+            for closed_trade_id in closed_trades_crypto_stock:
+                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, False)
 
-            total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT])
+                total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT])
 
         # sum the net profit column for options table
-        for closed_trade_id in closed_trades_options:
-            closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
+        if closed_trades_options is not None:
+            for closed_trade_id in closed_trades_options:
+                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
 
-            total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT])
+                total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT])
 
         return total_profit
 
@@ -649,24 +656,30 @@ class Fintracker:
         win_trades = 0
 
         # count the number of negative percentages and positive percentages for crypto and stock
-        for closed_trade_id in closed_trades_crypto_stock:
-            closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, False)
+        if closed_trades_crypto_stock is not None:
+            for closed_trade_id in closed_trades_crypto_stock:
+                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, False)
 
-            if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
-                win_trades += 1
-            else:
-                loss_trades += 1
+                if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
+                    win_trades += 1
+                else:
+                    loss_trades += 1
 
         # count the number of negative percentages and positive percentages for options
-        for closed_trade_id in closed_trades_options:
-            closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
+        if closed_trades_options is not None:
+            for closed_trade_id in closed_trades_options:
+                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
 
-            if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
-                win_trades += 1
-            else:
-                loss_trades += 1
+                if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
+                    win_trades += 1
+                else:
+                    loss_trades += 1
 
         # win-rate is the number of wins from total trade
+        # todo cleanup
+        if win_trades + loss_trades <= 0:
+            return 0
+
         return round(win_trades / (loss_trades + win_trades) * 100, 2)
 
     # deletes the view trade window if present and cleans up its aliases

@@ -55,7 +55,7 @@ class SellTrade:
             bought_price = trade[configs.FIREBASE_BOUGHT_PRICE]
             sold_price = self.dpg.get_value(configs.SELL_TRADE_SOLD_PRICE_ID)
             net_profit = round(sold_price - bought_price, 2) * count
-            profit_per = round(net_profit / bought_price * 100, 2)
+            profit_per = round((net_profit / (count * bought_price)) * 100, 2)
             reason = self.dpg.get_value(configs.SELL_TRADE_REASON_ID)
 
             if self.is_option:  # contains a contract
@@ -129,6 +129,7 @@ class SellTrade:
         else:
             table_id = configs.FINTRACKER_CLOSED_TRADES_CRYPTO_STOCK_TABLE_ID
 
+        self.fintracker.calculate_total_profit_win_rate_thread()
         self.fintracker.add_to_closed_table(table_id, row_data, self.is_option)
 
     def validate_input(self):
