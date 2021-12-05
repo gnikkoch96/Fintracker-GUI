@@ -346,7 +346,7 @@ class ViewTrade:
     def load_trade_data(self):
         # return closed trade info
         if not self.for_open_table():
-            return firebase_conn.get_closed_trade_by_id_db(self.user_id, self.trade_id, self.is_option)
+            return firebase_conn.get_closed_trade_by_id(self.user_id, self.trade_id, self.is_option)
 
         # return open trade info
         return firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)

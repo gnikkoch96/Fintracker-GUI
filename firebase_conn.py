@@ -139,7 +139,7 @@ def get_closed_trades_db(user_id, is_option):
 
 
 # retrieves a closed trade corresponding to trade id
-def get_closed_trade_by_id_db(user_id, trade_id, is_option):
+def get_closed_trade_by_id(user_id, trade_id, is_option):
     if is_option:
         return firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
             configs.FIREBASE_OPTION).child(trade_id).get().val()

@@ -15,6 +15,11 @@ class Fintracker:
         self.view_trade = None  # stores reference to currently viewed trade
         self.sell_trade = None  # stores reference to currently selling trade
 
+        # calculate total profit and win-rate thread
+        self.total_profit = 0
+        self.win_rate = 0
+        self.load_total_profit_win_rate_thread = threading.Thread(target=self.load_profit_win_rate)
+
         # open trades thread
         self.num_open_trade_rows = 0  # int value used for generating tag rows
         self.load_open_trades_thread = threading.Thread(target=self.load_open_trades,
@@ -54,16 +59,29 @@ class Fintracker:
 
     def create_fintracker_win_items(self):
         # profit, win-rate, news and add new trade button
-        with self.dpg.group(horizontal=True):
+        with self.dpg.group(horizontal=True,
+                            parent=configs.FINTRACKER_WINDOW_ID):
+
+            # start the thread to calculate the total profit and win-rate
+            self.load_total_profit_win_rate_thread.start()
+
             # profit
-            self.dpg.add_text(configs.FINTRACKER_PROFIT_LABEL_TEXT)
-            self.dpg.add_input_float(tag=configs.FINTRACKER_PROFIT_ID,
-                                     default_value=0.00)
+            self.dpg.add_text(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_TEXT)
+            self.dpg.add_input_text(tag=configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_ID,
+                                    width=configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_WIDTH,
+                                    default_value=self.total_profit)
+
+            # todo cleanup
+            self.dpg.disable_item(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_ID)
 
             # win-rate
-            self.dpg.add_text(configs.FINTRACKER_PROFIT_PERCENT_LABEL_TEXT)
-            self.dpg.add_input_float(tag=configs.FINTRACKER_PROFIT_PERCENT_ID,
-                                     default_value=0.00)
+            self.dpg.add_text(configs.FINTRACKER_DISPLAY_WIN_RATE_TEXT)
+            self.dpg.add_input_text(tag=configs.FINTRACKER_DISPLAY_WIN_RATE_ID,
+                                    width=configs.FINTRACKER_DISPLAY_WIN_RATE_WIDTH,
+                                    default_value=self.win_rate)
+
+            # todo cleanup
+            self.dpg.disable_item(configs.FINTRACKER_DISPLAY_WIN_RATE_ID)
 
             # news button
             self.dpg.add_button(tag=configs.FINTRACKER_NEWS_BTN_ID,
@@ -145,7 +163,7 @@ class Fintracker:
                 self.num_closed_trade_rows += 1
 
                 # retrieve individual trade based on trade id
-                closed_trade = firebase_conn.get_closed_trade_by_id_db(self.user_id, closed_trade_id, is_option)
+                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, is_option)
 
                 # closed trade data
                 if not is_option:
@@ -590,6 +608,67 @@ class Fintracker:
         # display login screen
         self.dpg.show_item(configs.LOGIN_WINDOW_ID)
 
+    # used for calculating the total profit and win-rate thread (reduces lag upon logging in)
+    def load_profit_win_rate(self):
+        # calculate values
+        self.total_profit = self.calculate_total_profit()
+        self.win_rate = self.calculate_win_rate()
+
+        # update values for the total profit and win-rate fields
+        self.dpg.set_value(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_ID, self.total_profit)
+        self.dpg.set_value(configs.FINTRACKER_DISPLAY_WIN_RATE_ID, self.win_rate)
+
+    # calculates the total profit
+    def calculate_total_profit(self):
+        # get all closed trades
+        closed_trades_crypto_stock = firebase_conn.get_closed_trades_db(self.user_id, False)
+        closed_trades_options = firebase_conn.get_closed_trades_db(self.user_id, True)
+
+        # sum the net profit column for crypto stock table
+        total_profit = 0
+        for closed_trade_id in closed_trades_crypto_stock:
+            closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, False)
+
+            total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT])
+
+        # sum the net profit column for options table
+        for closed_trade_id in closed_trades_options:
+            closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
+
+            total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT])
+
+        return total_profit
+
+    # calculates the win rate
+    def calculate_win_rate(self):
+        # get all closed trades
+        closed_trades_crypto_stock = firebase_conn.get_closed_trades_db(self.user_id, False)
+        closed_trades_options = firebase_conn.get_closed_trades_db(self.user_id, True)
+
+        loss_trades = 0
+        win_trades = 0
+
+        # count the number of negative percentages and positive percentages for crypto and stock
+        for closed_trade_id in closed_trades_crypto_stock:
+            closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, False)
+
+            if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
+                win_trades += 1
+            else:
+                loss_trades += 1
+
+        # count the number of negative percentages and positive percentages for options
+        for closed_trade_id in closed_trades_options:
+            closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
+
+            if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
+                win_trades += 1
+            else:
+                loss_trades += 1
+
+        # win-rate is the number of wins from total trade
+        return round(win_trades / (loss_trades + win_trades) * 100, 2)
+
     # deletes the view trade window if present and cleans up its aliases
     def close_view_trade_win(self):
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
@@ -621,11 +700,11 @@ class Fintracker:
         if self.dpg.does_alias_exist(configs.FINTRACKER_NEWS_BTN_ID):
             self.dpg.remove_alias(configs.FINTRACKER_NEWS_BTN_ID)
 
-        if self.dpg.does_alias_exist(configs.FINTRACKER_PROFIT_PERCENT_ID):
-            self.dpg.remove_alias(configs.FINTRACKER_PROFIT_PERCENT_ID)
+        if self.dpg.does_alias_exist(configs.FINTRACKER_DISPLAY_WIN_RATE_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_DISPLAY_WIN_RATE_ID)
 
-        if self.dpg.does_alias_exist(configs.FINTRACKER_PROFIT_ID):
-            self.dpg.remove_alias(configs.FINTRACKER_PROFIT_ID)
+        if self.dpg.does_alias_exist(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_ID):
+            self.dpg.remove_alias(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_ID)
 
         if self.dpg.does_alias_exist(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID):
             self.dpg.remove_alias(configs.FINTRACKER_OPEN_TRADES_CRYPTO_STOCK_TABLE_ID)

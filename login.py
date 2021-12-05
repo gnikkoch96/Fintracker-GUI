@@ -8,11 +8,13 @@ class Login:
         self.dpg = dpg
         self.create_login_win()
 
+    # todo cleanup (label probably not needed)
     def create_login_win(self):
         with self.dpg.window(tag=configs.LOGIN_WINDOW_ID,
                              label=configs.LOGIN_WINDOW_TEXT,
                              height=self.dpg.get_viewport_height(),
                              width=self.dpg.get_viewport_width(),
+                             no_title_bar=True,
                              no_resize=True):
             self.create_login_items()
 
