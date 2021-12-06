@@ -103,7 +103,10 @@ REGISTER_BTN_ID = "Register Button"
 REGISTER_LOGIN_BTN_ID = "Register_Login"
 REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 
-# value=======================================================================
+# value======================================================================
+FINTRACKER_VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
+FINTRACKER_LOGO_PATH = "resources/images/fintracker-logo.png"
+
 NOT_APPLICABLE_TEXT = "N/A"
 FONT_SCALE = 1.25
 DEFAULT_DATE = {'month': date.today().month - 1,
@@ -112,6 +115,7 @@ DEFAULT_DATE = {'month': date.today().month - 1,
 
 # height and width values
 FINTRACKER_WINDOW_VIEWPORT_SIZE = (1700, 800)  # width x height
+
 FINTRACKER_CLOSED_TRADES_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.48,
                                           FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.65)
 FINTRACKER_OPEN_TRADES_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] * 0.48,
@@ -120,6 +124,11 @@ FINTRACKER_OPEN_TRADES_BUTTONS_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[
                                                 FINTRACKER_WINDOW_VIEWPORT_SIZE[1] * 0.20)
 FINTRACKER_DISPLAY_TOTAL_PROFIT_WIDTH = 200
 FINTRACKER_DISPLAY_WIN_RATE_WIDTH = 200
+
+LOGIN_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 4,
+                              FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 5)
+LOGIN_WINDOW_POS_VALUE = [FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2 - LOGIN_WINDOW_VIEWPORT_SIZE[0] / 2
+    , FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 2 - LOGIN_WINDOW_VIEWPORT_SIZE[1] / 2]
 
 TRADE_INPUT_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
                                     FINTRACKER_WINDOW_VIEWPORT_SIZE[1])
@@ -254,7 +263,6 @@ TICKERS_SEARCH_WRAP_COUNT = 500
 
 # fintracker
 FINTRACKER_VIEWPORT_TITLE = "Fintracker - Record Your Trades!"
-FINTRACKER_VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
 FINTRACKER_WINDOW_TEXT = "(Fintracker) Investment Tracker"
 FINTRACKER_NEWS_BTN_TEXT = "News"
 FINTRACKER_DISPLAY_TOTAL_PROFIT_TEXT = "Net Profit: "
@@ -302,7 +310,7 @@ VIEW_TRADE_PROFIT_PERCENTAGE_TEXT = "Profit %: "
 VIEW_TRADE_SUCCESS_EDIT_MSG_TEXT = "[SUCCESS] Updated Trade!"
 
 # login
-LOGIN_WINDOW_TEXT = "(FinTracker) Login"
+LOGIN_HEADER_TEXT = "Fintracker | Login"
 LOGIN_INPUT_EMAIL_TEXT = "Enter E-Mail"
 LOGIN_INPUT_PASS_TEXT = "Enter Password"
 LOGIN_INPUT_ERROR_TEXT = "[ERROR] Invalid Login Credentials"
