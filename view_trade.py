@@ -281,36 +281,42 @@ class ViewTrade:
         ticker = self.dpg.get_value(configs.VIEW_TRADE_TICKER_CONTRACT_ID)
         sold_price = self.dpg.get_value(configs.VIEW_TRADE_SOLD_PRICE_ID)
 
+        valid_type = validations.validate_type(trade_type)
+        valid_count = validations.validate_count(count)
+        valid_bought_price = validations.validate_bought_price(bought_price)
+        valid_ticker = validations.validate_ticker(ticker, self.is_option)
+        valid_sold_price = validations.validate_sold_price(sold_price, self.for_open_table())
+
         # todo cleanup remove hardcode (using a dict possibly instead of tuple)
         # 0 - True or False
         # 1 - error message
-        if not validations.validate_type(trade_type)[0] \
-                or not validations.validate_count(count)[0] \
-                or not validations.validate_bought_price(bought_price)[0] \
-                or not validations.validate_ticker(ticker, self.is_option)[0] \
-                or not validations.validate_sold_price(sold_price, self.for_open_table())[0]:
+        if not valid_type[0] \
+                or not valid_count[0] \
+                or not valid_bought_price[0] \
+                or not valid_ticker[0] \
+                or not valid_sold_price[0]:
 
             message = "[ERROR]\n"
 
             # invalid type
-            if not validations.validate_type(trade_type)[0]:
-                message += validations.validate_type(trade_type)[1]
+            if not valid_type[0]:
+                message += valid_type[1]
 
             # invalid count
-            if not validations.validate_count(count)[0]:
-                message += validations.validate_count(count)[1]
+            if not valid_count[0]:
+                message += valid_count[1]
 
             # invalid bought price
-            if not validations.validate_bought_price(bought_price)[0]:
-                message += validations.validate_bought_price(bought_price)[1]
+            if not valid_bought_price[0]:
+                message += valid_bought_price[1]
 
             # invalid ticker
-            if not validations.validate_ticker(ticker, self.is_option)[0]:
-                message += validations.validate_ticker(ticker, self.is_option)[1]
+            if not valid_ticker[0]:
+                message += valid_ticker[1]
 
             # invalid sold price
-            if not validations.validate_sold_price(sold_price, self.for_open_table())[0]:
-                message += validations.validate_sold_price(sold_price, self.for_open_table())[1]
+            if not valid_sold_price[0]:
+                message += valid_sold_price[1]
 
             # error message
             DialogWin(self.dpg, message, self)

@@ -132,14 +132,15 @@ class SellTrade:
         self.fintracker.calculate_total_profit_win_rate_thread()
         self.fintracker.add_to_closed_table(table_id, row_data, self.is_option)
 
+    # todo cleanup (we have a validations class)
     def validate_input(self):
         trade = firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
 
         # has to be above the number of held positions
-        valid_count = self.dpg.get_value(configs.SELL_TRADE_COUNT_ID) <= trade[configs.FIREBASE_COUNT]
+        valid_count = trade[configs.FIREBASE_COUNT] >= self.dpg.get_value(configs.SELL_TRADE_COUNT_ID) > 0
 
         # has to be above 0
-        valid_sold_price = self.dpg.get_value(configs.SELL_TRADE_SOLD_PRICE_ID) > 0
+        valid_sold_price = self.dpg.get_value(configs.SELL_TRADE_SOLD_PRICE_ID) >= 0
 
         if not valid_count or not valid_sold_price:
             # display invalid input message

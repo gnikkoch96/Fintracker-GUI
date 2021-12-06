@@ -68,8 +68,8 @@ def validate_trade_ticker(ticker, invest_type, is_option):
 # todo cleanup
 def validate_sold_price(sold_price, for_open):
     if not for_open:
-        # sold price greater than 0
-        valid_sold_price = sold_price > 0
+        # sold price greater than or equal to 0
+        valid_sold_price = sold_price >= 0
 
         if not valid_sold_price:
             return False, "Invalid Sold Price (Can't be below 0)\n"
