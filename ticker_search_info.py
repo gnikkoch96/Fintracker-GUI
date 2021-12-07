@@ -75,34 +75,45 @@ class CryptoStockInfo:
     def create_search_win_stock_items(self):
         upper_ticker = self.ticker.upper()
 
+        # todo cleanup
+        stock_data = yft.retrieve_info(upper_ticker)
+
+        name = stock_data[0]
+        price = stock_data[1]
+        market_cap = stock_data[2]
+        shares_short = stock_data[3]
+        shares_short_prior = stock_data[4]
+        shares_per = stock_data[5]
+        bus_sum = stock_data[6]
+
         # ticker + name + current price
         with self.dpg.group(horizontal=True):
             # ticker
             self.dpg.add_text(configs.TICKER_SEARCH_TICKER_TEXT + upper_ticker)
 
             # name
-            self.dpg.add_text(f"({yft.get_stock_name(upper_ticker)})")
+            self.dpg.add_text(f"({name})")
+            # self.dpg.add_text(f"({yft.get_stock_name(upper_ticker)})")
 
             # current price
-            self.dpg.add_text("$" + str(yft.get_stock_price(upper_ticker)))
-
+            self.dpg.add_text("$" + str(price))
 
         # market cap
-        self.dpg.add_text(configs.TICKER_SEARCH_MARKET_CAP_STOCK_TEXT + yft.get_market_cap(upper_ticker))
+        self.dpg.add_text(configs.TICKER_SEARCH_MARKET_CAP_STOCK_TEXT + str(market_cap))
 
         # shares shorted
-        self.dpg.add_text(configs.TICKER_SEARCH_SHARES_SHORTED_STOCK_TEXT + yft.get_shares_short(upper_ticker))
+        self.dpg.add_text(configs.TICKER_SEARCH_SHARES_SHORTED_STOCK_TEXT + str(shares_short))
 
         # shares shorted prior month
         self.dpg.add_text(
-            configs.TICKER_SEARCH_SHARES_SHORTED_PRIOR_MONTH_TEXT + yft.get_shares_short_prior_month(upper_ticker))
+            configs.TICKER_SEARCH_SHARES_SHORTED_PRIOR_MONTH_TEXT + str(shares_short_prior))
 
         # short percent float
-        self.dpg.add_text(configs.TICKER_SEARCH_SHORT_PERCENT_TEXT + yft.get_short_percent_float(upper_ticker))
+        self.dpg.add_text(configs.TICKER_SEARCH_SHORT_PERCENT_TEXT + str(shares_per))
 
         # summary of business
         self.dpg.add_text(configs.TICKER_SEARCH_SUMMARY_OF_BUSINESS_STOCK_TEXT)
-        self.dpg.add_text(default_value=yft.get_long_business_summary(upper_ticker),
+        self.dpg.add_text(default_value=bus_sum,
                           wrap=configs.TICKERS_SEARCH_WRAP_COUNT)
 
     def cleanup_aliases(self):

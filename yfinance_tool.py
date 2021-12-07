@@ -2,6 +2,25 @@ import yfinance as yf
 import configs
 
 
+# todo cleanup (current solution to slowdown in retrieving data from yfinance api)
+def retrieve_info(ticker):
+    stock = yf.Ticker(ticker)
+
+    if stock is None:
+        return
+
+    stock_info = stock.get_info()
+    name = stock_info[configs.YFINANCE_SHORTNAME]
+    price = stock_info[configs.YFINANCE_REGULARMARKETPRICE]
+    market_cap = stock_info[configs.YFINANCE_MARKETCAP]
+    shares_short = stock_info[configs.YFINANCE_SHARESHORT]
+    shares_short_prior_month = stock_info[configs.YFINANCE_SHARESHORTPRIORMONTH]
+    shares_short_per = stock_info[configs.YFINANCE_SHORTPERCENTFLOAT]
+    bus_sum = stock_info[configs.YFINANCE_LONGBUSINESSSUMMARY]
+
+    return name, price, market_cap, shares_short, shares_short_prior_month, shares_short_per, bus_sum
+
+
 # checks if ticker exists
 def validate_ticker(ticker):
     stock = yf.Ticker(ticker)
@@ -18,6 +37,7 @@ def get_stock_name(ticker):
         return
 
     return stock.get_info()[configs.YFINANCE_SHORTNAME]
+
 
 def get_stock_price(ticker):
     stock = yf.Ticker(ticker)
