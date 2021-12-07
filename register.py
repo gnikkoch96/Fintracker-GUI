@@ -34,7 +34,6 @@ class Register:
 
     def create_register_items(self):
         # logo + header text
-        self.dpg.add_spacer(height=configs.REGISTER_SPACERY_VALUE)
         with self.dpg.group(horizontal=True):
             self.dpg.add_spacer(width=configs.REGISTER_SPACERX_VALUE)
 
