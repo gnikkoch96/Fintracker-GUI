@@ -95,8 +95,9 @@ class InputTrade:
                                 callback=self.current_price_callback)
 
         # reason input
+        self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_REASON_TEXT)
         self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_REASON_ID,
-                                hint=configs.TRADE_INPUT_INFO_WINDOW_REASON_TEXT)
+                                multiline=True)
 
         self.hide_option_items()
 

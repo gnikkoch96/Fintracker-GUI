@@ -36,6 +36,8 @@ def create_dpg_fonts():
 
 
 def create_dpg_themes():
+    # todo once you setup your themes for each window, see similarities and put them as default
+
     # login theme
     with dpg.theme(tag=configs.LOGIN_THEME_ID):
         with dpg.theme_component(dpg.mvAll):
@@ -53,6 +55,17 @@ def create_dpg_themes():
             dpg.add_theme_style(dpg.mvStyleVar_WindowRounding, 7, category=dpg.mvThemeCat_Core)
             dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 20, 20, category=dpg.mvThemeCat_Core)
             dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 8, 17, category=dpg.mvThemeCat_Core)
+
+    # fintracker theme
+    with dpg.theme(tag=configs.FINTRACKER_THEME_ID):
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 8, category=dpg.mvThemeCat_Core)
+            dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 4, 8, category=dpg.mvThemeCat_Core)
+
+    # dialog theme
+    with dpg.theme(tag=configs.DIALOG_THEME_ID):
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 8, category=dpg.mvThemeCat_Core)
 
 
 if __name__ == '__main__':

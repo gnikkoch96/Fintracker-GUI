@@ -1,6 +1,7 @@
 import configs
 import investment_tracker
 
+
 class DialogWin:
     # prev_win refers to the window that created the dialog
     def __init__(self, dpg, message, prev_win):
@@ -17,35 +18,49 @@ class DialogWin:
                              modal=True,
                              on_close=self.cleanup_alias,
                              pos=configs.DIALOG_CENTER_WINDOW_POS,
+                             no_resize=True,
                              no_title_bar=True):
             self.create_dialog_win_items()
+            self.apply_theme()
+
+    def apply_theme(self):
+        self.dpg.bind_item_theme(configs.DIALOG_WINDOW_ID, configs.DIALOG_THEME_ID)
 
     def create_dialog_win_items(self):
-        self.dpg.add_text(default_value=self.message,
-                          wrap=configs.DIALOG_MESSAGE_WRAP_COUNT)
-        self.dpg.add_button(tag=configs.DIALOG_CONFIRMATION_BTN_ID,
-                            label=configs.DIALOG_CONFIRMATION_BTN_TEXT,
-                            callback=self.confirmation_callback)
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.DIALOG_WINDOW_VIEWPORT_SIZE[0]/5.5)
+            self.dpg.add_text(default_value=self.message,
+                              wrap=configs.DIALOG_MESSAGE_WRAP_COUNT)
+
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.DIALOG_WINDOW_VIEWPORT_SIZE[0]/2.5)
+            self.dpg.add_button(tag=configs.DIALOG_CONFIRMATION_BTN_ID,
+                                label=configs.DIALOG_CONFIRMATION_BTN_TEXT,
+                                callback=self.confirmation_callback)
 
     def confirmation_callback(self):
         self.close_dialog_win()
         self.close_prev_win()
 
     # close previous window for success messages
+    # todo cleanup
     def close_prev_win(self):
         # close the previous window if it was a success message
         if configs.DIALOG_SUCCESS_TEXT in self.message:
             if self.dpg.does_alias_exist(configs.SELL_TRADE_WINDOW_ID):
                 self.dpg.delete_item(configs.SELL_TRADE_WINDOW_ID)
+                self.prev_win.cleanup_alias()
 
             if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
                 self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
+                self.prev_win.cleanup_alias()
 
             # leave the trade input window alone as users might want to add multiple trades at once
             if not self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_ID) \
                     and not isinstance(self.prev_win, investment_tracker.Fintracker) \
                     and not self.dpg.does_alias_exist(configs.LOGIN_WINDOW_ID) \
                     and not self.dpg.does_alias_exist(configs.REGISTER_WINDOW_ID):
+                print("what happened")
                 self.prev_win.cleanup_alias()
 
     def close_dialog_win(self):

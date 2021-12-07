@@ -47,6 +47,10 @@ class Fintracker:
             self.dpg.set_primary_window(configs.FINTRACKER_WINDOW_ID, True)
             self.create_fintracker_win_menu()
             self.create_fintracker_win_items()
+            self.apply_theme()
+
+    def apply_theme(self):
+        self.dpg.bind_item_theme(configs.FINTRACKER_WINDOW_ID, configs.FINTRACKER_THEME_ID)
 
     def create_fintracker_win_menu(self):
         # menu bar
@@ -136,7 +140,7 @@ class Fintracker:
                             parent=configs.FINTRACKER_CLOSED_TRADES_ID):
 
             # column headers
-            self.dpg.add_table_column()
+            self.dpg.add_table_column() # view trade
             self.dpg.add_table_column(label=configs.FIREBASE_DATE)
             self.dpg.add_table_column(label=configs.FIREBASE_TYPE)
 
@@ -145,7 +149,8 @@ class Fintracker:
             else:
                 self.dpg.add_table_column(label=configs.FIREBASE_CONTRACT)
 
-            self.dpg.add_table_column(label=configs.FIREBASE_COUNT)
+            self.dpg.add_table_column(label=configs.FIREBASE_COUNT,
+                                      init_width_or_weight=1)
             self.dpg.add_table_column(label=configs.FIREBASE_BOUGHT_PRICE)
             self.dpg.add_table_column(label=configs.FIREBASE_SOLD_PRICE)
             self.dpg.add_table_column(label=configs.FIREBASE_NET_PROFIT)
@@ -168,9 +173,9 @@ class Fintracker:
 
                 # closed trade data
                 if not is_option:
-                    trade_type = closed_trade[configs.FIREBASE_TICKER]
+                    trade = closed_trade[configs.FIREBASE_TICKER]
                 else:
-                    trade_type = closed_trade[configs.FIREBASE_CONTRACT]
+                    trade = closed_trade[configs.FIREBASE_CONTRACT]
                 bought_price = closed_trade[configs.FIREBASE_BOUGHT_PRICE]
                 count = closed_trade[configs.FIREBASE_COUNT]
                 invest_type = closed_trade[configs.FIREBASE_TYPE]
@@ -185,7 +190,7 @@ class Fintracker:
 
                 # table row
 
-                # used to cleanup alias when logging out
+                # used to cleanup row tag alias when logging out
                 # todo make this cleaner
                 if self.dpg.does_alias_exist(
                         configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_closed_trade_rows)):
@@ -211,7 +216,12 @@ class Fintracker:
 
                     # trade (ticker or contract)
                     with self.dpg.table_cell():
-                        self.dpg.add_text(trade_type)
+                        trade_ref = self.dpg.add_text(trade)
+
+                        # make reading option contracts easier
+                        if is_option:
+                            with self.dpg.tooltip(trade_ref):
+                                self.dpg.add_text(trade)
 
                     # count
                     with self.dpg.table_cell():
@@ -339,7 +349,12 @@ class Fintracker:
 
                     # ticker
                     with self.dpg.table_cell():
-                        self.dpg.add_text(trade)
+                        trade_ref = self.dpg.add_text(trade)
+
+                        # make reading option contracts easier
+                        if is_option:
+                            with self.dpg.tooltip(trade_ref):
+                                self.dpg.add_text(trade)
 
                     # count
                     with self.dpg.table_cell():
