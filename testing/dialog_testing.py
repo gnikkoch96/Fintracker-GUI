@@ -2,6 +2,9 @@ import dearpygui.dearpygui as dpg
 
 dpg.create_context()
 
+def get_mouse_pos():
+    print(dpg.get_mouse_pos())
+
 with dpg.window(label="Delete Files", modal=True, show=False, id="modal_id", no_title_bar=True):
     dpg.add_text("All those beautiful files will be deleted.\nThis operation cannot be undone!")
     dpg.add_separator()
@@ -9,7 +12,7 @@ with dpg.window(label="Delete Files", modal=True, show=False, id="modal_id", no_
     with dpg.group(horizontal=True):
         dpg.add_button(label="OK", width=75, callback=lambda: dpg.configure_item("modal_id", show=False))
         dpg.add_button(label="Cancel", width=75, callback=lambda: dpg.configure_item("modal_id", show=False))
-
+        dpg.add_button(label="click", callback=get_mouse_pos)
 with dpg.window(label="Tutorial"):
     dpg.add_button(label="Open Dialog", callback=lambda: dpg.configure_item("modal_id", show=True))
 

@@ -11,7 +11,8 @@ def validate_coin(ticker):
         return False
 
     try:
-        coin_gecko.get_coin_by_id(id=ticker)
+
+        coin_gecko.get_coin_by_id(id=ticker.lower())
         return True
     except:
         return False
@@ -43,7 +44,8 @@ def get_description(ticker):
 
 
 def get_current_price(ticker):
-    coin = coin_gecko.get_coin_by_id(id=ticker)
+    print(ticker)
+    coin = coin_gecko.get_coin_by_id(id=ticker.lower())
     return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CURRENTPRICE][configs.COINGECKO_USD]
 
 

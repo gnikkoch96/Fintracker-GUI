@@ -42,6 +42,19 @@ def create_dpg_themes():
     with dpg.theme(tag=configs.DEFAULT_THEME_ID):
         with dpg.theme_component(dpg.mvAll):
             dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 8, category=dpg.mvThemeCat_Core)
+            dpg.add_theme_color(dpg.mvThemeCol_TitleBgActive, (0, 0, 0), category=dpg.mvThemeCat_Core)
+
+    # etc. themes
+
+    # used to display positive changes of stock/crypto prices
+    with dpg.theme(tag=configs.GREEN_TEXT_COLOR):
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_color(dpg.mvThemeCol_Text, (163, 239, 97), category=dpg.mvThemeCat_Core)
+
+    # used to display negative changes of stock/crypto prices
+    with dpg.theme(tag=configs.RED_TEXT_COLOR):
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_color(dpg.mvThemeCol_Text, (242, 65, 65), category=dpg.mvThemeCat_Core)
 
     # login theme
     with dpg.theme(tag=configs.LOGIN_THEME_ID):

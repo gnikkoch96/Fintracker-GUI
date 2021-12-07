@@ -22,7 +22,9 @@ class SellTrade:
                              label=configs.SELL_TRADE_WINDOW_TEXT,
                              width=configs.SELL_TRADE_WINDOW_SIZE[0],
                              height=configs.SELL_TRADE_WINDOW_SIZE[1],
+                             pos=self.dpg.get_mouse_pos(),
                              on_close=self.cleanup_alias):
+            print(self.dpg.get_mouse_pos())
             self.create_sell_trade_win_items()
 
     def create_sell_trade_win_items(self):

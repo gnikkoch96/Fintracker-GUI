@@ -128,21 +128,19 @@ class InputTrade:
                 if yft.validate_ticker(ticker):
                     curr_price = yft.get_stock_price(ticker)
                 else:
-                    # todo display an error message
-                    pass
+                    DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_FAIL_MSG, self)
 
             else:  # get crypto price
                 if cgt.validate_coin(ticker):
                     curr_price = cgt.get_current_price(ticker)
                 else:
-                    # todo display an error message
-                    pass
+                    DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_FAIL_MSG, self)
 
             self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
 
         else:
-            # todo add a dialogue
-            print("Error: Ticker is Empty, cannot load current price")
+            DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_EMPTY_FAIL_MSG, self)
+
 
     def add_callback(self):
         if self.validate_inputs():

@@ -17,6 +17,7 @@ class CryptoStockInfo:
                              label=configs.TICKER_SEARCH_CRYPTO_STOCK_WINDOW_TEXT,
                              width=configs.TICKER_SEARCH_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.TICKER_SEARCH_WINDOW_VIEWPORT_SIZE[1],
+                             pos=configs.TICKER_SEARCH_WINDOW_POS,
                              on_close=self.cleanup_aliases,
                              modal=True):
 
@@ -29,16 +30,24 @@ class CryptoStockInfo:
         # needs to be lowercase (coingecko api)
         lower_ticker = self.ticker.lower()
 
-        # display name + ticker
-        self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_NAME_TEXT + self.ticker.capitalize())
-        self.dpg.add_text(configs.TICKER_SEARCH_TICKER_TEXT + cgt.get_symbol(lower_ticker))
+        # display name + ticker + current price
+        with self.dpg.group(horizontal=True):
+            # ticker + symbol
+            self.dpg.add_text(
+                configs.TICKER_SEARCH_CRYPTO_NAME_TEXT + self.ticker.capitalize() + f"({cgt.get_symbol(lower_ticker)})")
 
-        # current price
-        self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_CURPRICE_TEXT + str(cgt.get_current_price(lower_ticker)))
+            # current price
+            self.dpg.add_text("$" + str(cgt.get_current_price(lower_ticker)))
 
-        # change % 24 hrs
-        self.dpg.add_text(
-            configs.TICKER_SEARCH_CHANGE_PERCENT_24H_TEXT + str(cgt.get_price_change_percentage_24h(lower_ticker)))
+            # change % 24 hrs
+            change_per = round(cgt.get_price_change_percentage_24h(lower_ticker), 2)
+
+            change_per_text = self.dpg.add_text(str(change_per) + "%")
+
+            if change_per > 0:
+                self.dpg.bind_item_theme(change_per_text, configs.GREEN_TEXT_COLOR)
+            else:
+                self.dpg.bind_item_theme(change_per_text, configs.RED_TEXT_COLOR)
 
         # market cap
         self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_MRKTCAPTEXT + str(cgt.get_market_cap(lower_ticker)))
@@ -58,6 +67,7 @@ class CryptoStockInfo:
         self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_HASHALGO_TEXT + hashing_algo)
 
         # description
+        self.dpg.add_spacer(height=configs.TICKER_SEARCH_DESC_SPACERY)
         self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_DESCRIPTION_TEXT)
         self.dpg.add_text(default_value=cgt.get_description(lower_ticker),
                           wrap=configs.TICKERS_SEARCH_WRAP_COUNT)
