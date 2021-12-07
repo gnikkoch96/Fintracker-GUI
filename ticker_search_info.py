@@ -75,8 +75,17 @@ class CryptoStockInfo:
     def create_search_win_stock_items(self):
         upper_ticker = self.ticker.upper()
 
-        # displays ticker
-        self.dpg.add_text(configs.TICKER_SEARCH_TICKER_TEXT + upper_ticker)
+        # ticker + name + current price
+        with self.dpg.group(horizontal=True):
+            # ticker
+            self.dpg.add_text(configs.TICKER_SEARCH_TICKER_TEXT + upper_ticker)
+
+            # name
+            self.dpg.add_text(f"({yft.get_stock_name(upper_ticker)})")
+
+            # current price
+            self.dpg.add_text("$" + str(yft.get_stock_price(upper_ticker)))
+
 
         # market cap
         self.dpg.add_text(configs.TICKER_SEARCH_MARKET_CAP_STOCK_TEXT + yft.get_market_cap(upper_ticker))

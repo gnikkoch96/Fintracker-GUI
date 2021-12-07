@@ -10,12 +10,22 @@ def validate_ticker(ticker):
     return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is not None
 
 
-def get_stock_price(ticker):
+def get_stock_name(ticker):
+    stock = yf.Ticker(ticker)
+
     # stock doesn't exist
-    if validate_ticker(ticker):
+    if stock is None:
+        return
+
+    return stock.get_info()[configs.YFINANCE_SHORTNAME]
+
+def get_stock_price(ticker):
+    stock = yf.Ticker(ticker)
+
+    # stock doesn't exist
+    if stock is None:
         return 0
 
-    stock = yf.Ticker(ticker)
     return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE]
 
 

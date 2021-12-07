@@ -9,6 +9,8 @@ pd.set_option('display.max_columns', 20)
 
 
 dole = yf.Ticker("DOLE")
+print(dole.info)
+# sector,
 # info = dole.info
 #
 # print(info)
@@ -18,11 +20,9 @@ dole = yf.Ticker("DOLE")
 # stocks
 # print(info['longBusinessSummary'], info['currentPrice'], info['targetHighPrice'], info['targetMeanPrice'], info['sharesShort'], info['sharesShortPriorMonth'],
 #       info['shortPercentOfFloat'], info['shortRatio'], info['floatShares'], info['marketCap'])
-print(dole.recommendations)
 
 
-print(dole.major_holders)
-print(dole.institutional_holders)
+
 # print(dole.news)
 
 # options
