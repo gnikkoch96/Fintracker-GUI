@@ -2,12 +2,17 @@ import firebase_conn
 import configs
 import tools
 from investment_tracker import Fintracker
-
+from dialog_win import DialogWin
 
 class Login:
     def __init__(self, dpg):
         self.dpg = dpg
+        self._user = None
         self.create_login_win()
+
+    @property
+    def user(self):
+        return self._user
 
     # todo cleanup (label probably not needed)
     def create_login_win(self):
@@ -19,6 +24,14 @@ class Login:
                              no_move=True,
                              no_resize=True):
             self.create_login_items()
+            self.apply_fonts()
+            self.apply_themes()
+
+    def apply_fonts(self):
+        self.dpg.bind_item_font(configs.LOGIN_HEADER_ID, configs.HEADER_FONT)
+
+    def apply_themes(self):
+        self.dpg.bind_item_theme(configs.LOGIN_WINDOW_ID, configs.LOGIN_THEME_ID)
 
     def create_login_items(self):
         # logo + header text
@@ -27,7 +40,8 @@ class Login:
             tools.add_and_load_image(self.dpg, configs.FINTRACKER_LOGO_PATH)
 
             # header text
-            self.dpg.add_text(configs.LOGIN_HEADER_TEXT)
+            self.dpg.add_text(tag=configs.LOGIN_HEADER_ID,
+                              default_value=configs.LOGIN_HEADER_TEXT)
 
         # email input
         with self.dpg.group(horizontal=True):
@@ -50,6 +64,7 @@ class Login:
                           default_value=configs.LOGIN_INPUT_ERROR_TEXT)
         self.dpg.hide_item(configs.LOGIN_INPUT_ERROR_ID)
 
+        # register + offline
         with self.dpg.group(horizontal=True):
             # register button
             self.dpg.add_button(tag=configs.LOGIN_REGISTER_BTN_ID,
@@ -70,12 +85,12 @@ class Login:
         email = "n2@email.com"
         password = "123456"
 
-        user = firebase_conn.authenticate_user_login(email, password)
+        self._user = firebase_conn.authenticate_user_login(email, password)
 
-        if user is not None:
-            # todo create a dialogue that shows sign-in was successful
-            Fintracker(self.dpg, False, user)
+        if self._user is not None:
+            Fintracker(self.dpg, False, self.user)
             self.dpg.hide_item(configs.LOGIN_WINDOW_ID)
+
         else:
             self.dpg.show_item(configs.LOGIN_INPUT_ERROR_ID)
             self.reset_input_fields()

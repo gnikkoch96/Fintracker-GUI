@@ -14,6 +14,10 @@ FIREBASE_CONFIG = {
 
 # ids======================================================================
 
+# fonts
+DEFAULT_FONT = "Default Font"
+HEADER_FONT = "Header Font"
+
 # dialog
 DIALOG_WINDOW_ID = "Dialog Window"
 DIALOG_CONFIRMATION_BTN_ID = "Dialog Window Confirmation Button"
@@ -86,6 +90,8 @@ VIEW_TRADE_NET_PROFIT_ID = "View Trade Net Profit"
 VIEW_TRADE_PROFIT_PERCENTAGE_ID = "View Trade Profit Percentage"
 
 # login window
+LOGIN_THEME_ID = "Login Theme"
+LOGIN_HEADER_ID = "Login Header"
 LOGIN_WINDOW_ID = "Login Window"
 LOGIN_INPUT_EMAIL_ID = "Login E-Mail"
 LOGIN_INPUT_PASS_ID = "Login Password"
@@ -107,6 +113,8 @@ REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 FINTRACKER_VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
 FINTRACKER_LOGO_PATH = "resources/images/fintracker-logo.png"
 
+OSWALD_FONT_PATH = "resources/fonts/Oswald-VariableFont_wght.ttf"
+
 NOT_APPLICABLE_TEXT = "N/A"
 FONT_SCALE = 1.25
 DEFAULT_DATE = {'month': date.today().month - 1,
@@ -126,7 +134,7 @@ FINTRACKER_DISPLAY_TOTAL_PROFIT_WIDTH = 200
 FINTRACKER_DISPLAY_WIN_RATE_WIDTH = 200
 
 LOGIN_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 4,
-                              FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 5)
+                              FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 3)
 LOGIN_WINDOW_POS_VALUE = [FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2 - LOGIN_WINDOW_VIEWPORT_SIZE[0] / 2
     , FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 2 - LOGIN_WINDOW_VIEWPORT_SIZE[1] / 2]
 
@@ -151,6 +159,13 @@ VIEW_TRADE_CHANGE_DATE_WINDOW_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 8,
 
 SELL_TRADE_WINDOW_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 5,
                           FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 3)
+
+DIALOG_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 4,
+                               FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 6)
+DIALOG_CENTER_WINDOW_POS = [FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2 - DIALOG_WINDOW_VIEWPORT_SIZE[0] / 2
+    , FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 2 - DIALOG_WINDOW_VIEWPORT_SIZE[1] / 2]
+DIALOG_MESSAGE_WRAP_COUNT = 350
+
 # dearpygui keywords
 DPG_DATE_PICKER_YEAR = "year"
 DPG_DATE_PICKER_MONTH = "month"
@@ -317,6 +332,7 @@ LOGIN_INPUT_ERROR_TEXT = "[ERROR] Invalid Login Credentials"
 LOGIN_INPUT_BTN_TEXT = "Login"
 LOGIN_REGISTER_BTN_TEXT = "Not a user? Sign up now!"
 LOGIN_OFFLINE_BTN_TEXT = "Go Offline"
+LOGIN_SUCCESSFUL_MSG_TEXT = "[SUCCESS] Logged in Successfully"
 
 # register
 REGISTER_WINDOW_TEXT = "(FinTracker) Register"

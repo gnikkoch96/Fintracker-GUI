@@ -4,6 +4,7 @@ import threading
 from view_trade import ViewTrade
 from trade_input import InputTrade
 from sell_trade import SellTrade
+from dialog_win import DialogWin
 
 
 class Fintracker:
@@ -42,6 +43,7 @@ class Fintracker:
                              width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1],
                              no_resize=True):
+            DialogWin(self.dpg, configs.LOGIN_SUCCESSFUL_MSG_TEXT, self)
             self.dpg.set_primary_window(configs.FINTRACKER_WINDOW_ID, True)
             self.create_fintracker_win_menu()
             self.create_fintracker_win_items()

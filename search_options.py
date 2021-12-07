@@ -93,7 +93,7 @@ class Options:
                                     label=configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_TEXT,
                                     callback=self.load_options)
         else:
-            DialogWin(self.dpg, configs.OPTION_INVALID_TICKER_MSG_TEXT)
+            DialogWin(self.dpg, configs.OPTION_INVALID_TICKER_MSG_TEXT, self)
 
     # displays table listing all strike prices corresponding to call/put and expiration date
     def load_options(self):
