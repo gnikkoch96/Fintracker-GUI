@@ -65,12 +65,14 @@ class Fintracker:
 
     def create_fintracker_win_items(self):
         # profit, win-rate, news and add new trade button
+        self.dpg.add_spacer(height=configs.FINTRACKER_PROFIT_WINRATE_GROUP_SPACERY)
         with self.dpg.group(horizontal=True,
                             parent=configs.FINTRACKER_WINDOW_ID):
             # start the thread to calculate the total profit and win-rate
             self.calculate_total_profit_win_rate_thread()
 
             # profit
+            self.dpg.add_spacer(width=configs.FINTRACKER_PROFIT_WINRATE_GROUP_SPACERX)
             self.dpg.add_text(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_TEXT)
             self.dpg.add_input_text(tag=configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_ID,
                                     width=configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_WIDTH,
@@ -98,6 +100,7 @@ class Fintracker:
                                 callback=self.add_callback)
 
         # closed and open trade windows group
+        self.dpg.add_spacer(height=configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_SPACERY)
         with self.dpg.group(tag=configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_ID,
                             horizontal=True):
             # start loading closed trades
