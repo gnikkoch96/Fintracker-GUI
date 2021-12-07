@@ -36,34 +36,49 @@ class InputTrade:
                              label=configs.TRADE_INPUT_WINDOW_TEXT,
                              width=configs.TRADE_INPUT_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.TRADE_INPUT_WINDOW_VIEWPORT_SIZE[1],
+                             pos=configs.TRADE_INPUT_WINDOW_POS_VALUE,
                              on_close=self.cleanup_alias,
                              no_resize=True):
             self.create_trade_input_win_items()
+            self.apply_theme()
+
+    def apply_theme(self):
+        self.dpg.bind_item_theme(configs.TRADE_INPUT_WINDOW_ID, configs.TRADE_INPUT_THEME_ID)
 
     def create_trade_input_win_items(self):
         # radio buttons - type of investment (i.e. crypto, stocks, options)
-        self.dpg.add_radio_button(tag=configs.TRADE_INPUT_RADIO_BTNS_ID,
-                                  items=self.investment_types,
-                                  horizontal=True,
-                                  callback=self.define_investment_type)
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.TRADE_INPUT_RADIO_BTN_SPACERX)
+            self.dpg.add_radio_button(tag=configs.TRADE_INPUT_RADIO_BTNS_ID,
+                                      items=self.investment_types,
+                                      horizontal=True,
+                                      callback=self.define_investment_type)
 
-        # depending on the radio button choice, it will load a specific child window
+        # add trade info
+        self.create_add_trade_info_win()
+
+        # add trade button
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.TRADE_INPUT_ADD_BTN_SPACERX)
+            self.dpg.add_button(tag=configs.TRADE_INPUT_ADD_BTN_ID,
+                                label=configs.TRADE_INPUT_ADD_BTN_TEXT,
+                                callback=self.add_callback)
+
+    def create_add_trade_info_win(self):
         with self.dpg.child_window(tag=configs.TRADE_INPUT_INFO_WINDOW_ID,
                                    width=configs.TRADE_INPUT_INFO_WINDOW_VIEWPORT_SIZE[0],
                                    height=configs.TRADE_INPUT_INFO_WINDOW_VIEWPORT_SIZE[1],
                                    parent=configs.TRADE_INPUT_WINDOW_ID):
-            self.create_add_trade_info_items()
+            self.create_add_trade_info_win_items()
 
-        # add trade button
-        self.dpg.add_button(tag=configs.TRADE_INPUT_ADD_BTN_ID,
-                            label=configs.TRADE_INPUT_ADD_BTN_TEXT,
-                            callback=self.add_callback)
+    def create_add_trade_info_win_items(self):
+        self.dpg.add_spacer(height=configs.TRADE_INPUT_ADD_INFO_WIN_SPACERY)
 
-    def create_add_trade_info_items(self):
         # ticker input
         with self.dpg.group(horizontal=True):
+            self.dpg.add_text(tag=configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT_ID,
+                              default_value=configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT)
             self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID,
-                                    hint=configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT,
                                     width=configs.TRADE_INPUT_INFO_WINDOW_TICKER_WIDTH)
             self.dpg.add_button(tag=configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID,
                                 label=configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_TEXT,
@@ -95,9 +110,11 @@ class InputTrade:
                                 callback=self.current_price_callback)
 
         # reason input
-        self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_REASON_TEXT)
-        self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_REASON_ID,
-                                multiline=True)
+        self.dpg.add_spacer(height=configs.TRADE_INPUT_REASON_INPT_SPACERY)
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_REASON_TEXT)
+            self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_REASON_ID,
+                                    multiline=True)
 
         self.hide_option_items()
 
@@ -189,6 +206,8 @@ class InputTrade:
 
     # choose the options contract
     def contract_callback(self):
+        # todo focus back on the choose contract win if present
+
         self.dpg.disable_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
 
         self.option = Options(self.dpg, configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
@@ -288,6 +307,7 @@ class InputTrade:
 
     def hide_stock_crypto_items(self):
         self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+        self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT_ID)
         self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
         self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
 
@@ -295,6 +315,7 @@ class InputTrade:
         self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
         self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID)
         self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
+        self.dpg.show_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT_ID)
 
     def hide_option_items(self):
         self.dpg.hide_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
@@ -354,6 +375,9 @@ class InputTrade:
 
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID):
             self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
+
+        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT_ID):
+            self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT_ID)
 
         self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
         self.dpg.remove_alias(configs.TRADE_INPUT_WINDOW_ID)

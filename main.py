@@ -38,10 +38,14 @@ def create_dpg_fonts():
 def create_dpg_themes():
     # todo once you setup your themes for each window, see similarities and put them as default
 
+    # default theme
+    with dpg.theme(tag=configs.DEFAULT_THEME_ID):
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 8, category=dpg.mvThemeCat_Core)
+
     # login theme
     with dpg.theme(tag=configs.LOGIN_THEME_ID):
         with dpg.theme_component(dpg.mvAll):
-            dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 6, category=dpg.mvThemeCat_Core)
             dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 15, 7, category=dpg.mvThemeCat_Core)
             dpg.add_theme_style(dpg.mvStyleVar_WindowRounding, 7, category=dpg.mvThemeCat_Core)
             dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 20, 20, category=dpg.mvThemeCat_Core)
@@ -50,7 +54,6 @@ def create_dpg_themes():
     # register theme
     with dpg.theme(tag=configs.REGISTER_THEME_ID):
         with dpg.theme_component(dpg.mvAll):
-            dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 6, category=dpg.mvThemeCat_Core)
             dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 15, 7, category=dpg.mvThemeCat_Core)
             dpg.add_theme_style(dpg.mvStyleVar_WindowRounding, 7, category=dpg.mvThemeCat_Core)
             dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 20, 20, category=dpg.mvThemeCat_Core)
@@ -59,13 +62,22 @@ def create_dpg_themes():
     # fintracker theme
     with dpg.theme(tag=configs.FINTRACKER_THEME_ID):
         with dpg.theme_component(dpg.mvAll):
-            dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 8, category=dpg.mvThemeCat_Core)
             dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 4, 8, category=dpg.mvThemeCat_Core)
 
     # dialog theme
     with dpg.theme(tag=configs.DIALOG_THEME_ID):
         with dpg.theme_component(dpg.mvAll):
             dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 8, category=dpg.mvThemeCat_Core)
+
+    # trade input theme
+    with dpg.theme(tag=configs.TRADE_INPUT_THEME_ID):
+        with dpg.theme_component(dpg.mvRadioButton):
+            dpg.add_theme_style(dpg.mvStyleVar_ItemSpacing, 20, 20, category=dpg.mvThemeCat_Core)
+
+        with dpg.theme_component(dpg.mvAll):
+            dpg.add_theme_style(dpg.mvStyleVar_WindowPadding, 20, 8, category=dpg.mvThemeCat_Core)
+
+    dpg.bind_theme(configs.DEFAULT_THEME_ID)
 
 
 if __name__ == '__main__':
