@@ -43,7 +43,9 @@ class DialogWin:
 
             # leave the trade input window alone as users might want to add multiple trades at once
             if not self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_ID) \
-                    and not isinstance(self.prev_win, investment_tracker.Fintracker):
+                    and not isinstance(self.prev_win, investment_tracker.Fintracker) \
+                    and not self.dpg.does_alias_exist(configs.LOGIN_WINDOW_ID) \
+                    and not self.dpg.does_alias_exist(configs.REGISTER_WINDOW_ID):
                 self.prev_win.cleanup_alias()
 
     def close_dialog_win(self):

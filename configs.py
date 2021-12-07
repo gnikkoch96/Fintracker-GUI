@@ -96,11 +96,12 @@ LOGIN_WINDOW_ID = "Login Window"
 LOGIN_INPUT_EMAIL_ID = "Login E-Mail"
 LOGIN_INPUT_PASS_ID = "Login Password"
 LOGIN_INPUT_BTN_ID = "Login Button"
-LOGIN_INPUT_ERROR_ID = "Login Error"
 LOGIN_REGISTER_BTN_ID = "Login_Register"
 LOGIN_OFFLINE_BTN_ID = "Offline Mode"
 
 # register window
+REGISTER_THEME_ID = "Register Theme"
+REGISTER_HEADER_ID = "Register Header"
 REGISTER_WINDOW_ID = "Register Window"
 REGISTER_INPUT_EMAIL_ID = "Register Email"
 REGISTER_INPUT_PASS_ID = "Register Pass"
@@ -137,6 +138,11 @@ LOGIN_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 4,
                               FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 3)
 LOGIN_WINDOW_POS_VALUE = [FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2 - LOGIN_WINDOW_VIEWPORT_SIZE[0] / 2
     , FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 2 - LOGIN_WINDOW_VIEWPORT_SIZE[1] / 2]
+
+REGISTER_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 3,
+                                 FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 2)
+REGISTER_WINDOW_POS_VALUE = [FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2 - REGISTER_WINDOW_VIEWPORT_SIZE[0] / 2
+    , FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 2 - REGISTER_WINDOW_VIEWPORT_SIZE[1] / 2]
 
 TRADE_INPUT_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2,
                                     FINTRACKER_WINDOW_VIEWPORT_SIZE[1])
@@ -326,19 +332,22 @@ VIEW_TRADE_SUCCESS_EDIT_MSG_TEXT = "[SUCCESS] Updated Trade!"
 
 # login
 LOGIN_HEADER_TEXT = "Fintracker | Login"
+LOGIN_FAILED_MSG_TEXT = "[ERROR] Invalid Login Credentials"
 LOGIN_INPUT_EMAIL_TEXT = "Enter E-Mail"
 LOGIN_INPUT_PASS_TEXT = "Enter Password"
-LOGIN_INPUT_ERROR_TEXT = "[ERROR] Invalid Login Credentials"
 LOGIN_INPUT_BTN_TEXT = "Login"
 LOGIN_REGISTER_BTN_TEXT = "Not a user? Sign up now!"
 LOGIN_OFFLINE_BTN_TEXT = "Go Offline"
 LOGIN_SUCCESSFUL_MSG_TEXT = "[SUCCESS] Logged in Successfully"
 
 # register
-REGISTER_WINDOW_TEXT = "(FinTracker) Register"
+REGISTER_SPACERX_VALUE = 65
+REGISTER_SPACERY_VALUE = 10
+REGISTER_HEADER_TEXT = "Fintracker | Register"
 REGISTER_INPUT_EMAIL_TEXT = "Enter E-Mail"
 REGISTER_INPUT_PASS_TEXT = "Enter Password"
-REGISTER_INPUT_ERROR_TEXT = "[ERROR] E-Mail is currently being used and/or Confirm Password and Password are not the same."
+REGISTER_SUCCESS_MSG_TEXT = "[SUCCESS] Registered new account! Thank You."
+REGISTER_FAILED_MSG_TEXT = "[ERROR] E-Mail is currently being used and/or Confirm Password and Password are not the same."
 REGISTER_BTN_TEXT = "Register"
 REGISTER_LOGIN_BTN_TEXT = "Already have an account? Click Here"
 REGISTER_INPUT_CONFIRM_PASS_TEXT = "Confirm Password"

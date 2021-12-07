@@ -59,11 +59,6 @@ class Login:
                                     hint=configs.LOGIN_INPUT_PASS_TEXT,
                                     password=True)
 
-        # error message
-        self.dpg.add_text(tag=configs.LOGIN_INPUT_ERROR_ID,
-                          default_value=configs.LOGIN_INPUT_ERROR_TEXT)
-        self.dpg.hide_item(configs.LOGIN_INPUT_ERROR_ID)
-
         # register + offline
         with self.dpg.group(horizontal=True):
             # register button
@@ -92,7 +87,7 @@ class Login:
             self.dpg.hide_item(configs.LOGIN_WINDOW_ID)
 
         else:
-            self.dpg.show_item(configs.LOGIN_INPUT_ERROR_ID)
+            DialogWin(self.dpg, configs.LOGIN_FAILED_MSG_TEXT, self)
             self.reset_input_fields()
 
     def reset_input_fields(self):
