@@ -670,6 +670,7 @@ class Fintracker:
 
     # calculates the win rate
     def calculate_win_rate(self):
+
         # get all closed trades
         closed_trades_crypto_stock = firebase_conn.get_closed_trades_db(self.user_id, False)
         closed_trades_options = firebase_conn.get_closed_trades_db(self.user_id, True)

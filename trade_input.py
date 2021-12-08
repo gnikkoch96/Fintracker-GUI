@@ -1,3 +1,5 @@
+import time
+
 import configs
 import yfinance_tool as yft
 import cngko_tool as cgt
@@ -124,7 +126,10 @@ class InputTrade:
         self.hide_option_items()
 
     def current_price_callback(self):
+        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+
         if not self.is_ticker_empty():
+
             ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
             curr_price = 0
 
@@ -133,22 +138,42 @@ class InputTrade:
                 if yft.validate_ticker(ticker):
                     curr_price = yft.get_stock_price(ticker)
                 else:
+                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+                    # todo cleanup
+                    time.sleep(0.01)
+
+                    # current price error dialog
                     DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_FAIL_MSG, self)
 
             else:  # get crypto price
                 if cgt.validate_coin(ticker):
                     curr_price = cgt.get_current_price(ticker)
                 else:
+                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+                    # todo cleanup
+                    time.sleep(0.01)
+
+                    # current price error dialog
                     DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_FAIL_MSG, self)
 
             self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
 
         else:
+            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+            # todo cleanup
+            time.sleep(0.01)
+
+            # empty current price error dialog
             DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_EMPTY_FAIL_MSG, self)
 
-
     def add_callback(self):
+        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+
         if self.validate_inputs():
+
             bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
             count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
             invest_type = self.investment_type.upper()
@@ -201,6 +226,11 @@ class InputTrade:
                 firebase_conn.add_open_trade_db(self.user_id, data, True)
                 self.update_to_open_table(data, True)
 
+            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+            # todo cleanup
+            time.sleep(0.01)
+
             # success add message
             DialogWin(self.dpg, configs.TRADE_INPUT_SUCCESS_ADD_MSG_TEXT, self)
 
@@ -222,23 +252,49 @@ class InputTrade:
 
     def load_stock_info(self):
         ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
+        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
 
         # todo think about putting this in a separate method
         if not self.is_ticker_empty():
             if self.is_crypto():
                 if cgt.validate_coin(ticker.lower()):
+                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+                    # todo cleanup
+                    time.sleep(0.01)
+
                     CryptoStockInfo(self.dpg, ticker, True)
                 else:
+                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+                    # todo cleanup
+                    time.sleep(0.01)
+
                     # invalid token msg
                     DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_TOKEN_MSG_TEXT, self)
             elif self.is_stock():
                 if yft.validate_ticker(ticker):
+                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+                    # todo cleanup
+                    time.sleep(0.01)
+
                     CryptoStockInfo(self.dpg, ticker)
                 else:
+                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+                    # todo cleanup
+                    time.sleep(0.01)
+
                     # invalid ticker msg
                     DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_TICKER_MSG_TEXT, self)
 
         else:
+            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+            # todo cleanup
+            time.sleep(0.01)
+
             # empty input msg
             DialogWin(self.dpg, configs.TRADE_INPUT_TICKER_INPUT_EMPTY_MSG_TEXT, self)
 
@@ -282,6 +338,11 @@ class InputTrade:
             # invalid bought_price
             if not check_bought_price[0]:
                 message += check_bought_price[1]
+
+            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+            # todo cleanup
+            time.sleep(0.01)
 
             # error message
             DialogWin(self.dpg, message, self)

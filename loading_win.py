@@ -1,3 +1,4 @@
+import time
 import dearpygui.dearpygui as dpg
 import configs
 
@@ -15,3 +16,14 @@ def launch_load_win():
         dpg.add_text(configs.LOADING_TEXT)
 
         # todo add a cancel button
+
+
+def show_load_win():
+    dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+
+
+def hide_load_win():
+    dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+    # timer sleep to allow next window to load
+    time.sleep(0.01)

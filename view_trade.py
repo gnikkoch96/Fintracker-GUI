@@ -1,5 +1,6 @@
 import configs
 import firebase_conn
+import loading_win
 import validations
 from search_options import Options
 from dialog_win import DialogWin
@@ -206,6 +207,8 @@ class ViewTrade:
 
     # stores the edited values to firebase
     def save_callback(self):
+        loading_win.show_load_win()
+
         if self.validate_edit():
             # getting edited data
             trade = self.dpg.get_value(configs.VIEW_TRADE_TICKER_CONTRACT_ID)
@@ -274,11 +277,10 @@ class ViewTrade:
             # update the total profit and win rate from fintracker
             self.fintracker.calculate_total_profit_win_rate_thread()
 
+            loading_win.hide_load_win()
+
             # success edit msg
             DialogWin(self.dpg, configs.VIEW_TRADE_SUCCESS_EDIT_MSG_TEXT, self)
-        else:
-            # load dialog
-            pass
 
     # create option window for the user to choose another option
     def change_contract_callback(self):
@@ -352,6 +354,8 @@ class ViewTrade:
             # invalid sold price
             if not valid_sold_price[0]:
                 message += valid_sold_price[1]
+
+            loading_win.hide_load_win()
 
             # error message
             DialogWin(self.dpg, message, self)
