@@ -28,6 +28,7 @@ class ViewTrade:
                              label=configs.VIEW_TRADE_WINDOW_TEXT,
                              width=configs.VIEW_TRADE_WINDOW_SIZE[0],
                              height=configs.VIEW_TRADE_WINDOW_SIZE[1],
+                             pos=self.dpg.get_mouse_pos(),
                              on_close=self.cleanup_alias):
             self.create_view_trades_win_items()
 
@@ -49,112 +50,141 @@ class ViewTrade:
             profit_per = self.trade_data[configs.FIREBASE_PROFIT_PERCENTAGE]
             sold_price = self.trade_data[configs.FIREBASE_SOLD_PRICE]
 
-        # display contract or ticker
+        # display contract or ticker and date
+        self.dpg.add_spacer(height=configs.VIEW_TRADE_SPACERY)
         with self.dpg.group(horizontal=True):
-            # label
+            self.dpg.add_spacer(width=configs.VIEW_TRADE_SPACERX)
+
+            # trade label
             self.dpg.add_text(configs.VIEW_TRADE_TICKER_CONTRACT_TEXT)
 
             # trade value
             self.dpg.add_input_text(tag=configs.VIEW_TRADE_TICKER_CONTRACT_ID,
+                                    width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
                                     default_value=trade)
 
-            # change contract button (hidden in the beginning)
-            self.dpg.add_button(tag=configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID,
-                                label=configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_TEXT,
-                                callback=self.change_contract_callback)
-
-        # display date
-        with self.dpg.group(horizontal=True):
-            # label
+            # date label
             self.dpg.add_text(configs.VIEW_TRADE_DATE_TEXT)
 
             # date value
             self.dpg.add_input_text(tag=configs.VIEW_TRADE_DATE_ID,
+                                    width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
                                     default_value=date)
+            # date tooltip
+            with self.dpg.tooltip(configs.VIEW_TRADE_DATE_ID):
+                self.dpg.add_text(configs.VIEW_TRADE_DATE_TOOLTIP_TEXT)
+
+        # display stock type
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.VIEW_TRADE_SPACERX)
+
+            # trade type label
+            self.dpg.add_text(configs.VIEW_TRADE_TYPE_TEXT)
+
+            # trade type value
+            self.dpg.add_input_text(tag=configs.VIEW_TRADE_TYPE_ID,
+                                    width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
+                                    default_value=trade_type)
+
+            # count label
+            self.dpg.add_text(configs.VIEW_TRADE_COUNT_TEXT)
+
+            # count value
+            self.dpg.add_input_int(tag=configs.VIEW_TRADE_COUNT_ID,
+                                   width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
+                                   default_value=count)
+
+        # display bought price and sold price
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.VIEW_TRADE_SPACERX)
+
+            # bought price label
+            self.dpg.add_text(configs.VIEW_TRADE_BOUGHT_PRICE_TEXT)
+
+            # bought price value
+            self.dpg.add_input_float(tag=configs.VIEW_TRADE_BOUGHT_PRICE_ID,
+                                     width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
+                                     default_value=bought_price)
+
+            # if viewing closing trade display sold price
+            if not self.for_open_table():
+                # sold label
+                self.dpg.add_text(configs.VIEW_TRADE_SOLD_PRICE_TEXT)
+
+                # sold price value
+                self.dpg.add_input_int(tag=configs.VIEW_TRADE_SOLD_PRICE_ID,
+                                       width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
+                                       default_value=sold_price)
+
+        # display net profit and profit percentage (not editable)
+        if not self.for_open_table():
+            with self.dpg.group(horizontal=True):
+                self.dpg.add_spacer(width=configs.VIEW_TRADE_SPACERX)
+
+                # label
+                self.dpg.add_text(configs.VIEW_TRADE_NET_PROFIT_TEXT)
+
+                # net profit value
+                self.dpg.add_input_text(tag=configs.VIEW_TRADE_NET_PROFIT_ID,
+                                        width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
+                                        default_value=str(net_profit))
+
+                # label
+                self.dpg.add_text(configs.VIEW_TRADE_PROFIT_PERCENTAGE_TEXT)
+
+                # profit percentage value
+                self.dpg.add_input_text(tag=configs.VIEW_TRADE_PROFIT_PERCENTAGE_ID,
+                                        width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
+                                        default_value=str(profit_per))
+
+        # display reason
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.VIEW_TRADE_SPACERX)
+
+            # label
+            self.dpg.add_text(configs.VIEW_TRADE_REASON_TEXT)
+
+            # reason value
+            self.dpg.add_input_text(tag=configs.VIEW_TRADE_REASON_ID,
+                                    multiline=True,
+                                    default_value=reason)
+
+        # change buttons
+        with self.dpg.group(horizontal=True):
+            if self.is_option:
+                self.dpg.add_spacer(width=configs.VIEW_TRADE_CHANGE_BTNS_SPACERX)
+            else:
+                self.dpg.add_spacer(width=configs.VIEW_TRADE_CHANGE_DATE_SPACERX)
 
             # change date button (hidden in the beginning)
             self.dpg.add_button(tag=configs.VIEW_TRADE_CHANGE_DATE_BTN_ID,
                                 label=configs.VIEW_TRADE_CHANGE_DATE_BTN_TEXT,
                                 callback=self.change_date_callback)
 
-        # display stock type
-        with self.dpg.group(horizontal=True):
-            # label
-            self.dpg.add_text(configs.VIEW_TRADE_TYPE_TEXT)
-
-            # trade type value
-            self.dpg.add_input_text(tag=configs.VIEW_TRADE_TYPE_ID,
-                                    default_value=trade_type)
-
-        # display count
-        with self.dpg.group(horizontal=True):
-            # label
-            self.dpg.add_text(configs.VIEW_TRADE_COUNT_TEXT)
-
-            # count value
-            self.dpg.add_input_int(tag=configs.VIEW_TRADE_COUNT_ID,
-                                   default_value=count)
-
-        # display bought price
-        with self.dpg.group(horizontal=True):
-            # label
-            self.dpg.add_text(configs.VIEW_TRADE_BOUGHT_PRICE_TEXT)
-
-            # bought price value
-            self.dpg.add_input_float(tag=configs.VIEW_TRADE_BOUGHT_PRICE_ID,
-                                     default_value=bought_price)
-
-        # if viewing closing trade
-        if not self.for_open_table():
-            # display sold price
-            with self.dpg.group(horizontal=True):
-                # label
-                self.dpg.add_text(configs.VIEW_TRADE_SOLD_PRICE_TEXT)
-
-                # sold price value
-                self.dpg.add_input_int(tag=configs.VIEW_TRADE_SOLD_PRICE_ID,
-                                       default_value=sold_price)
-
-            # display net profit (not editable)
-            with self.dpg.group(horizontal=True):
-                # label
-                self.dpg.add_text(configs.VIEW_TRADE_NET_PROFIT_TEXT)
-
-                # net profit value
-                self.dpg.add_input_float(tag=configs.VIEW_TRADE_NET_PROFIT_ID,
-                                         default_value=net_profit)
-
-            # display profit percentage (not editable)
-            with self.dpg.group(horizontal=True):
-                # label
-                self.dpg.add_text(configs.VIEW_TRADE_PROFIT_PERCENTAGE_TEXT)
-
-                # profit percentage value
-                self.dpg.add_input_float(tag=configs.VIEW_TRADE_PROFIT_PERCENTAGE_ID,
-                                         default_value=profit_per)
-        # display reason
-        with self.dpg.group(horizontal=True):
-            # label
-            self.dpg.add_text(configs.VIEW_TRADE_REASON_TEXT)
-
-            # reason value
-            self.dpg.add_input_text(tag=configs.VIEW_TRADE_REASON_ID,
-                                    default_value=reason)
+            # change contract button (hidden in the beginning)
+            self.dpg.add_button(tag=configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID,
+                                label=configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_TEXT,
+                                callback=self.change_contract_callback)
 
         # edit button
-        self.dpg.add_button(tag=configs.VIEW_TRADE_EDIT_BTN_ID,
-                            label=configs.VIEW_TRADE_EDIT_BTN_TEXT,
-                            callback=self.edit_callback)
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.VIEW_TRADE_EDIT_BTN_SPACERX)
+            self.dpg.add_button(tag=configs.VIEW_TRADE_EDIT_BTN_ID,
+                                label=configs.VIEW_TRADE_EDIT_BTN_TEXT,
+                                callback=self.edit_callback)
 
-        # save button (hidden in the beginning)
-        self.dpg.add_button(tag=configs.VIEW_TRADE_SAVE_BTN_ID,
-                            label=configs.VIEW_TRADE_SAVE_BTN_TEXT,
-                            callback=self.save_callback)
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.VIEW_TRADE_SAVE_CANCEL_BTNS_SPACERX)
 
-        # cancel button (hidden in the beginning)
-        self.dpg.add_button(tag=configs.VIEW_TRADE_CANCEL_BTN_ID,
-                            label=configs.VIEW_TRADE_CANCEL_BTN_TEXT,
-                            callback=self.cancel_callback)
+            # save button (hidden in the beginning)
+            self.dpg.add_button(tag=configs.VIEW_TRADE_SAVE_BTN_ID,
+                                label=configs.VIEW_TRADE_SAVE_BTN_TEXT,
+                                callback=self.save_callback)
+
+            # cancel button (hidden in the beginning)
+            self.dpg.add_button(tag=configs.VIEW_TRADE_CANCEL_BTN_ID,
+                                label=configs.VIEW_TRADE_CANCEL_BTN_TEXT,
+                                callback=self.cancel_callback)
 
         self.disable_items()
 
