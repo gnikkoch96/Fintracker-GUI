@@ -6,38 +6,34 @@ coin_gecko = CoinGeckoAPI()
 
 def validate_coin(ticker):
     # empty ticker (coin gecko sets search to bitcoin for empty strings)
-    # todo cleanup
     if ticker == "":
         return False
 
     try:
-
         coin_gecko.get_coin_by_id(id=ticker.lower())
         return True
     except:
         return False
 
 
+# returns the simplified name for the coin (i.e Bitcoin -> BTC)
 def get_symbol(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
     return coin[configs.COINGECKO_SYMBOL].upper()
 
 
+# returns the full name of the coin (i.e. Bitcoin, Etherium)
 def get_name(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
     return coin[configs.COINGECKO_NAME].upper()
 
 
+# returns the hashing algorithm the coin uses (i.e. Proof of Stake)
 def get_hashing_algorithm(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
     return coin[configs.COINGECKO_HASHINGALGO]
 
-
-def get_categories(ticker):
-    coin = coin_gecko.get_coin_by_id(id=ticker)
-    return coin[configs.COINGECKO_CATEGORIES]
-
-
+# returns the 
 def get_description(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
     return coin[configs.COINGECKO_DESC][configs.COINGECKO_ENGLISH]
