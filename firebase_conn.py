@@ -19,6 +19,7 @@ def authenticate_user_login(email, password):
     except:
         return None
 
+
 # attempts to create an account using passed email and password
 def create_user_account(email, password):
     try:
@@ -119,6 +120,7 @@ def remove_closed_trade_by_id(user_id, is_option, trade_id):
     else:
         firebase_db.child(user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
             configs.FIREBASE_STOCK_CRYPTO).child(trade_id).remove()
+
 
 # retrieves all closed trades corresponding to user id
 def get_closed_trades_db(user_id, is_option):

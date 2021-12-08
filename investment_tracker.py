@@ -7,6 +7,7 @@ from sell_trade import SellTrade
 from dialog_win import DialogWin
 
 
+# desc: the main hub for displaying information (closed and open trades, total profit, and win rate)
 class Fintracker:
 
     # user_id is none if the user chooses to go offline
@@ -43,7 +44,9 @@ class Fintracker:
                              width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1],
                              no_resize=True):
+            # displays login success dialog
             DialogWin(self.dpg, configs.LOGIN_SUCCESSFUL_MSG_TEXT, self)
+
             self.dpg.set_primary_window(configs.FINTRACKER_WINDOW_ID, True)
             self.create_fintracker_win_menu()
             self.create_fintracker_win_items()
@@ -129,7 +132,7 @@ class Fintracker:
                               parent=configs.FINTRACKER_CLOSED_TRADES_ID)
             self.load_closed_table(True)
 
-    # is_option flag will load the corresponding table (i.e crypto/stock or option)
+    # is_option flag will load under corresponding table (i.e crypto/stock or option)
     def load_closed_table(self, is_option):
         if is_option:
             table_tag = configs.FINTRACKER_CLOSED_TRADES_OPTION_TABLE_ID
@@ -160,7 +163,7 @@ class Fintracker:
             self.dpg.add_table_column(label=configs.FIREBASE_PROFIT_PERCENTAGE)
             self.dpg.add_table_column(label=configs.FINTRACKER_REMOVE_TEXT)
 
-            # don't continue if there are no trades
+            # don't continue if there are no trades (placed here so at least it loads the column headers)
             if firebase_conn.get_closed_trades_db(self.user_id, is_option) is None:
                 return
 
@@ -169,6 +172,7 @@ class Fintracker:
 
             # load data to the table
             for closed_trade_id in closed_trades:
+                # used for row tag
                 self.num_closed_trade_rows += 1
 
                 # retrieve individual trade based on trade id
@@ -187,18 +191,16 @@ class Fintracker:
                 net_profit = closed_trade[configs.FIREBASE_NET_PROFIT]
                 profit_per = closed_trade[configs.FIREBASE_PROFIT_PERCENTAGE]
 
-                # crypto prices are not rounded
+                # only round on non-crypto trades
                 if invest_type != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT:
                     bought_price = round(bought_price, 2)
 
-                # table row
-
                 # used to cleanup row tag alias when logging out
-                # todo make this cleaner
                 if self.dpg.does_alias_exist(
                         configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_closed_trade_rows)):
                     self.dpg.remove_alias(configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_closed_trade_rows))
 
+                # table row
                 row_tag = configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_closed_trade_rows)
                 with self.dpg.table_row(tag=row_tag,
                                         parent=table_tag):
@@ -316,7 +318,6 @@ class Fintracker:
                     trade = open_trade[configs.FIREBASE_TICKER]
                 else:
                     trade = open_trade[configs.FIREBASE_CONTRACT]
-
                 bought_price = open_trade[configs.FIREBASE_BOUGHT_PRICE]
                 count = open_trade[configs.FIREBASE_COUNT]
                 invest_type = open_trade[configs.FIREBASE_TYPE]
@@ -511,6 +512,7 @@ class Fintracker:
                                     callback=self.closed_trade_remove_callback,
                                     user_data=(row_tag, is_option, closed_trade_id))
 
+    # used by classes that update the values of a row from a given table
     def update_table_row(self, row_tag, new_data, is_options, for_open_table):
         # get the columns for the row (since no tag was given to them)
         row_cols = self.dpg.get_item_children(row_tag, 1)
@@ -531,7 +533,6 @@ class Fintracker:
             new_net_profit = new_data[configs.FIREBASE_NET_PROFIT]
             new_profit_per = new_data[configs.FIREBASE_PROFIT_PERCENTAGE]
 
-        # todo make this cleaner
         counter = 0
         for row_col_id in row_cols:
             row_col_items = self.dpg.get_item_children(row_col_id, 1)
@@ -558,9 +559,7 @@ class Fintracker:
 
                     counter += 1
 
-    def exit_menu_callback(self):
-        self.dpg.stop_dearpygui()
-
+    # opens the trade input window
     def add_callback(self):
         # give focus back to the trade input window if present
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID):
@@ -569,6 +568,7 @@ class Fintracker:
             # create a new trade input window
             InputTrade(self.dpg, self.user_id, self)
 
+    # opens the sell trade window
     def sell_callback(self, sender, app_data, user_data):
         self.close_view_trade_win()
 
@@ -583,6 +583,7 @@ class Fintracker:
             self.close_sell_trade_win()
             self.sell_trade = SellTrade(self.dpg, self, trade_id, is_option, row_tag)
 
+    # launches the view trade window with current trade's info
     def view_trade_callback(self, sender, app_data, user_data):
         trade_id = user_data[0]
         is_option = user_data[1]
@@ -623,12 +624,17 @@ class Fintracker:
 
         self.dpg.delete_item(row_tag)
 
+    # logs the user out
     def logout_menu_callback(self):
         # close the fintracker window
         self.close_fintracker_win()
 
         # display login screen
         self.dpg.show_item(configs.LOGIN_WINDOW_ID)
+
+    # stops the program
+    def exit_menu_callback(self):
+        self.dpg.stop_dearpygui()
 
     # used for calculating the total profit and win-rate thread (reduces lag upon logging in)
     def load_profit_win_rate(self):
@@ -668,7 +674,7 @@ class Fintracker:
 
         return round(total_profit, 2)
 
-    # calculates the win rate
+    # calculates the win rate percentage
     def calculate_win_rate(self):
 
         # get all closed trades
