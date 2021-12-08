@@ -58,6 +58,7 @@ class InputTrade:
         self.create_add_trade_info_win()
 
         # add trade button
+        self.dpg.add_spacer(width=configs.TRADE_INPUT_ADD_BTN_SPACERY)
         with self.dpg.group(horizontal=True):
             self.dpg.add_spacer(width=configs.TRADE_INPUT_ADD_BTN_SPACERX)
             self.dpg.add_button(tag=configs.TRADE_INPUT_ADD_BTN_ID,
@@ -376,6 +377,10 @@ class InputTrade:
 
         if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT_ID):
             self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT_ID)
+
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_ID):
+            self.dpg.delete_item(configs.OPTION_WINDOW_ID)
+            self.option.cleanup_alias()
 
         self.dpg.remove_alias(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID)
         self.dpg.remove_alias(configs.TRADE_INPUT_WINDOW_ID)

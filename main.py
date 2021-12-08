@@ -76,7 +76,7 @@ def create_dpg_themes():
     with dpg.theme(tag=configs.FINTRACKER_THEME_ID):
         with dpg.theme_component(dpg.mvAll):
             dpg.add_theme_style(dpg.mvStyleVar_FramePadding, 4, 8, category=dpg.mvThemeCat_Core)
-
+            dpg.add_theme_color(dpg.mvThemeCol_MenuBarBg, (0, 0, 0), category=dpg.mvThemeCat_Core)
     # dialog theme
     with dpg.theme(tag=configs.DIALOG_THEME_ID):
         with dpg.theme_component(dpg.mvAll):

@@ -46,12 +46,16 @@ class Options:
                              label=configs.OPTIONS_WINDOW_TEXT,
                              width=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[1],
+                             pos=configs.OPTIONS_WINDOW_POS,
+                             no_resize=True,
                              on_close=self.cleanup_alias):
             self.create_options_win_items()
 
     def create_options_win_items(self):
         # retrieve ticker option data
         with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.OPTIONS_WINDOW_INPUT_SEARCH_GROUP_SPACERX)
+
             # ticker input
             self.dpg.add_input_text(tag=configs.OPTION_WINDOW_TICKER_INPUT_ID,
                                     hint=configs.OPTION_WINDOW_TICKER_INPUT_TEXT)
@@ -75,6 +79,7 @@ class Options:
 
         if self.validate_input(ticker):
             with self.dpg.group(horizontal=True, parent=configs.OPTION_WINDOW_ID):
+                self.dpg.add_spacer(width=configs.OPTIONS_WINDOW_COMBOS_GROUP_SPACERX)
 
                 # call or put combo (user chooses)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
@@ -203,7 +208,8 @@ class Options:
 
     # removes aliases - might get fixed in the next update
     def cleanup_alias(self):
-        self.dpg.enable_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
+        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID):
+            self.dpg.enable_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
 
         if self.dpg.does_alias_exist(configs.OPTION_WINDOW_ID):
             self.dpg.remove_alias(configs.OPTION_WINDOW_ID)
@@ -228,3 +234,5 @@ class Options:
 
         if self.dpg.does_alias_exist(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID):
             self.dpg.remove_alias(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID)
+
+
