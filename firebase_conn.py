@@ -11,24 +11,20 @@ firebase_auth = firebase.auth()
 firebase_db = firebase.database()
 
 
+# returns the user's id once authenticated
 def authenticate_user_login(email, password):
     try:
         auth = firebase_auth.sign_in_with_email_and_password(email, password)
-
-        return auth[configs.FIREBASE_LOCAL_ID]  # returns the user's id
+        return auth[configs.FIREBASE_LOCAL_ID]
     except:
         return None
 
-
+# attempts to create an account using passed email and password
 def create_user_account(email, password):
     try:
         firebase_auth.create_user_with_email_and_password(email, password)
-
-        # todo remove this
-        print("Successfully Created an Account")
         return True
     except:
-        print("Password has to have a length of 6 or higher")
         return False
 
 

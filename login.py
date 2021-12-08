@@ -29,7 +29,7 @@ class Login:
             self.apply_themes()
 
     def apply_fonts(self):
-        self.dpg.bind_item_font(configs.LOGIN_HEADER_ID, configs.HEADER_FONT)
+        self.dpg.bind_item_font(configs.LOGIN_HEADER_ID, configs.HEADER_FONT_THEME_ID)
 
     def apply_themes(self):
         self.dpg.bind_item_theme(configs.LOGIN_WINDOW_ID, configs.LOGIN_THEME_ID)

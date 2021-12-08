@@ -34,9 +34,9 @@ def create_windows():
 
 def create_dpg_fonts():
     with dpg.font_registry():
-        dpg.add_font(configs.OSWALD_FONT_PATH, 20, tag=configs.DEFAULT_FONT)
-        dpg.add_font(configs.OSWALD_FONT_PATH, 30, tag=configs.HEADER_FONT)
-        dpg.bind_font(configs.DEFAULT_FONT)
+        dpg.add_font(configs.OSWALD_FONT_PATH, 20, tag=configs.DEFAULT_FONT_THEME_ID)
+        dpg.add_font(configs.OSWALD_FONT_PATH, 30, tag=configs.HEADER_FONT_THEME_ID)
+        dpg.bind_font(configs.DEFAULT_FONT_THEME_ID)
 
 
 def create_dpg_themes():
@@ -51,12 +51,12 @@ def create_dpg_themes():
     # etc. themes
 
     # used to display positive changes of stock/crypto prices
-    with dpg.theme(tag=configs.GREEN_TEXT_COLOR):
+    with dpg.theme(tag=configs.GREEN_TEXT_COLOR_THEME_ID):
         with dpg.theme_component(dpg.mvAll):
             dpg.add_theme_color(dpg.mvThemeCol_Text, (163, 239, 97), category=dpg.mvThemeCat_Core)
 
     # used to display negative changes of stock/crypto prices
-    with dpg.theme(tag=configs.RED_TEXT_COLOR):
+    with dpg.theme(tag=configs.RED_TEXT_COLOR_THEME_ID):
         with dpg.theme_component(dpg.mvAll):
             dpg.add_theme_color(dpg.mvThemeCol_Text, (242, 65, 65), category=dpg.mvThemeCat_Core)
 

@@ -10,7 +10,7 @@ from dialog_win import DialogWin
 # desc: search options gui that will display contracts to the user based on
 # ticker, call/put, and expiration date
 def create_option_type_combo_list():
-    option_types = [configs.OPTIONS_CALL_TEXT, configs.OPTIONS_PUT_TEXT]
+    option_types = [configs.OPTION_CALL_TEXT, configs.OPTION_PUT_TEXT]
     return option_types
 
 
@@ -48,7 +48,7 @@ class Options:
     def create_options_win(self):
         # options window
         with self.dpg.window(tag=configs.OPTION_WINDOW_ID,
-                             label=configs.OPTIONS_WINDOW_TEXT,
+                             label=configs.OPTION_WINDOW_TEXT,
                              width=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.OPTIONS_WINDOW_VIEWPORT_SIZE[1],
                              pos=configs.OPTIONS_WINDOW_POS,
@@ -59,7 +59,7 @@ class Options:
     def create_options_win_items(self):
         # retrieve ticker option data
         with self.dpg.group(horizontal=True):
-            self.dpg.add_spacer(width=configs.OPTIONS_WINDOW_INPUT_SEARCH_GROUP_SPACERX)
+            self.dpg.add_spacer(width=configs.OPTION_WINDOW_INPUT_SEARCH_GROUP_SPACERX)
 
             # ticker input
             self.dpg.add_input_text(tag=configs.OPTION_WINDOW_TICKER_INPUT_ID,
@@ -87,13 +87,13 @@ class Options:
         # combos + search contract button
         if self.validate_input(ticker):
             with self.dpg.group(horizontal=True, parent=configs.OPTION_WINDOW_ID):
-                self.dpg.add_spacer(width=configs.OPTIONS_WINDOW_COMBOS_GROUP_SPACERX)
+                self.dpg.add_spacer(width=configs.OPTION_WINDOW_COMBOS_GROUP_SPACERX)
 
                 # call or put combo (user chooses)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID,
                                    items=create_option_type_combo_list(),
                                    width=configs.OPTIONS_WINDOW_COMBO_WIDTH,
-                                   default_value=configs.OPTIONS_CALL_TEXT)
+                                   default_value=configs.OPTION_CALL_TEXT)
 
                 # date combo (callback will search)
                 self.dpg.add_combo(tag=configs.OPTION_WINDOW_DATE_COMBO_ID,

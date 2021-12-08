@@ -45,9 +45,9 @@ class CryptoStockInfo:
             change_per_text = self.dpg.add_text(str(change_per) + "%")
 
             if change_per > 0:
-                self.dpg.bind_item_theme(change_per_text, configs.GREEN_TEXT_COLOR)
+                self.dpg.bind_item_theme(change_per_text, configs.GREEN_TEXT_COLOR_THEME_ID)
             else:
-                self.dpg.bind_item_theme(change_per_text, configs.RED_TEXT_COLOR)
+                self.dpg.bind_item_theme(change_per_text, configs.RED_TEXT_COLOR_THEME_ID)
 
         # market cap
         self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_MRKTCAPTEXT + str(cgt.get_market_cap(lower_ticker)))

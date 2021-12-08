@@ -67,7 +67,7 @@ def get_options(ticker, contract_type, date):
     stock_options = stock.option_chain(date)
 
     # returns call contracts
-    if contract_type == configs.OPTIONS_CALL_TEXT:
+    if contract_type == configs.OPTION_CALL_TEXT:
         return stock_options[0]
     else:  # returns put contracts
         return stock_options[1]

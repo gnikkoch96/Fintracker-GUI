@@ -29,7 +29,7 @@ class Register:
             self.apply_theme()
 
     def apply_fonts(self):
-        self.dpg.bind_item_font(configs.REGISTER_HEADER_ID, configs.HEADER_FONT)
+        self.dpg.bind_item_font(configs.REGISTER_HEADER_ID, configs.HEADER_FONT_THEME_ID)
 
     def apply_theme(self):
         self.dpg.bind_item_theme(configs.REGISTER_WINDOW_ID, configs.REGISTER_THEME_ID)
