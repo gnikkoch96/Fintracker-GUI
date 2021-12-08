@@ -1,5 +1,6 @@
 import firebase_conn
 import configs
+import loading_win
 import tools
 from investment_tracker import Fintracker
 from dialog_win import DialogWin
@@ -72,6 +73,8 @@ class Login:
                                 callback=self.offline_callback)
 
     def login_callback(self):
+        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+
         # todo uncomment this in final product
         # email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
         # password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)

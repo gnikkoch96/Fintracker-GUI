@@ -1,5 +1,6 @@
 import dearpygui.dearpygui as dpg
 import configs
+import loading_win
 from login import Login
 from register import Register
 
@@ -12,6 +13,9 @@ def create_windows():
     dpg.setup_dearpygui()
     dpg.set_global_font_scale(configs.FONT_SCALE)
     dpg.set_viewport_small_icon(configs.FINTRACKER_VIEWPORT_ICON_PATH)
+
+    # todo cleanup (creates the loading window which will be used throughout program)
+    loading_win.launch_load_win()
 
     # fonts
     create_dpg_fonts()

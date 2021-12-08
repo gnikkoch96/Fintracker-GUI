@@ -23,6 +23,9 @@ DEFAULT_THEME_ID = "Default Theme"
 GREEN_TEXT_COLOR = "Green Text"
 RED_TEXT_COLOR = "Red Text"
 
+# loading window
+LOADING_WINDOW_ID = "Loading Window"
+
 # dialog
 DIALOG_WINDOW_ID = "Dialog Window"
 DIALOG_CONFIRMATION_BTN_ID = "Dialog Window Confirmation Button"
@@ -118,6 +121,8 @@ REGISTER_BTN_ID = "Register Button"
 REGISTER_LOGIN_BTN_ID = "Register_Login"
 REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 
+
+
 # value======================================================================
 FINTRACKER_VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
 FINTRACKER_LOGO_PATH = "resources/images/fintracker-logo.png"
@@ -192,6 +197,13 @@ DIALOG_CENTER_WINDOW_POS = [FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2 - DIALOG_WIND
     , FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 2 - DIALOG_WINDOW_VIEWPORT_SIZE[1] / 2]
 DIALOG_MESSAGE_WRAP_COUNT = 375
 
+LOADING_WINDOW_VIEWPORT_SIZE = (FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 6,
+                               FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 6.5)
+
+LOADING_WINDOW_CENTER_WINDOW_POS = [FINTRACKER_WINDOW_VIEWPORT_SIZE[0] / 2 - LOADING_WINDOW_VIEWPORT_SIZE[0] / 2
+    , FINTRACKER_WINDOW_VIEWPORT_SIZE[1] / 2 - LOADING_WINDOW_VIEWPORT_SIZE[1] / 2]
+
+
 # dearpygui keywords
 DPG_DATE_PICKER_YEAR = "year"
 DPG_DATE_PICKER_MONTH = "month"
@@ -248,6 +260,9 @@ YFINANCE_SHORTPERCENTFLOAT = "shortPercentOfFloat"
 YFINANCE_MARKETCAP = "marketCap"
 YFINANCE_SHORTNAME = "shortName"
 
+# loading
+LOADING_TEXT = "Loading...Please Wait"
+
 # dialog
 DIALOG_CONFIRMATION_BTN_TEXT = "Confirm"
 DIALOG_SUCCESS_TEXT = "SUCCESS"
@@ -269,7 +284,7 @@ OPTIONS_WINDOW_COMBOS_GROUP_SPACERX = OPTIONS_WINDOW_VIEWPORT_SIZE[0]/6
 
 # trade input
 TRADE_INPUT_THEME_ID = "Trade Input Theme"
-TRADE_INPUT_WINDOW_TEXT = "(Fintracker) Add Trade"
+TRADE_INPUT_WINDOW_TEXT = "Input Trade Info"
 TRADE_INPUT_ADD_BTN_TEXT = "Add Trade"
 TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_TEXT = "Ticker Info"
 TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_TOOLTIP_TEXT = "Enter Ticker to Learn More About It"

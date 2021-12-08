@@ -1,7 +1,11 @@
+import time
+
 import configs
+import loading_win
 import yfinance_tool as yft
 import threading
 from dialog_win import DialogWin
+
 
 # desc: search options gui that will display contracts to the user based on
 # ticker, call/put, and expiration date
@@ -16,10 +20,11 @@ class Options:
         self.dpg = dpg
         self.item_id = item_id
 
+        # used for reference from other classes (i.e. using the getter method)
         self._contract = None
 
         # search options thread (created to prevent waiting)
-        self.search_options_thread = None
+        # self.search_options_thread = None
 
         self.create_options_win()
 
@@ -65,18 +70,21 @@ class Options:
                                 label=configs.OPTION_SEARCH_BTN_TEXT,
                                 callback=self.search_callback)
 
-    # restart the loading option dates thread
+    # search options thread (created to prevent waiting)
     def search_callback(self):
-        self.search_options_thread = threading.Thread(target=self.load_option_combos,
-                                                      daemon=True)
-        self.search_options_thread.start()
+        threading.Thread(target=self.load_option_combos, daemon=True).start()
 
     # loads data to the combos (type and expiration date)
     def load_option_combos(self):
+        # instead of creating another window, we can just configure it
+        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+
+        # resets the table
         self.delete_option_win_items()
 
         ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
 
+        # combos + search contract button
         if self.validate_input(ticker):
             with self.dpg.group(horizontal=True, parent=configs.OPTION_WINDOW_ID):
                 self.dpg.add_spacer(width=configs.OPTIONS_WINDOW_COMBOS_GROUP_SPACERX)
@@ -97,11 +105,23 @@ class Options:
                 self.dpg.add_button(tag=configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID,
                                     label=configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_TEXT,
                                     callback=self.load_options)
+                self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
         else:
+            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+            # todo cleanup this was a quick fix (sleeping wastes cpu cycle)
+            time.sleep(0.0000001)
+
             DialogWin(self.dpg, configs.OPTION_INVALID_TICKER_MSG_TEXT, self)
+
+    def search_contract_callback(self):
+        threading.Thread(target=self.load_options(), daemon=True).start()
 
     # displays table listing all strike prices corresponding to call/put and expiration date
     def load_options(self):
+        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+
         self.delete_option_win_table()
 
         ticker = self.dpg.get_value(configs.OPTION_WINDOW_TICKER_INPUT_ID)
@@ -141,6 +161,8 @@ class Options:
                     with self.dpg.table_cell():
                         iv = round(options_list[configs.YFINANCE_IV_TEXT][row] * 100, 2)
                         self.dpg.add_text(iv)
+
+        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
 
     # storing contract choice
     def row_callback(self, sender, app_data, user_data):
@@ -237,5 +259,3 @@ class Options:
 
         if self.dpg.does_alias_exist(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID):
             self.dpg.remove_alias(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID)
-
-
