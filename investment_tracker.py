@@ -143,7 +143,7 @@ class Fintracker:
                             parent=configs.FINTRACKER_CLOSED_TRADES_ID):
 
             # column headers
-            self.dpg.add_table_column() # view trade
+            self.dpg.add_table_column()  # view trade
             self.dpg.add_table_column(label=configs.FIREBASE_DATE)
             self.dpg.add_table_column(label=configs.FIREBASE_TYPE)
 
@@ -295,8 +295,8 @@ class Fintracker:
                 self.dpg.add_table_column(label=configs.FIREBASE_CONTRACT)
             self.dpg.add_table_column(label=configs.FIREBASE_COUNT)
             self.dpg.add_table_column(label=configs.FIREBASE_BOUGHT_PRICE)
-            self.dpg.add_table_column(label=configs.FINTRACKER_SELL_TEXT)
-            self.dpg.add_table_column(label=configs.FINTRACKER_REMOVE_TEXT)
+            self.dpg.add_table_column()
+            self.dpg.add_table_column()
 
             # return if there are no trades to retrieve
             if firebase_conn.get_open_trades_db(self.user_id, is_option) is None:
@@ -598,6 +598,7 @@ class Fintracker:
     def open_trade_remove_callback(self, sender, app_data, user_data):
         # close the window of the removed trade if possible
         self.close_view_trade_win()
+        self.close_sell_trade_win()
 
         row_tag = user_data[0]
         is_option = user_data[1]
@@ -610,6 +611,7 @@ class Fintracker:
     def closed_trade_remove_callback(self, sender, app_data, user_data):
         # close the window of the removed trade if possible
         self.close_view_trade_win()
+        self.close_sell_trade_win()
 
         row_tag = user_data[0]
         is_option = user_data[1]

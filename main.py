@@ -94,5 +94,4 @@ def create_dpg_themes():
 
 
 if __name__ == '__main__':
-    dpg.show_style_editor()
     create_windows()

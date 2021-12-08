@@ -28,7 +28,7 @@ class ViewTrade:
                              label=configs.VIEW_TRADE_WINDOW_TEXT,
                              width=configs.VIEW_TRADE_WINDOW_SIZE[0],
                              height=configs.VIEW_TRADE_WINDOW_SIZE[1],
-                             pos=self.dpg.get_mouse_pos(),
+                             pos=configs.VIEW_TRADE_WINDOW_POS,
                              on_close=self.cleanup_alias):
             self.create_view_trades_win_items()
 
@@ -287,6 +287,8 @@ class ViewTrade:
                              label=configs.VIEW_TRADE_DATE_PICKER_WINDOW_TEXT,
                              width=configs.VIEW_TRADE_CHANGE_DATE_WINDOW_SIZE[0],
                              height=configs.VIEW_TRADE_CHANGE_DATE_WINDOW_SIZE[1],
+                             on_close=self.cleanup_date_alias(),
+                             pos=self.dpg.get_mouse_pos(),
                              modal=True):
             self.dpg.add_date_picker(tag=configs.VIEW_TRADE_DATE_PICKER_ID,
                                      default_value=configs.DEFAULT_DATE,
@@ -427,6 +429,14 @@ class ViewTrade:
         if not self.for_open_table():
             self.dpg.enable_item(configs.VIEW_TRADE_SOLD_PRICE_ID)
 
+    # date picker opens a new window so we need to cleanup it alias without cleaning others
+    def cleanup_date_alias(self):
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_DATE_PICKER_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_DATE_PICKER_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_DATE_PICKER_WINDOW_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_DATE_PICKER_WINDOW_ID)
+
     def cleanup_alias(self):
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
             self.dpg.remove_alias(configs.VIEW_TRADE_WINDOW_ID)
@@ -472,3 +482,9 @@ class ViewTrade:
 
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID):
             self.dpg.remove_alias(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_DATE_PICKER_WINDOW_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_DATE_PICKER_WINDOW_ID)
+
+        if self.dpg.does_alias_exist(configs.VIEW_TRADE_DATE_PICKER_ID):
+            self.dpg.remove_alias(configs.VIEW_TRADE_DATE_PICKER_ID)

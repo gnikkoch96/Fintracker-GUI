@@ -201,6 +201,9 @@ class Options:
         if self.dpg.does_alias_exist(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID):
             self.dpg.delete_item(configs.OPTION_WINDOW_SEARCH_CONTRACT_BTN_ID)
 
+        if self.dpg.does_alias_exist(configs.OPTION_TABLE_ID):
+            self.dpg.delete_item(configs.OPTION_TABLE_ID)
+
     # deletes the options table
     def delete_option_win_table(self):
         if self.dpg.does_alias_exist(configs.OPTION_TABLE_ID):

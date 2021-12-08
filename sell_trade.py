@@ -22,28 +22,38 @@ class SellTrade:
                              label=configs.SELL_TRADE_WINDOW_TEXT,
                              width=configs.SELL_TRADE_WINDOW_SIZE[0],
                              height=configs.SELL_TRADE_WINDOW_SIZE[1],
-                             pos=self.dpg.get_mouse_pos(),
+                             pos=configs.SELL_TRADE_WINDOW_POS,
+                             no_resize=True,
                              on_close=self.cleanup_alias):
-            print(self.dpg.get_mouse_pos())
             self.create_sell_trade_win_items()
 
     def create_sell_trade_win_items(self):
-        # count amount
-        self.dpg.add_text(configs.SELL_TRADE_COUNT_TEXT)
-        self.dpg.add_input_int(tag=configs.SELL_TRADE_COUNT_ID)
+        self.dpg.add_spacer(height=configs.SELL_TRADE_WINDOW_SPACERY)
+
+        # number sold
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_text(configs.SELL_TRADE_COUNT_TEXT)
+            self.dpg.add_input_int(tag=configs.SELL_TRADE_COUNT_ID)
 
         # sold price
-        self.dpg.add_text(configs.SELL_TRADE_SOLD_PRICE_TEXT)
-        self.dpg.add_input_float(tag=configs.SELL_TRADE_SOLD_PRICE_ID)
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_text(configs.SELL_TRADE_SOLD_PRICE_TEXT)
+            self.dpg.add_input_float(tag=configs.SELL_TRADE_SOLD_PRICE_ID)
 
         # reason for selling
-        self.dpg.add_text(configs.SELL_TRADE_REASON_TEXT)
-        self.dpg.add_input_text(tag=configs.SELL_TRADE_REASON_ID)
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_text(configs.SELL_TRADE_REASON_TEXT)
+            self.dpg.add_input_text(tag=configs.SELL_TRADE_REASON_ID,
+                                    height=100,
+                                    multiline=True)
 
         # sell button
-        self.dpg.add_button(tag=configs.SELL_TRADE_SELL_BTN_ID,
-                            label=configs.SELL_TRADE_SELL_BTN_TEXT,
-                            callback=self.sell_trade_callback)
+        self.dpg.add_spacer(height=configs.SELL_TRADE_SELL_BTN_SPACERY)
+        with self.dpg.group(horizontal=True):
+            self.dpg.add_spacer(width=configs.SELL_TRADE_SELL_BTN_SPACERX)
+            self.dpg.add_button(tag=configs.SELL_TRADE_SELL_BTN_ID,
+                                label=configs.SELL_TRADE_SELL_BTN_TEXT,
+                                callback=self.sell_trade_callback)
 
     def sell_trade_callback(self):
         if self.validate_input():
