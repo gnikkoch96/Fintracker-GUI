@@ -9,6 +9,7 @@ def launch_load_win():
                     height=configs.LOADING_WINDOW_VIEWPORT_SIZE[1],
                     pos=configs.LOADING_WINDOW_CENTER_WINDOW_POS,
                     modal=True,
+                    no_move=True,
                     no_title_bar=True,
                     no_resize=True):
         dpg.add_text(configs.LOADING_TEXT)

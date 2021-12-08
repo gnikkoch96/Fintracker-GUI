@@ -111,7 +111,7 @@ class Options:
             self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
 
             # todo cleanup this was a quick fix (sleeping wastes cpu cycle)
-            time.sleep(0.0000001)
+            time.sleep(0.1)
 
             DialogWin(self.dpg, configs.OPTION_INVALID_TICKER_MSG_TEXT, self)
 

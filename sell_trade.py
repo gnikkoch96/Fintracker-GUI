@@ -1,7 +1,10 @@
+import time
+
 import configs
 import firebase_conn
 from datetime import date
 from dialog_win import DialogWin
+
 
 class SellTrade:
     def __init__(self, dpg, fintracker, trade_id, is_option, row_tag):
@@ -57,6 +60,10 @@ class SellTrade:
 
     def sell_trade_callback(self):
         if self.validate_input():
+            self.dpg.disable_item(configs.SELL_TRADE_SELL_BTN_ID)
+
+            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+
             # retrieve the trade that we are selling
             trade = firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
 
@@ -66,7 +73,7 @@ class SellTrade:
             invest_type = trade[configs.FIREBASE_TYPE]
             bought_price = trade[configs.FIREBASE_BOUGHT_PRICE]
             sold_price = self.dpg.get_value(configs.SELL_TRADE_SOLD_PRICE_ID)
-            net_profit = round((sold_price - bought_price)* count, 2)
+            net_profit = round((sold_price - bought_price) * count, 2)
             profit_per = round((net_profit / (count * bought_price)) * 100, 2)
             reason = self.dpg.get_value(configs.SELL_TRADE_REASON_ID)
 
@@ -99,8 +106,18 @@ class SellTrade:
             self.update_closed_table(data)
             self.update_open_trades(trade, data)
 
+            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+            # todo cleanup quick fix
+            time.sleep(0.1)
+
             # display success message
             DialogWin(self.dpg, configs.SELL_TRADE_SOLD_SUCCESS_MSG_TEXT, self)
+
+            # todo cleanup quick fix (user could still press the sell button which leads to an error)
+            time.sleep(0.1)
+
+            self.dpg.enable_item(configs.SELL_TRADE_SELL_BTN_ID)
 
     # delete window and cleanup_aliases alias
     def close_sell_trade_win(self):

@@ -1,3 +1,5 @@
+import time
+
 import firebase_conn
 import configs
 import tools
@@ -83,6 +85,8 @@ class Register:
 
     # attempt to register new user
     def register_callback(self, sender, app_data, user_data):
+        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+
         email = self.dpg.get_value(configs.REGISTER_INPUT_EMAIL_ID)
         password = self.dpg.get_value(configs.REGISTER_INPUT_PASS_ID)
         confirm_pass = self.dpg.get_value(configs.REGISTER_INPUT_CONFIRM_PASS_ID)
@@ -90,11 +94,22 @@ class Register:
         # check to see if the confirm pass is the same as the pass if not return an error
         # try to make the account and see if the email is already being used or not
         # todo create a better validation
+        # todo cleanup
         if confirm_pass != password or not firebase_conn.create_user_account(email, password):
             self.reset_fields()
+            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+            # todo cleanup
+            time.sleep(0.1)
+
             DialogWin(self.dpg, configs.REGISTER_FAILED_MSG_TEXT, self)
         else:
             self.reset_fields()
+            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+
+            # todo cleanup quick fix
+            time.sleep(0.0000001)
+
             DialogWin(self.dpg, configs.REGISTER_SUCCESS_MSG_TEXT, self)
             self.login_callback()
 
