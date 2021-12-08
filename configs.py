@@ -384,7 +384,7 @@ LOGIN_INPUT_EMAIL_TEXT = "Enter E-Mail"
 LOGIN_INPUT_PASS_TEXT = "Enter Password"
 LOGIN_INPUT_BTN_TEXT = "Login"
 LOGIN_REGISTER_BTN_TEXT = "Not a user? Sign up now!"
-LOGIN_OFFLINE_BTN_TEXT = "Go Offline"
+LOGIN_OFFLINE_BTN_TEXT = "Offline Mode"
 LOGIN_SUCCESSFUL_MSG_TEXT = "[SUCCESS] Logged in Successfully"
 
 # register

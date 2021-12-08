@@ -15,11 +15,8 @@ def authenticate_user_login(email, password):
     try:
         auth = firebase_auth.sign_in_with_email_and_password(email, password)
 
-        # todo remove this
-        print("Logged in successfully!")
         return auth[configs.FIREBASE_LOCAL_ID]  # returns the user's id
     except:
-        print("[ERROR] Login Failed")
         return None
 
 

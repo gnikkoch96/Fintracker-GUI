@@ -455,7 +455,7 @@ class Fintracker:
         invest_type = row_data[configs.FIREBASE_TYPE]
         date = row_data[configs.FIREBASE_DATE]
         sold_price = row_data[configs.FIREBASE_SOLD_PRICE]
-        net_profit = row_data[configs.FIREBASE_NET_PROFIT]
+        net_profit = round(row_data[configs.FIREBASE_NET_PROFIT], 2)
         profit_per = row_data[configs.FIREBASE_PROFIT_PERCENTAGE]
 
         # get the recent trade that was added
@@ -666,7 +666,7 @@ class Fintracker:
 
                 total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT])
 
-        return total_profit
+        return round(total_profit, 2)
 
     # calculates the win rate
     def calculate_win_rate(self):

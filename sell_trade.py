@@ -66,7 +66,7 @@ class SellTrade:
             invest_type = trade[configs.FIREBASE_TYPE]
             bought_price = trade[configs.FIREBASE_BOUGHT_PRICE]
             sold_price = self.dpg.get_value(configs.SELL_TRADE_SOLD_PRICE_ID)
-            net_profit = round(sold_price - bought_price, 2) * count
+            net_profit = round((sold_price - bought_price)* count, 2)
             profit_per = round((net_profit / (count * bought_price)) * 100, 2)
             reason = self.dpg.get_value(configs.SELL_TRADE_REASON_ID)
 
@@ -94,6 +94,7 @@ class SellTrade:
                         configs.FIREBASE_PROFIT_PERCENTAGE: profit_per,
                         configs.FIREBASE_REASON: reason
                         }
+
             firebase_conn.add_closed_trade_db(self.user_id, data, self.is_option)
             self.update_closed_table(data)
             self.update_open_trades(trade, data)

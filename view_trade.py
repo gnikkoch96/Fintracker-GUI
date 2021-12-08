@@ -271,7 +271,10 @@ class ViewTrade:
                 firebase_conn.update_open_trade_by_id(self.user_id, self.trade_id, new_data, self.is_option)
                 self.fintracker.update_table_row(self.row_tag, new_data, self.is_option, True)
 
-            # edit success msg
+            # update the total profit and win rate from fintracker
+            self.fintracker.calculate_total_profit_win_rate_thread()
+
+            # success edit msg
             DialogWin(self.dpg, configs.VIEW_TRADE_SUCCESS_EDIT_MSG_TEXT, self)
         else:
             # load dialog
