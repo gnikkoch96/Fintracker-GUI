@@ -681,14 +681,17 @@ class Fintracker:
         closed_trades_crypto_stock = firebase_conn.get_closed_trades_db(self.user_id, False)
         closed_trades_options = firebase_conn.get_closed_trades_db(self.user_id, True)
 
+        # count the number of win and loss trades
         loss_trades = 0
         win_trades = 0
 
         # count the number of negative percentages and positive percentages for crypto and stock
         if closed_trades_crypto_stock is not None:
             for closed_trade_id in closed_trades_crypto_stock:
+                # gets stock or crypto trade
                 closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, False)
 
+                # a trade is a win if the net profit is positive
                 if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
                     win_trades += 1
                 else:
@@ -697,15 +700,16 @@ class Fintracker:
         # count the number of negative percentages and positive percentages for options
         if closed_trades_options is not None:
             for closed_trade_id in closed_trades_options:
+                # gets option trade
                 closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
 
+                # a trade is a win if the net profit is positive
                 if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
                     win_trades += 1
                 else:
                     loss_trades += 1
 
-        # win-rate is the number of wins from total trade
-        # todo cleanup
+        # empty trades
         if win_trades + loss_trades <= 0:
             return 0
 
@@ -717,11 +721,13 @@ class Fintracker:
             self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
             self.view_trade.cleanup_alias()
 
+    # deletes the sell trade window if present and cleans up its aliases
     def close_sell_trade_win(self):
         if self.dpg.does_alias_exist(configs.SELL_TRADE_WINDOW_ID):
             self.dpg.delete_item(configs.SELL_TRADE_WINDOW_ID)
             self.sell_trade.cleanup_alias()
 
+    # deletes the fintracker window if present and cleans up its aliases
     def close_fintracker_win(self):
         self.dpg.delete_item(configs.FINTRACKER_WINDOW_ID)
         self.cleanup_alias()

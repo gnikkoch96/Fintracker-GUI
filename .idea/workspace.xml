@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ff56f13a-af49-4716-9548-457a8147bcdf" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/firebase_conn.py" beforeDir="false" afterPath="$PROJECT_DIR$/firebase_conn.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/investment_tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/investment_tracker.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -171,8 +170,8 @@
     <list>
       <item itemvalue="Python.cngko-api-test" />
       <item itemvalue="Python.dynamic_image_test" />
-      <item itemvalue="Python.main" />
       <item itemvalue="Python.loading_win" />
+      <item itemvalue="Python.main" />
       <item itemvalue="Python.theme_testing" />
       <item itemvalue="Python.yf-api-test" />
     </list>
