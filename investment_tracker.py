@@ -81,26 +81,26 @@ class Fintracker:
                                     width=configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_WIDTH,
                                     default_value=self.total_profit)
 
-            # todo cleanup
-            self.dpg.disable_item(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_ID)
-
             # win-rate
             self.dpg.add_text(configs.FINTRACKER_DISPLAY_WIN_RATE_TEXT)
             self.dpg.add_input_text(tag=configs.FINTRACKER_DISPLAY_WIN_RATE_ID,
                                     width=configs.FINTRACKER_DISPLAY_WIN_RATE_WIDTH,
                                     default_value=self.win_rate)
 
-            # todo cleanup
-            self.dpg.disable_item(configs.FINTRACKER_DISPLAY_WIN_RATE_ID)
-
             # news button
             self.dpg.add_button(tag=configs.FINTRACKER_NEWS_BTN_ID,
                                 label=configs.FINTRACKER_NEWS_BTN_TEXT)
+
+            # todo remove once added
+            with self.dpg.tooltip(configs.FINTRACKER_NEWS_BTN_ID):
+                self.dpg.add_text("Not Working Yet")
 
             # add trade button
             self.dpg.add_button(tag=configs.FINTRACKER_ADD_BTN_ID,
                                 label=configs.FINTRACKER_ADD_BTN_TEXT,
                                 callback=self.add_callback)
+
+            self.disable_items()
 
         # closed and open trade windows group
         self.dpg.add_spacer(height=configs.FINTRACKER_CLOSED_OPEN_TRADES_GROUP_SPACERY)
@@ -111,6 +111,11 @@ class Fintracker:
 
             # start loading open trades
             self.load_open_trades_thread.start()
+
+    # disables editing total profit and win-rate
+    def disable_items(self):
+        self.dpg.disable_item(configs.FINTRACKER_DISPLAY_WIN_RATE_ID)
+        self.dpg.disable_item(configs.FINTRACKER_DISPLAY_TOTAL_PROFIT_ID)
 
     def load_closed_trades(self):
         # close trade window
@@ -207,9 +212,11 @@ class Fintracker:
 
                     # id (user clicks this to find about their trade)
                     with self.dpg.table_cell():
-                        self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
-                                            callback=self.view_trade_callback,
-                                            user_data=(closed_trade_id, is_option, row_tag))
+                        with self.dpg.group(horizontal=True):
+                            self.dpg.add_spacer(width=configs.FINTRACKER_VIEW_CLOSED_TRADE_BTN_SPACERYX)
+                            self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                                callback=self.view_trade_callback,
+                                                user_data=(closed_trade_id, is_option, row_tag))
 
                     # date
                     with self.dpg.table_cell():
@@ -339,9 +346,11 @@ class Fintracker:
 
                     # id (user clicks this to find about their trade)
                     with self.dpg.table_cell():
-                        self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
-                                            callback=self.view_trade_callback,
-                                            user_data=(open_trade_id, is_option, row_tag))
+                        with self.dpg.group(horizontal=True):
+                            self.dpg.add_spacer(width=configs.FINTRACKER_VIEW_OPEN_TRADE_BTN_SPACERYX)
+                            self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                                callback=self.view_trade_callback,
+                                                user_data=(open_trade_id, is_option, row_tag))
 
                     # date
                     with self.dpg.table_cell():
@@ -405,9 +414,11 @@ class Fintracker:
 
             # id (user clicks this to find about their trade)
             with self.dpg.table_cell():
-                self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
-                                    callback=self.view_trade_callback,
-                                    user_data=(open_trade_id, is_option, row_tag))
+                with self.dpg.group(horizontal=True):
+                    self.dpg.add_spacer(width=configs.FINTRACKER_VIEW_OPEN_TRADE_BTN_SPACERYX)
+                    self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                        callback=self.view_trade_callback,
+                                        user_data=(open_trade_id, is_option, row_tag))
 
             # date
             with self.dpg.table_cell():
@@ -419,7 +430,12 @@ class Fintracker:
 
             # ticker
             with self.dpg.table_cell():
-                self.dpg.add_text(trade)
+                trade_ref = self.dpg.add_text(trade)
+
+                # make reading option contracts easier
+                if is_option:
+                    with self.dpg.tooltip(trade_ref):
+                        self.dpg.add_text(trade)
 
             # count
             with self.dpg.table_cell():
@@ -448,9 +464,9 @@ class Fintracker:
 
         # closed trade data
         if not is_option:
-            trade_type = row_data[configs.FIREBASE_TICKER]
+            trade = row_data[configs.FIREBASE_TICKER]
         else:
-            trade_type = row_data[configs.FIREBASE_CONTRACT]
+            trade = row_data[configs.FIREBASE_CONTRACT]
         bought_price = row_data[configs.FIREBASE_BOUGHT_PRICE]
         count = row_data[configs.FIREBASE_COUNT]
         invest_type = row_data[configs.FIREBASE_TYPE]
@@ -470,9 +486,11 @@ class Fintracker:
 
             # id (user clicks this to find about their trade)
             with self.dpg.table_cell():
-                self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
-                                    callback=self.view_trade_callback,
-                                    user_data=(closed_trade_id, is_option, row_tag))
+                with self.dpg.group(horizontal=True):
+                    self.dpg.add_spacer(width=configs.FINTRACKER_VIEW_CLOSED_TRADE_BTN_SPACERYX)
+                    self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                        callback=self.view_trade_callback,
+                                        user_data=(closed_trade_id, is_option, row_tag))
 
             # date
             with self.dpg.table_cell():
@@ -484,7 +502,12 @@ class Fintracker:
 
             # trade (ticker or contract)
             with self.dpg.table_cell():
-                self.dpg.add_text(trade_type)
+                trade_ref = self.dpg.add_text(trade)
+
+                # make reading option contracts easier
+                if is_option:
+                    with self.dpg.tooltip(trade_ref):
+                        self.dpg.add_text(trade)
 
             # count
             with self.dpg.table_cell():

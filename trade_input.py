@@ -292,7 +292,7 @@ class InputTrade:
         # 0 - True or False
         # 1 - Error Message
         if not check_ticker[0] or not check_contract_empty[0] or not check_count[0] or not check_bought_price[0]:
-            message = "[ERROR]\n"
+            message = "\t\t\t\t\t\t[ERROR]\n"
 
             # invalid ticker
             if not check_ticker[0]:
@@ -310,10 +310,7 @@ class InputTrade:
             if not check_bought_price[0]:
                 message += check_bought_price[1]
 
-            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-            # todo cleanup
-            time.sleep(0.01)
+            loading_win.hide_load_win()
 
             # error message
             DialogWin(self.dpg, message, self)

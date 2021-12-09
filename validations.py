@@ -20,7 +20,7 @@ def validate_count(count):
     valid_count = count > 0
 
     if not valid_count:
-        return False, configs.VALIDATE_ERROR_TYPE_MSG + "\n"
+        return False, configs.VALIDATE_ERROR_COUNT_MSG + "\n"
 
     return True, ""
 
@@ -43,7 +43,7 @@ def validate_ticker(ticker, invest_type):
         if not valid_ticker: # invalid crypto ticker
             return False, configs.VALIDATE_ERROR_CRYPTO_TICKER_MSG + "\n"
 
-    else:
+    elif invest_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
         valid_ticker = yft.validate_ticker(ticker)
 
         if not valid_ticker: # invalid stock ticker

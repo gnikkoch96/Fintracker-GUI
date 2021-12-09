@@ -73,6 +73,10 @@ class Login:
                                 label=configs.LOGIN_OFFLINE_BTN_TEXT,
                                 callback=self.offline_callback)
 
+            # todo remove once added
+            with self.dpg.tooltip(configs.LOGIN_OFFLINE_BTN_ID):
+                self.dpg.add_text("Not Working Yet")
+
     def login_callback(self):
         loading_win.show_load_win()
 
@@ -106,4 +110,3 @@ class Login:
     def offline_callback(self, sender, app_data, user_data):
         # todo also display a warning for choosing to go online
         pass
-        # Fintracker(self.dpg, True)
