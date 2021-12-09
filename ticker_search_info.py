@@ -75,7 +75,7 @@ class CryptoStockInfo:
     def create_search_win_stock_items(self):
         upper_ticker = self.ticker.upper()
 
-        # todo cleanup
+        # todo cleanup (quick fix to slow api pulls)
         stock_data = yft.retrieve_info(upper_ticker)
 
         name = stock_data[0]

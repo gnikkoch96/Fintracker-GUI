@@ -2,6 +2,7 @@ import time
 
 import firebase_conn
 import configs
+import loading_win
 import tools
 
 from dialog_win import DialogWin
@@ -13,7 +14,7 @@ class Register:
         self.dpg = dpg
         self.create_register_win()
 
-        # hide the register (prevent circular imports)
+        # login is displayed first, so it needs to hide
         self.dpg.hide_item(configs.REGISTER_WINDOW_ID)
 
     def create_register_win(self):
@@ -70,6 +71,7 @@ class Register:
                                     hint=configs.REGISTER_INPUT_CONFIRM_PASS_TEXT,
                                     password=True)
 
+        # register + sign in button
         with self.dpg.group(horizontal=True):
             self.dpg.add_spacer(width=configs.REGISTER_SPACERX_VALUE)
 
@@ -78,7 +80,7 @@ class Register:
                                 label=configs.REGISTER_BTN_TEXT,
                                 callback=self.register_callback)
 
-            # login button
+            # login button (returns user to login screen)
             self.dpg.add_button(tag=configs.REGISTER_LOGIN_BTN_ID,
                                 label=configs.REGISTER_LOGIN_BTN_TEXT,
                                 callback=self.login_callback)
@@ -94,23 +96,21 @@ class Register:
         # check to see if the confirm pass is the same as the pass if not return an error
         # try to make the account and see if the email is already being used or not
         # todo create a better validation
-        # todo cleanup
         if confirm_pass != password or not firebase_conn.create_user_account(email, password):
             self.reset_fields()
-            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+            loading_win.hide_load_win()
 
-            # todo cleanup
-            time.sleep(0.1)
-
+            # error register dialog
             DialogWin(self.dpg, configs.REGISTER_FAILED_MSG_TEXT, self)
+
         else:
             self.reset_fields()
-            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
 
-            # todo cleanup quick fix
-            time.sleep(0.0000001)
+            loading_win.hide_load_win()
 
+            # success register dialog
             DialogWin(self.dpg, configs.REGISTER_SUCCESS_MSG_TEXT, self)
+
             self.login_callback()
 
     # resets the fields

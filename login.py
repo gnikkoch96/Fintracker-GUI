@@ -5,6 +5,7 @@ import tools
 from investment_tracker import Fintracker
 from dialog_win import DialogWin
 
+# dec: Login GUI
 class Login:
     def __init__(self, dpg):
         self.dpg = dpg
@@ -15,7 +16,6 @@ class Login:
     def user(self):
         return self._user
 
-    # todo cleanup (label probably not needed)
     def create_login_win(self):
         with self.dpg.window(tag=configs.LOGIN_WINDOW_ID,
                              width=configs.LOGIN_WINDOW_VIEWPORT_SIZE[0],
@@ -46,6 +46,7 @@ class Login:
 
         # email input
         with self.dpg.group(horizontal=True):
+            # email field
             self.dpg.add_input_text(tag=configs.LOGIN_INPUT_EMAIL_ID,
                                     hint=configs.LOGIN_INPUT_EMAIL_TEXT)
 
@@ -73,7 +74,7 @@ class Login:
                                 callback=self.offline_callback)
 
     def login_callback(self):
-        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+        loading_win.show_load_win()
 
         # todo uncomment this in final product
         # email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)

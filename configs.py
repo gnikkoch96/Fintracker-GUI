@@ -136,6 +136,15 @@ DEFAULT_DATE = {'month': date.today().month - 1,
                 'year': date.today().year - 1900,
                 'month_day': date.today().day}
 
+# validations
+VALIDATE_ERROR_TYPE_MSG = "Invalid Bought Price (Can't be below 0)"
+VALIDATE_ERROR_COUNT_MSG = "Invalid Count (Can't be below 0)"
+VALIDATE_ERROR_BOUGHT_PRICE_MSG = "Invalid Bought Price (Can't be below 0)"
+VALIDATE_ERROR_STOCK_TICKER_MSG = "Invalid Ticker (Make sure spelling is correct)"
+VALIDATE_ERROR_CRYPTO_TICKER_MSG = "Invalid Token (Type Full name like Bitcoin and use \'-\' for spaces)"
+VALIDATE_ERROR_SOLD_PRICE_MSG = "Invalid Sold Price (Can't be below 0)"
+VALIDATE_ERROR_CONTRACT_MSG = "No Contract was Chosen"
+
 # height and width values
 FINTRACKER_WINDOW_VIEWPORT_SIZE = (1700, 800)  # width x height
 
@@ -262,6 +271,9 @@ YFINANCE_SHORTNAME = "shortName"
 
 # loading
 LOADING_TEXT = "Loading...Please Wait"
+LOADING_WINDOW_TEXT_SPACERY = LOADING_WINDOW_VIEWPORT_SIZE[1]/4
+LOADING_WINDOW_TEXT_SPACERX = LOADING_WINDOW_VIEWPORT_SIZE[0]/5
+
 
 # dialog
 DIALOG_CONFIRMATION_BTN_TEXT = "Confirm"

@@ -50,20 +50,22 @@ def get_stock_price(ticker):
 
 
 def get_options_date(ticker):
-    # stock doesn't exist
-    if not validate_ticker(ticker):
-        return
-
     stock = yf.Ticker(ticker)
+
+    # stock doesn't exist
+    if stock is None:
+        return 0
+
     return list(stock.options)
 
 
 def get_options(ticker, contract_type, date):
-    # stock doesn't exist
-    if not validate_ticker(ticker):
-        return
-
     stock = yf.Ticker(ticker)
+
+    # stock doesn't exist
+    if stock is None:
+        return 0
+
     stock_options = stock.option_chain(date)
 
     # returns call contracts
@@ -98,11 +100,13 @@ def get_market_cap(ticker):
     return str(stock.get_info()[configs.YFINANCE_MARKETCAP])
 
 
+# not used
 def get_major_holders(ticker):
     stock = yf.Ticker(ticker)
     return stock.major_holders
 
 
+# not used
 def get_institutional_holders(ticker):
     stock = yf.Ticker(ticker)
     return stock.institutional_holders

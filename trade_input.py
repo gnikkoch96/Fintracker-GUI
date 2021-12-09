@@ -1,6 +1,7 @@
 import time
 
 import configs
+import loading_win
 import yfinance_tool as yft
 import cngko_tool as cgt
 import firebase_conn
@@ -12,6 +13,7 @@ from datetime import date
 from dialog_win import DialogWin
 
 
+# creates the gui that allows user to input their crypto/stock/option trade
 class InputTrade:
     def __init__(self, dpg, user_id, fintracker):
         self.dpg = dpg
@@ -26,9 +28,6 @@ class InputTrade:
 
         # stores option obj for contract reference
         self.option = None
-
-        # threading to make gui responsive
-        self.ticker_search_thread = None
 
         self.create_trade_input_win()
 
@@ -79,10 +78,15 @@ class InputTrade:
 
         # ticker input
         with self.dpg.group(horizontal=True):
+            # input ticker label
             self.dpg.add_text(tag=configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT_ID,
                               default_value=configs.TRADE_INPUT_INFO_WINDOW_TICKER_TEXT)
+
+            # input ticker field
             self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID,
                                     width=configs.TRADE_INPUT_INFO_WINDOW_TICKER_WIDTH)
+
+            # ticker info button
             self.dpg.add_button(tag=configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID,
                                 label=configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_TEXT,
                                 callback=self.search_callback)
@@ -137,11 +141,9 @@ class InputTrade:
             if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
                 if yft.validate_ticker(ticker):
                     curr_price = yft.get_stock_price(ticker)
+                    loading_win.hide_load_win()
                 else:
-                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-                    # todo cleanup
-                    time.sleep(0.01)
+                    loading_win.hide_load_win()
 
                     # current price error dialog
                     DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_FAIL_MSG, self)
@@ -149,11 +151,9 @@ class InputTrade:
             else:  # get crypto price
                 if cgt.validate_coin(ticker):
                     curr_price = cgt.get_current_price(ticker)
+                    loading_win.hide_load_win()
                 else:
-                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-                    # todo cleanup
-                    time.sleep(0.01)
+                    loading_win.hide_load_win()
 
                     # current price error dialog
                     DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_FAIL_MSG, self)
@@ -161,10 +161,7 @@ class InputTrade:
             self.dpg.set_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID, curr_price)
 
         else:
-            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-            # todo cleanup
-            time.sleep(0.01)
+            loading_win.hide_load_win()
 
             # empty current price error dialog
             DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_EMPTY_FAIL_MSG, self)
@@ -187,12 +184,6 @@ class InputTrade:
                 # round price of bought price for stock
                 if self.is_stock():
                     bought_price = round(bought_price, 2)
-
-                # edit: removed because it was causing issues when editing the crypto trades
-                # due to the api using full names as opposed to their symbol
-                # store the symbol of crypto as opposed to their name
-                # if self.is_crypto():
-                #     ticker = cgt.get_symbol(ticker.lower())
 
                 data = {configs.FIREBASE_DATE: date_val,
                         configs.FIREBASE_TICKER: ticker,
@@ -226,10 +217,7 @@ class InputTrade:
                 firebase_conn.add_open_trade_db(self.user_id, data, True)
                 self.update_to_open_table(data, True)
 
-            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-            # todo cleanup
-            time.sleep(0.01)
+            loading_win.hide_load_win()
 
             # success add message
             DialogWin(self.dpg, configs.TRADE_INPUT_SUCCESS_ADD_MSG_TEXT, self)
@@ -239,61 +227,44 @@ class InputTrade:
 
     # choose the options contract
     def contract_callback(self):
-        # todo focus back on the choose contract win if present
+        if self.dpg.does_alias_exist(configs.OPTION_WINDOW_ID):
+            self.dpg.focus_item(configs.OPTION_WINDOW_ID)
+        else:
+            self.option = Options(self.dpg, configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
 
-        self.dpg.disable_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
-
-        self.option = Options(self.dpg, configs.TRADE_INPUT_INFO_WINDOW_SHOW_CONTRACT_ID)
-
+    # threading to make a more responsive gui
     def search_callback(self):
-        self.ticker_search_thread = threading.Thread(target=self.load_stock_info,
-                                                     daemon=True)
-        self.ticker_search_thread.start()
+        threading.Thread(target=self.load_stock_info, daemon=True).start()
 
     def load_stock_info(self):
         ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
-        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+        loading_win.show_load_win()
 
         # todo think about putting this in a separate method
         if not self.is_ticker_empty():
             if self.is_crypto():
                 if cgt.validate_coin(ticker.lower()):
-                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-                    # todo cleanup
-                    time.sleep(0.01)
+                    loading_win.hide_load_win()
 
                     CryptoStockInfo(self.dpg, ticker, True)
                 else:
-                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-                    # todo cleanup
-                    time.sleep(0.01)
+                    loading_win.hide_load_win()
 
                     # invalid token msg
                     DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_TOKEN_MSG_TEXT, self)
             elif self.is_stock():
                 if yft.validate_ticker(ticker):
-                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-                    # todo cleanup
-                    time.sleep(0.01)
+                    loading_win.hide_load_win()
 
                     CryptoStockInfo(self.dpg, ticker)
                 else:
-                    self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-                    # todo cleanup
-                    time.sleep(0.01)
+                    loading_win.hide_load_win()
 
                     # invalid ticker msg
                     DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_TICKER_MSG_TEXT, self)
 
         else:
-            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-            # todo cleanup
-            time.sleep(0.01)
+            loading_win.hide_load_win()
 
             # empty input msg
             DialogWin(self.dpg, configs.TRADE_INPUT_TICKER_INPUT_EMPTY_MSG_TEXT, self)
@@ -313,7 +284,7 @@ class InputTrade:
         count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
         bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
 
-        check_ticker = validations.validate_trade_ticker(ticker, self.investment_type, self.is_option())
+        check_ticker = validations.validate_ticker(ticker, self.investment_type)
         check_contract_empty = validations.is_contract_empty(contract, self.is_option())
         check_count = validations.validate_count(count)
         check_bought_price = validations.validate_bought_price(bought_price)
@@ -359,13 +330,13 @@ class InputTrade:
     # display corresponding items depending on investment type
     def display_correct_investment_type_items(self):
         if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT:
-            # hide: ticker input, search, current price
+            # hide: ticker label, ticker input, search, current price
             # show: contract btn, show contract text
             self.hide_stock_crypto_items()
             self.show_option_items()
         else:
             # hide: contract btn, show contract text
-            # show: ticker input, search, current price
+            # show: ticker label, ticker input, search, current price
             self.hide_option_items()
             self.show_stock_crypto_items()
 

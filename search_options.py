@@ -108,19 +108,17 @@ class Options:
                 self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
 
         else:
-            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+            loading_win.hide_load_win()
 
-            # todo cleanup this was a quick fix (sleeping wastes cpu cycle)
-            time.sleep(0.1)
-
+            # invalid ticker dialog
             DialogWin(self.dpg, configs.OPTION_INVALID_TICKER_MSG_TEXT, self)
 
     def search_contract_callback(self):
-        threading.Thread(target=self.load_options(), daemon=True).start()
+        threading.Thread(target=self.load_options, daemon=True).start()
 
     # displays table listing all strike prices corresponding to call/put and expiration date
     def load_options(self):
-        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+        loading_win.show_load_win()
 
         self.delete_option_win_table()
 
@@ -162,7 +160,7 @@ class Options:
                         iv = round(options_list[configs.YFINANCE_IV_TEXT][row] * 100, 2)
                         self.dpg.add_text(iv)
 
-        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
+        loading_win.show_hide_win()
 
     # storing contract choice
     def row_callback(self, sender, app_data, user_data):
@@ -173,13 +171,12 @@ class Options:
         option_type = self.dpg.get_value(configs.OPTION_WINDOW_OPTION_TYPE_COMBO_ID)
 
         # store contract
-        # self._contract = (date_value, ticker.upper(), option_type, strike_price)
         contract_data = (date_value, ticker.upper(), option_type, strike_price)
         self.contract = contract_data
 
         # display contract information in item_id
-        self.dpg.set_value(self.item_id,
-                           f"{date_value} | {ticker.upper()} | {option_type} | {strike_price}")
+        contract_format = f"{date_value} | {ticker.upper()} | {option_type} | {strike_price}"
+        self.dpg.set_value(self.item_id, contract_format)
         self.dpg.show_item(self.item_id)
 
         self.delete_options_win()
@@ -233,9 +230,6 @@ class Options:
 
     # removes aliases - might get fixed in the next update
     def cleanup_alias(self):
-        if self.dpg.does_alias_exist(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID):
-            self.dpg.enable_item(configs.TRADE_INPUT_INFO_WINDOW_CONTRACT_BTN_ID)
-
         if self.dpg.does_alias_exist(configs.OPTION_WINDOW_ID):
             self.dpg.remove_alias(configs.OPTION_WINDOW_ID)
 

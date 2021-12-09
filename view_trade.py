@@ -6,6 +6,7 @@ from search_options import Options
 from dialog_win import DialogWin
 
 
+# desc: displays trade info in gui
 class ViewTrade:
     # fintracker will be needed to update the table after edit
     def __init__(self, dpg, fintracker, trade_id, is_option, row_tag):
@@ -174,6 +175,7 @@ class ViewTrade:
                                 label=configs.VIEW_TRADE_EDIT_BTN_TEXT,
                                 callback=self.edit_callback)
 
+        # save + cancel btns
         with self.dpg.group(horizontal=True):
             self.dpg.add_spacer(width=configs.VIEW_TRADE_SAVE_CANCEL_BTNS_SPACERX)
 
@@ -187,6 +189,7 @@ class ViewTrade:
                                 label=configs.VIEW_TRADE_CANCEL_BTN_TEXT,
                                 callback=self.cancel_callback)
 
+        self.hide_update_buttons()
         self.disable_items()
 
     # enables items to be edited and shows corresponding buttons
@@ -203,6 +206,7 @@ class ViewTrade:
         self.restore_default_values()
 
         self.dpg.show_item(configs.VIEW_TRADE_EDIT_BTN_ID)
+        self.hide_update_buttons()
         self.disable_items()
 
     # stores the edited values to firebase
@@ -321,7 +325,7 @@ class ViewTrade:
         valid_type = validations.validate_type(trade_type)
         valid_count = validations.validate_count(count)
         valid_bought_price = validations.validate_bought_price(bought_price)
-        valid_ticker = validations.validate_ticker(ticker, self.is_option)
+        valid_ticker = validations.validate_ticker(ticker, trade_type)
         valid_sold_price = validations.validate_sold_price(sold_price, self.for_open_table())
 
         # todo cleanup remove hardcode (using a dict possibly instead of tuple)
@@ -396,19 +400,8 @@ class ViewTrade:
         # return open trade info
         return firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
 
-    # closing window
-    def close_view_trade_win(self):
-        self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
-        self.cleanup_alias()
-
     # disable the items so that the user doesn't accidentally edit them
     def disable_items(self):
-        # hide buttons only until user wants to edit their trades
-        self.dpg.hide_item(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
-        self.dpg.hide_item(configs.VIEW_TRADE_SAVE_BTN_ID)
-        self.dpg.hide_item(configs.VIEW_TRADE_CANCEL_BTN_ID)
-        self.dpg.hide_item(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID)
-
         self.dpg.disable_item(configs.VIEW_TRADE_REASON_ID)
         self.dpg.disable_item(configs.VIEW_TRADE_BOUGHT_PRICE_ID)
         self.dpg.disable_item(configs.VIEW_TRADE_COUNT_ID)
@@ -424,7 +417,7 @@ class ViewTrade:
     # enable the items to be edited
     def enable_items(self):
         if self.is_option:
-            self.dpg.show_item(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
+            self.show_update_buttons()
         else:  # only change trade input if it isn't options related (a button will replace it instead)
             self.dpg.enable_item(configs.VIEW_TRADE_TICKER_CONTRACT_ID)
 
@@ -435,6 +428,21 @@ class ViewTrade:
 
         if not self.for_open_table():
             self.dpg.enable_item(configs.VIEW_TRADE_SOLD_PRICE_ID)
+
+    def hide_update_buttons(self):
+        # hide buttons only until user wants to edit their trades
+        self.dpg.hide_item(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
+        self.dpg.hide_item(configs.VIEW_TRADE_SAVE_BTN_ID)
+        self.dpg.hide_item(configs.VIEW_TRADE_CANCEL_BTN_ID)
+        self.dpg.hide_item(configs.VIEW_TRADE_CHANGE_DATE_BTN_ID)
+
+    def show_update_buttons(self):
+        self.dpg.show_item(configs.VIEW_TRADE_CHANGE_CONTRACT_BTN_ID)
+
+    # closing window
+    def close_view_trade_win(self):
+        self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
+        self.cleanup_alias()
 
     # date picker opens a new window so we need to cleanup it alias without cleaning others
     def cleanup_date_alias(self):

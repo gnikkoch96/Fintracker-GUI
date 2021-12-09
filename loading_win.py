@@ -13,15 +13,21 @@ def launch_load_win():
                     no_move=True,
                     no_title_bar=True,
                     no_resize=True):
-        dpg.add_text(configs.LOADING_TEXT)
+        dpg.add_spacer(height=configs.LOADING_WINDOW_TEXT_SPACERY)
+
+        with dpg.group(horizontal=True):
+            dpg.add_spacer(width=configs.LOADING_WINDOW_TEXT_SPACERX)
+            dpg.add_text(configs.LOADING_TEXT)
 
         # todo add a cancel button
 
 
+# displays the loading window
 def show_load_win():
     dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
 
 
+# hides the loading window and puts cpu cycle to sleep (if it needs to wait for next window to load)
 def hide_load_win():
     dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
 
