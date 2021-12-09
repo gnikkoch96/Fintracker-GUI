@@ -87,31 +87,40 @@ class Register:
 
     # attempt to register new user
     def register_callback(self, sender, app_data, user_data):
-        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+        loading_win.show_load_win()
 
-        email = self.dpg.get_value(configs.REGISTER_INPUT_EMAIL_ID)
-        password = self.dpg.get_value(configs.REGISTER_INPUT_PASS_ID)
-        confirm_pass = self.dpg.get_value(configs.REGISTER_INPUT_CONFIRM_PASS_ID)
-
-        # check to see if the confirm pass is the same as the pass if not return an error
-        # try to make the account and see if the email is already being used or not
-        # todo create a better validation
-        if confirm_pass != password or not firebase_conn.create_user_account(email, password):
-            self.reset_fields()
-            loading_win.hide_load_win()
-
-            # error register dialog
-            DialogWin(self.dpg, configs.REGISTER_FAILED_MSG_TEXT, self)
-
-        else:
-            self.reset_fields()
-
+        if self.validate_inputs():
             loading_win.hide_load_win()
 
             # success register dialog
             DialogWin(self.dpg, configs.REGISTER_SUCCESS_MSG_TEXT, self)
 
+            # returns use to login screen
             self.login_callback()
+        else:
+            loading_win.hide_load_win()
+
+            # error register dialog
+            DialogWin(self.dpg, configs.REGISTER_FAILED_MSG_TEXT, self)
+
+        # resets the input fields
+        self.reset_fields()
+
+    def validate_inputs(self):
+        email = self.dpg.get_value(configs.REGISTER_INPUT_EMAIL_ID)
+        password = self.dpg.get_value(configs.REGISTER_INPUT_PASS_ID)
+        confirm_pass = self.dpg.get_value(configs.REGISTER_INPUT_CONFIRM_PASS_ID)
+
+        # confirm password validation
+        valid_pass = password == confirm_pass
+
+        # check if email is already being used
+        valid_email = firebase_conn.create_user_account(email, password)
+
+        if not valid_pass or not valid_email:
+            return False
+
+        return True
 
     # resets the fields
     def reset_fields(self):

@@ -160,7 +160,7 @@ class Options:
                         iv = round(options_list[configs.YFINANCE_IV_TEXT][row] * 100, 2)
                         self.dpg.add_text(iv)
 
-        loading_win.show_hide_win()
+        loading_win.hide_load_win()
 
     # storing contract choice
     def row_callback(self, sender, app_data, user_data):
