@@ -117,9 +117,6 @@ class InputTrade:
                                 label=configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT,
                                 callback=self.current_price_callback)
 
-            with self.dpg.tooltip(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID):
-                self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_TOOLTIP_TEXT)
-
         # reason input
         self.dpg.add_spacer(height=configs.TRADE_INPUT_REASON_INPT_SPACERY)
         with self.dpg.group(horizontal=True):

@@ -3,6 +3,8 @@ import time
 import configs
 import firebase_conn
 from datetime import date
+
+import loading_win
 from dialog_win import DialogWin
 
 
@@ -73,9 +75,13 @@ class SellTrade:
             invest_type = trade[configs.FIREBASE_TYPE]
             bought_price = trade[configs.FIREBASE_BOUGHT_PRICE]
             sold_price = self.dpg.get_value(configs.SELL_TRADE_SOLD_PRICE_ID)
-            net_profit = round((sold_price - bought_price) * count, 2)
+            net_profit = (sold_price - bought_price) * count
             profit_per = round((net_profit / (count * bought_price)) * 100, 2)
             reason = self.dpg.get_value(configs.SELL_TRADE_REASON_ID)
+
+            # round the net profit if it is a stock
+            if invest_type != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT:
+                round(net_profit, 2)
 
             if self.is_option:  # contains a contract
                 contract = trade[configs.FIREBASE_CONTRACT]
@@ -106,10 +112,7 @@ class SellTrade:
             self.update_closed_table(data)
             self.update_open_trades(trade, data)
 
-            self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=False)
-
-            # todo cleanup quick fix
-            time.sleep(0.1)
+            loading_win.hide_load_win()
 
             # display success message
             DialogWin(self.dpg, configs.SELL_TRADE_SOLD_SUCCESS_MSG_TEXT, self)

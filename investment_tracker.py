@@ -486,7 +486,7 @@ class Fintracker:
         invest_type = row_data[configs.FIREBASE_TYPE]
         date = row_data[configs.FIREBASE_DATE]
         sold_price = row_data[configs.FIREBASE_SOLD_PRICE]
-        net_profit = round(row_data[configs.FIREBASE_NET_PROFIT], 2)
+        net_profit = row_data[configs.FIREBASE_NET_PROFIT]
         profit_per = row_data[configs.FIREBASE_PROFIT_PERCENTAGE]
 
         # only round on non-crypto trades
