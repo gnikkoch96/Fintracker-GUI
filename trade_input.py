@@ -91,10 +91,6 @@ class InputTrade:
                                 label=configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_TEXT,
                                 callback=self.search_callback)
 
-            # ticker info tooltip
-            with self.dpg.tooltip(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_ID):
-                self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_SEARCH_BTN_TOOLTIP_TEXT)
-
         # options input (hidden in the beginning)
         with self.dpg.group(horizontal=True):
             # choose contract btn

@@ -200,7 +200,6 @@ class Fintracker:
                 if invest_type.lower() != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT.lower():
                     bought_price = round(bought_price, 2)
 
-
                 # used to cleanup row tag alias when logging out
                 if self.dpg.does_alias_exist(
                         configs.FINTRACKER_CLOSED_TRADES_ROW_TEXT + str(self.num_closed_trade_rows)):
@@ -257,9 +256,13 @@ class Fintracker:
 
                     # remove button
                     with self.dpg.table_cell():
-                        self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
-                                            callback=self.closed_trade_remove_callback,
-                                            user_data=(row_tag, is_option, closed_trade_id))
+                        with self.dpg.group(horizontal=True):
+                            self.dpg.add_spacer(width=configs.FINTRACKER_CLOSED_REMOVE_SPACERX)
+                            remove_btn = self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
+                                                             callback=self.open_trade_remove_callback,
+                                                             user_data=(row_tag, is_option, closed_trade_id))
+
+                            self.dpg.bind_item_theme(remove_btn, configs.RED_BTN_COLOR_THEME_ID)
 
     def load_open_trades(self):
         # open trades window
@@ -386,9 +389,12 @@ class Fintracker:
 
                     # remove button
                     with self.dpg.table_cell():
-                        self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
-                                            callback=self.open_trade_remove_callback,
-                                            user_data=(row_tag, is_option, open_trade_id))
+                        with self.dpg.group(horizontal=True):
+                            self.dpg.add_spacer(width=configs.FINTRACKER_OPEN_REMOVE_SPACERX)
+                            remove_btn = self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
+                                                callback=self.open_trade_remove_callback,
+                                                user_data=(row_tag, is_option, open_trade_id))
+                            self.dpg.bind_item_theme(remove_btn, configs.RED_BTN_COLOR_THEME_ID)
 
     # used by other classes to add to the fintracker tables
     def add_to_open_table(self, table_id, row_data, is_option):
@@ -458,9 +464,13 @@ class Fintracker:
 
             # remove button
             with self.dpg.table_cell():
-                self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
-                                    callback=self.open_trade_remove_callback,
-                                    user_data=(row_tag, is_option, open_trade_id))
+                with self.dpg.group(horizontal=True):
+                    self.dpg.add_spacer(width=configs.FINTRACKER_OPEN_REMOVE_SPACERX)
+                    remove_btn = self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
+                                        callback=self.open_trade_remove_callback,
+                                        user_data=(row_tag, is_option, open_trade_id))
+
+                    self.dpg.bind_item_theme(remove_btn, configs.RED_BTN_COLOR_THEME_ID)
 
     # used by other classes to update the fintracker table
     def add_to_closed_table(self, table_id, row_data, is_option):
@@ -538,9 +548,13 @@ class Fintracker:
 
             # remove button
             with self.dpg.table_cell():
-                self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
-                                    callback=self.closed_trade_remove_callback,
-                                    user_data=(row_tag, is_option, closed_trade_id))
+                with self.dpg.group(horizontal=True):
+                    self.dpg.add_spacer(width=configs.FINTRACKER_CLOSED_REMOVE_SPACERX)
+                    remove_btn = self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
+                                        callback=self.open_trade_remove_callback,
+                                        user_data=(row_tag, is_option, closed_trade_id))
+
+                    self.dpg.bind_item_theme(remove_btn, configs.RED_BTN_COLOR_THEME_ID)
 
     # used by classes that update the values of a row from a given table
     def update_table_row(self, row_tag, new_data, is_options, for_open_table):
