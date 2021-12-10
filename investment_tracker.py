@@ -259,7 +259,7 @@ class Fintracker:
                         with self.dpg.group(horizontal=True):
                             self.dpg.add_spacer(width=configs.FINTRACKER_CLOSED_REMOVE_SPACERX)
                             remove_btn = self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
-                                                             callback=self.open_trade_remove_callback,
+                                                             callback=self.closed_trade_remove_callback,
                                                              user_data=(row_tag, is_option, closed_trade_id))
 
                             self.dpg.bind_item_theme(remove_btn, configs.RED_BTN_COLOR_THEME_ID)
@@ -551,7 +551,7 @@ class Fintracker:
                 with self.dpg.group(horizontal=True):
                     self.dpg.add_spacer(width=configs.FINTRACKER_CLOSED_REMOVE_SPACERX)
                     remove_btn = self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
-                                        callback=self.open_trade_remove_callback,
+                                        callback=self.closed_trade_remove_callback,
                                         user_data=(row_tag, is_option, closed_trade_id))
 
                     self.dpg.bind_item_theme(remove_btn, configs.RED_BTN_COLOR_THEME_ID)
@@ -661,7 +661,8 @@ class Fintracker:
         row_tag = user_data[0]
         is_option = user_data[1]
         close_trade_id = user_data[2]
-        firebase_conn.remove_closed_trade_by_id(self.user_id, is_option, close_trade_id)
+
+        print(firebase_conn.remove_closed_trade_by_id(self.user_id, is_option, close_trade_id))
 
         # update the total profit and win-rate
         self.calculate_total_profit_win_rate_thread()

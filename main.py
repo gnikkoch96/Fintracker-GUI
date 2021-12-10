@@ -47,6 +47,7 @@ def create_dpg_themes():
             dpg.add_theme_style(dpg.mvStyleVar_ChildRounding, 12, category=dpg.mvThemeCat_Core)
             dpg.add_theme_color(dpg.mvThemeCol_TitleBgActive, (0, 95, 115), category=dpg.mvThemeCat_Core)
             dpg.add_theme_color(dpg.mvThemeCol_Button, (0, 95, 115), category=dpg.mvThemeCat_Core)
+            dpg.add_theme_color(dpg.mvThemeCol_CheckMark, (0, 95, 115), category=dpg.mvThemeCat_Core)
             dpg.add_theme_color(dpg.mvThemeCol_MenuBarBg, (0, 95, 115), category=dpg.mvThemeCat_Core)
 
     # used to display positive changes of stock/crypto prices
@@ -104,5 +105,4 @@ def create_dpg_themes():
 
 
 if __name__ == '__main__':
-    dpg.show_style_editor()
     create_windows()
