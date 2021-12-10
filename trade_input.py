@@ -113,12 +113,16 @@ class InputTrade:
         with self.dpg.group(horizontal=True):
             # bought_price input
             self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_TEXT)
-            self.dpg.add_input_float(tag=configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
+            self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
+            # self.dpg.add_input_float(tag=configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
 
             # current price button
             self.dpg.add_button(tag=configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID,
                                 label=configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_TEXT,
                                 callback=self.current_price_callback)
+
+            with self.dpg.tooltip(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID):
+                self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_TOOLTIP_TEXT)
 
         # reason input
         self.dpg.add_spacer(height=configs.TRADE_INPUT_REASON_INPT_SPACERY)
@@ -151,6 +155,8 @@ class InputTrade:
             else:  # get crypto price
                 if cgt.validate_coin(ticker):
                     curr_price = cgt.get_current_price(ticker)
+                    print(curr_price)
+
                     loading_win.hide_load_win()
                 else:
                     loading_win.hide_load_win()
@@ -171,7 +177,7 @@ class InputTrade:
 
         if self.validate_inputs():
 
-            bought_price = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
+            bought_price = float(self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID))
             count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
             invest_type = self.investment_type.upper()
             date_val = str(date.today())

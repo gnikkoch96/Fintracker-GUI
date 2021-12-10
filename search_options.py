@@ -183,6 +183,10 @@ class Options:
 
     # validates ticker and whether or not it contains options
     def validate_input(self, ticker):
+        # todo cleanup
+        if ticker == "":
+            return False
+
         # must be valid ticker
         valid_ticker = yft.validate_ticker(ticker)
 

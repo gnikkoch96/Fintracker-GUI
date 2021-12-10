@@ -3,6 +3,7 @@ from pycoingecko import CoinGeckoAPI
 
 coin_gecko = CoinGeckoAPI()
 
+
 # validates the token's ticker input
 def validate_coin(ticker):
     # empty ticker (coin gecko sets search to bitcoin for empty strings)
@@ -42,8 +43,9 @@ def get_description(ticker):
 
 # returns the current market price the coin is going for
 def get_current_price(ticker):
-    print(ticker)
     coin = coin_gecko.get_coin_by_id(id=ticker.lower())
+
+    print(coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CURRENTPRICE][configs.COINGECKO_USD])
     return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CURRENTPRICE][configs.COINGECKO_USD]
 
 

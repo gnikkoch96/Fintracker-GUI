@@ -26,8 +26,16 @@ def validate_count(count):
 
 
 def validate_bought_price(bought_price):
+    # bought_price has to have valid format
+
+    # todo cleanup (quick fix)
+    try:
+        float(bought_price)
+    except:
+        return False, configs.VALIDATE_ERROR_INVALID_BOUGHT_PRICE_MSG + "\n"
+
     # bought_price should be greater than 0
-    valid_bought_price = bought_price > 0
+    valid_bought_price = float(bought_price) > 0
 
     if not valid_bought_price:
         return False, configs.VALIDATE_ERROR_BOUGHT_PRICE_MSG + "\n"
@@ -40,13 +48,13 @@ def validate_ticker(ticker, invest_type):
     if invest_type == configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT:
         valid_ticker = cgt.validate_coin(ticker.lower())
 
-        if not valid_ticker: # invalid crypto ticker
+        if not valid_ticker:  # invalid crypto ticker
             return False, configs.VALIDATE_ERROR_CRYPTO_TICKER_MSG + "\n"
 
     elif invest_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
         valid_ticker = yft.validate_ticker(ticker)
 
-        if not valid_ticker: # invalid stock ticker
+        if not valid_ticker:  # invalid stock ticker
             return False, configs.VALIDATE_ERROR_STOCK_TICKER_MSG + "\n"
 
     return True, ""

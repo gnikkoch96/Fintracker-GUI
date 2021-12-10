@@ -104,7 +104,7 @@ class ViewTrade:
             self.dpg.add_text(configs.VIEW_TRADE_BOUGHT_PRICE_TEXT)
 
             # bought price value
-            self.dpg.add_input_float(tag=configs.VIEW_TRADE_BOUGHT_PRICE_ID,
+            self.dpg.add_input_text(tag=configs.VIEW_TRADE_BOUGHT_PRICE_ID,
                                      width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
                                      default_value=bought_price)
 

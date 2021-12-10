@@ -166,7 +166,7 @@ class Fintracker:
             self.dpg.add_table_column(label=configs.FIREBASE_SOLD_PRICE)
             self.dpg.add_table_column(label=configs.FIREBASE_NET_PROFIT)
             self.dpg.add_table_column(label=configs.FIREBASE_PROFIT_PERCENTAGE)
-            self.dpg.add_table_column(label=configs.FINTRACKER_REMOVE_TEXT)
+            self.dpg.add_table_column()
 
             # don't continue if there are no trades (placed here so at least it loads the column headers)
             if firebase_conn.get_closed_trades_db(self.user_id, is_option) is None:
@@ -197,8 +197,9 @@ class Fintracker:
                 profit_per = closed_trade[configs.FIREBASE_PROFIT_PERCENTAGE]
 
                 # only round on non-crypto trades
-                if invest_type != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT:
+                if invest_type.lower() != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT.lower():
                     bought_price = round(bought_price, 2)
+
 
                 # used to cleanup row tag alias when logging out
                 if self.dpg.does_alias_exist(
@@ -212,11 +213,10 @@ class Fintracker:
 
                     # id (user clicks this to find about their trade)
                     with self.dpg.table_cell():
-                        with self.dpg.group(horizontal=True):
-                            self.dpg.add_spacer(width=configs.FINTRACKER_VIEW_CLOSED_TRADE_BTN_SPACERYX)
-                            self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
-                                                callback=self.view_trade_callback,
-                                                user_data=(closed_trade_id, is_option, row_tag))
+                        self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                            width=configs.FINTRACKER_VIEW_CLOSED_TRADE_BTN_WIDTH,
+                                            callback=self.view_trade_callback,
+                                            user_data=(closed_trade_id, is_option, row_tag))
 
                     # date
                     with self.dpg.table_cell():
@@ -330,8 +330,8 @@ class Fintracker:
                 invest_type = open_trade[configs.FIREBASE_TYPE]
                 date = open_trade[configs.FIREBASE_DATE]
 
-                # crypto is not rounded
-                if invest_type != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT:
+                # only round on non-crypto trades
+                if invest_type.lower() != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT.lower():
                     bought_price = round(bought_price, 2)
 
                 # used to cleanup alias when logging out
@@ -346,11 +346,10 @@ class Fintracker:
 
                     # id (user clicks this to find about their trade)
                     with self.dpg.table_cell():
-                        with self.dpg.group(horizontal=True):
-                            self.dpg.add_spacer(width=configs.FINTRACKER_VIEW_OPEN_TRADE_BTN_SPACERYX)
-                            self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
-                                                callback=self.view_trade_callback,
-                                                user_data=(open_trade_id, is_option, row_tag))
+                        self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                            width=configs.FINTRACKER_VIEW_OPEN_TRADE_BTN_WIDTH,
+                                            callback=self.view_trade_callback,
+                                            user_data=(open_trade_id, is_option, row_tag))
 
                     # date
                     with self.dpg.table_cell():
@@ -380,6 +379,7 @@ class Fintracker:
                     # sell button
                     with self.dpg.table_cell():
                         self.dpg.add_button(label=configs.FINTRACKER_SELL_TEXT,
+                                            width=configs.FINTRACKER_SELL_BTN_WIDTH,
                                             callback=self.sell_callback,
                                             user_data=(is_option,
                                                        open_trade_id, row_tag))
@@ -404,6 +404,10 @@ class Fintracker:
         count = row_data[configs.FIREBASE_COUNT]
         bought_price = row_data[configs.FIREBASE_BOUGHT_PRICE]
 
+        # only round on non-crypto trades
+        if invest_type.lower() != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT.lower():
+            bought_price = round(bought_price, 2)
+
         # get the recent trade
         open_trade_keys = firebase_conn.get_open_trades_keys(self.user_id, is_option)
         open_trade_id = list(open_trade_keys)[-1]
@@ -414,11 +418,10 @@ class Fintracker:
 
             # id (user clicks this to find about their trade)
             with self.dpg.table_cell():
-                with self.dpg.group(horizontal=True):
-                    self.dpg.add_spacer(width=configs.FINTRACKER_VIEW_OPEN_TRADE_BTN_SPACERYX)
-                    self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
-                                        callback=self.view_trade_callback,
-                                        user_data=(open_trade_id, is_option, row_tag))
+                self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                    width=configs.FINTRACKER_VIEW_OPEN_TRADE_BTN_WIDTH,
+                                    callback=self.view_trade_callback,
+                                    user_data=(open_trade_id, is_option, row_tag))
 
             # date
             with self.dpg.table_cell():
@@ -448,6 +451,7 @@ class Fintracker:
             # sell button
             with self.dpg.table_cell():
                 self.dpg.add_button(label=configs.FINTRACKER_SELL_TEXT,
+                                    width=configs.FINTRACKER_SELL_BTN_WIDTH,
                                     callback=self.sell_callback,
                                     user_data=(is_option,
                                                open_trade_id, row_tag))
@@ -475,6 +479,10 @@ class Fintracker:
         net_profit = round(row_data[configs.FIREBASE_NET_PROFIT], 2)
         profit_per = row_data[configs.FIREBASE_PROFIT_PERCENTAGE]
 
+        # only round on non-crypto trades
+        if invest_type.lower() != configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT.lower():
+            bought_price = round(bought_price, 2)
+
         # get the recent trade that was added
         closed_trade_keys = firebase_conn.get_closed_trades_keys(self.user_id, is_option)
         closed_trade_id = list(closed_trade_keys)[-1]
@@ -486,11 +494,10 @@ class Fintracker:
 
             # id (user clicks this to find about their trade)
             with self.dpg.table_cell():
-                with self.dpg.group(horizontal=True):
-                    self.dpg.add_spacer(width=configs.FINTRACKER_VIEW_CLOSED_TRADE_BTN_SPACERYX)
-                    self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
-                                        callback=self.view_trade_callback,
-                                        user_data=(closed_trade_id, is_option, row_tag))
+                self.dpg.add_button(label=configs.FINTRACKER_VIEW_TRADE_BTN_TEXT,
+                                    width=configs.FINTRACKER_VIEW_CLOSED_TRADE_BTN_WIDTH,
+                                    callback=self.view_trade_callback,
+                                    user_data=(closed_trade_id, is_option, row_tag))
 
             # date
             with self.dpg.table_cell():
