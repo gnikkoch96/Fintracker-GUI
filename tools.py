@@ -1,4 +1,7 @@
 def add_and_load_image(dpg, image_path, parent=None):
+    if dpg.load_image(image_path) is None:
+        return
+
     width, height, channels, data = dpg.load_image(image_path)
 
     with dpg.texture_registry() as reg_id:

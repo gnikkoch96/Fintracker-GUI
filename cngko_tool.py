@@ -44,8 +44,6 @@ def get_description(ticker):
 # returns the current market price the coin is going for
 def get_current_price(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker.lower())
-
-    print(coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CURRENTPRICE][configs.COINGECKO_USD])
     return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CURRENTPRICE][configs.COINGECKO_USD]
 
 

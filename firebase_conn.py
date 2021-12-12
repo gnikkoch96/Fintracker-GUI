@@ -10,12 +10,15 @@ firebase_auth = firebase.auth()
 # realtime database
 firebase_db = firebase.database()
 
+# todo quick fix (cleanup)
+user_auth = None
+
 
 # returns the user's id once authenticated
 def authenticate_user_login(email, password):
     try:
-        auth = firebase_auth.sign_in_with_email_and_password(email, password)
-        return auth[configs.FIREBASE_LOCAL_ID]
+        user_auth = firebase_auth.sign_in_with_email_and_password(email, password)
+        return user_auth[configs.FIREBASE_LOCAL_ID]
     except:
         return None
 

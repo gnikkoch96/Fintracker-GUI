@@ -2,15 +2,26 @@ from datetime import date
 
 # firebase
 # todo replace with real firebase config
+# FIREBASE_CONFIG = {
+#     'apiKey': "AIzaSyBR0l5iXd7MwfLG5ltKhvMGKUsE7DpsGHQ",
+#     'authDomain': "python-testing-ef238.firebaseapp.com",
+#     'databaseURL': "https://python-testing-ef238-default-rtdb.firebaseio.com/",
+#     'projectId': "python-testing-ef238",
+#     'storageBucket': "python-testing-ef238.appspot.com",
+#     'messagingSenderId': "1063640306776",
+#     'appId': "1:1063640306776:web:b92a28f2ad29f10a67e62d",
+#     'measurementId': "G-8PCYDLQTW3"
+# }
+
 FIREBASE_CONFIG = {
-    'apiKey': "AIzaSyBR0l5iXd7MwfLG5ltKhvMGKUsE7DpsGHQ",
-    'authDomain': "python-testing-ef238.firebaseapp.com",
-    'databaseURL': "https://python-testing-ef238-default-rtdb.firebaseio.com/",
-    'projectId': "python-testing-ef238",
-    'storageBucket': "python-testing-ef238.appspot.com",
-    'messagingSenderId': "1063640306776",
-    'appId': "1:1063640306776:web:b92a28f2ad29f10a67e62d",
-    'measurementId': "G-8PCYDLQTW3"
+    'apiKey': "AIzaSyCtotU0H3hBXwq-Z3-29HSUHKin2M-JdDA",
+    'authDomain': "fintracker-ec2ae.firebaseapp.com",
+    'databaseURL': 'https://fintracker-ec2ae-default-rtdb.firebaseio.com/',
+    'projectId': "fintracker-ec2ae",
+    'storageBucket': "fintracker-ec2ae.appspot.com",
+    'messagingSenderId': "281971152933",
+    'appId': "1:281971152933:web:2fcd7568723b378846c7cc",
+    'measurementId': "G-8Z1P4NZ1TJ"
 }
 
 # ids======================================================================
@@ -128,7 +139,7 @@ REGISTER_INPUT_CONFIRM_PASS_ID = "Password Confirmation"
 # value======================================================================
 FINTRACKER_VIEWPORT_ICON_PATH = "resources/images/fintrack-logo.ico"
 FINTRACKER_LOGO_PATH = "resources/images/fintracker-logo.png"
-
+HOUR_IN_SECONDS = 3600 # used for refreshing tokens (login.py)
 OSWALD_FONT_PATH = "resources/fonts/Oswald-VariableFont_wght.ttf"
 
 NOT_APPLICABLE_TEXT = "N/A"

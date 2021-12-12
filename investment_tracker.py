@@ -715,7 +715,7 @@ class Fintracker:
             for closed_trade_id in closed_trades_options:
                 closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
 
-                total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT])
+                total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT] * 100)
 
         return round(total_profit, 2)
 

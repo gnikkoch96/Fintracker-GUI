@@ -5,11 +5,14 @@ import tools
 from investment_tracker import Fintracker
 from dialog_win import DialogWin
 
+
 # dec: Login GUI
 class Login:
     def __init__(self, dpg):
         self.dpg = dpg
         self._user = None
+        self.email = None
+        self.password = None
         self.create_login_win()
 
     @property
@@ -80,21 +83,19 @@ class Login:
     def login_callback(self):
         loading_win.show_load_win()
 
-        # todo uncomment this in final product
-        # email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
-        # password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
+        # enter email and password
+        self.email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
+        self.password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
 
-        # todo remove in final product
-        email = "n2@email.com"
-        password = "123456"
-
-        self._user = firebase_conn.authenticate_user_login(email, password)
+        self._user = firebase_conn.authenticate_user_login(self.email, self.password)
 
         if self._user is not None:
             Fintracker(self.dpg, False, self.user)
             self.dpg.hide_item(configs.LOGIN_WINDOW_ID)
 
         else:
+            loading_win.hide_load_win()
+
             DialogWin(self.dpg, configs.LOGIN_FAILED_MSG_TEXT, self)
             self.reset_input_fields()
 

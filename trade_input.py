@@ -109,8 +109,8 @@ class InputTrade:
         with self.dpg.group(horizontal=True):
             # bought_price input
             self.dpg.add_text(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_TEXT)
-            self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
-            # self.dpg.add_input_float(tag=configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID)
+            self.dpg.add_input_text(tag=configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID,
+                                    default_value="0")
 
             # current price button
             self.dpg.add_button(tag=configs.TRADE_INPUT_INFO_WINDOW_CURRENT_PRICE_BTN_ID,
@@ -148,7 +148,6 @@ class InputTrade:
             else:  # get crypto price
                 if cgt.validate_coin(ticker):
                     curr_price = cgt.get_current_price(ticker)
-                    print(curr_price)
 
                     loading_win.hide_load_win()
                 else:
