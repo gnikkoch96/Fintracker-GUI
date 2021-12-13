@@ -221,6 +221,7 @@ DPG_DATE_PICKER_DAY = "month_day"
 
 # firebase keywords
 FIREBASE_TOKENID = "idToken"
+FIREBASE_REFRESHTOKEN = "refreshToken"
 FIREBASE_DATE = "date"
 FIREBASE_TICKER = "ticker"
 FIREBASE_TYPE = "stock_type"

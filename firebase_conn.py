@@ -1,5 +1,8 @@
+import threading
+
 import pyrebase
 import configs
+import time
 
 # firebase init (connects to our firebase server)
 firebase = pyrebase.initialize_app(configs.FIREBASE_CONFIG)
@@ -37,9 +40,13 @@ class FirebaseConn:
         self._token_id = self._user[configs.FIREBASE_TOKENID]
 
         # thread that will refresh token (so that they are allowed to continue using our service)
+        threading.Thread(target=self.refresh_token, daemon=True).start()
 
     def refresh_token(self):
-        pass
+        while True:
+            # wait about an hour before refreshing the service token
+            time.sleep(configs.HOUR_IN_SECONDS)
+            firebase.auth().refresh(self._user[configs.FIREBASE_REFRESHTOKEN])
 
     def get_user_id(self):
         return self._user[configs.FIREBASE_LOCAL_ID]
