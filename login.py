@@ -81,11 +81,8 @@ class Login:
         loading_win.show_load_win()
 
         # enter email and password
-        # self.email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
-        # self.password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
-
-        self.email = "nikko@email.com"
-        self.password = "123456"
+        self.email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
+        self.password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
 
         user_login = firebase_conn.authenticate_user_login(self.email, self.password)
         if user_login is not None:
