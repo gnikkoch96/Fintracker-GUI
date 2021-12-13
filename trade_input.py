@@ -20,6 +20,9 @@ class InputTrade:
         self.user_id = user_id
         self.fintracker = fintracker
 
+        # to push data to firebase
+        self.firebase_client = fintracker.firebase_client
+
         # default will be on Crypto
         self.investment_types = [configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT,
                                  configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT,
@@ -191,7 +194,7 @@ class InputTrade:
                         configs.FIREBASE_REASON: reason
                         }
 
-                firebase_conn.add_open_trade_db(self.user_id, data, False)
+                self.firebase_client.add_open_trade_db(data, False)
                 self.update_to_open_table(data, False)
 
             # options
@@ -212,7 +215,7 @@ class InputTrade:
                         configs.FIREBASE_REASON: reason
                         }
 
-                firebase_conn.add_open_trade_db(self.user_id, data, True)
+                self.firebase_client.add_open_trade_db(data, True)
                 self.update_to_open_table(data, True)
 
             loading_win.hide_load_win()

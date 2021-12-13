@@ -1,23 +1,20 @@
-import firebase_conn
 import configs
+import firebase_conn
 import loading_win
 import tools
 from investment_tracker import Fintracker
 from dialog_win import DialogWin
+from firebase_conn import FirebaseConn
 
 
 # dec: Login GUI
 class Login:
     def __init__(self, dpg):
         self.dpg = dpg
-        self._user = None
+        self.firebase_conn = None
         self.email = None
         self.password = None
         self.create_login_win()
-
-    @property
-    def user(self):
-        return self._user
 
     def create_login_win(self):
         with self.dpg.window(tag=configs.LOGIN_WINDOW_ID,
@@ -84,15 +81,17 @@ class Login:
         loading_win.show_load_win()
 
         # enter email and password
-        self.email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
-        self.password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
+        # self.email = self.dpg.get_value(configs.LOGIN_INPUT_EMAIL_ID)
+        # self.password = self.dpg.get_value(configs.LOGIN_INPUT_PASS_ID)
 
-        self._user = firebase_conn.authenticate_user_login(self.email, self.password)
+        self.email = "nikko@email.com"
+        self.password = "123456"
 
-        if self._user is not None:
-            Fintracker(self.dpg, False, self.user)
+        user_login = firebase_conn.authenticate_user_login(self.email, self.password)
+        if user_login is not None:
+            self.firebase_conn = FirebaseConn(user_login)
+            Fintracker(self.dpg, False, self.firebase_conn)
             self.dpg.hide_item(configs.LOGIN_WINDOW_ID)
-
         else:
             loading_win.hide_load_win()
 

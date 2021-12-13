@@ -1,6 +1,7 @@
 import configs
 from pycoingecko import CoinGeckoAPI
 
+# connect to coin gecko api
 coin_gecko = CoinGeckoAPI()
 
 

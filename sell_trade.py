@@ -17,7 +17,7 @@ class SellTrade:
 
         # fintracker related
         self.fintracker = fintracker
-        self.user_id = fintracker.user_id
+        self.firebase_client = fintracker.firebase_client
 
         self.create_sell_trade_win()
 
@@ -67,7 +67,7 @@ class SellTrade:
             self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
 
             # retrieve the trade that we are selling
-            trade = firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
+            trade = self.firebase_client.get_open_trade_by_id(self.trade_id, self.is_option)
 
             # data
             date_val = str(date.today())
@@ -108,7 +108,7 @@ class SellTrade:
                         configs.FIREBASE_REASON: reason
                         }
 
-            firebase_conn.add_closed_trade_db(self.user_id, data, self.is_option)
+            self.firebase_client.add_closed_trade_db(data, self.is_option)
             self.update_closed_table(data)
             self.update_open_trades(trade, data)
 
@@ -138,7 +138,7 @@ class SellTrade:
             self.dpg.delete_item(self.row_tag)
 
             # update the firebase data
-            firebase_conn.remove_open_trade_by_id(self.user_id, self.is_option, self.trade_id)
+            self.firebase_client.remove_open_trade_by_id(self.is_option, self.trade_id)
 
         else:  # user is only selling a percentage of their holdings
             # update current holdings
@@ -151,8 +151,8 @@ class SellTrade:
             self.fintracker.update_table_row(self.row_tag, sold_data, self.is_option, True)
 
             # update db
-            firebase_conn.update_open_trade_by_id_key(self.user_id, self.trade_id, configs.FIREBASE_COUNT,
-                                                      current_holdings, self.is_option)
+            self.firebase_client.update_open_trade_by_id_key(self.trade_id, configs.FIREBASE_COUNT,
+                                                             current_holdings, self.is_option)
 
     # updates the closed trades table
     def update_closed_table(self, row_data):
@@ -167,7 +167,7 @@ class SellTrade:
 
     # todo cleanup (we have a validations class)
     def validate_input(self):
-        trade = firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
+        trade = self.firebase_client.get_open_trade_by_id(self.trade_id, self.is_option)
 
         # has to be above the number of held positions
         valid_count = trade[configs.FIREBASE_COUNT] >= self.dpg.get_value(configs.SELL_TRADE_COUNT_ID) > 0

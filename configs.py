@@ -1,18 +1,6 @@
 from datetime import date
 
 # firebase
-# todo replace with real firebase config
-# FIREBASE_CONFIG = {
-#     'apiKey': "AIzaSyBR0l5iXd7MwfLG5ltKhvMGKUsE7DpsGHQ",
-#     'authDomain': "python-testing-ef238.firebaseapp.com",
-#     'databaseURL': "https://python-testing-ef238-default-rtdb.firebaseio.com/",
-#     'projectId': "python-testing-ef238",
-#     'storageBucket': "python-testing-ef238.appspot.com",
-#     'messagingSenderId': "1063640306776",
-#     'appId': "1:1063640306776:web:b92a28f2ad29f10a67e62d",
-#     'measurementId': "G-8PCYDLQTW3"
-# }
-
 FIREBASE_CONFIG = {
     'apiKey': "AIzaSyCtotU0H3hBXwq-Z3-29HSUHKin2M-JdDA",
     'authDomain': "fintracker-ec2ae.firebaseapp.com",
@@ -232,6 +220,7 @@ DPG_DATE_PICKER_MONTH = "month"
 DPG_DATE_PICKER_DAY = "month_day"
 
 # firebase keywords
+FIREBASE_TOKENID = "idToken"
 FIREBASE_DATE = "date"
 FIREBASE_TICKER = "ticker"
 FIREBASE_TYPE = "stock_type"

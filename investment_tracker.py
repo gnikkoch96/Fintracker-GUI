@@ -11,9 +11,9 @@ from dialog_win import DialogWin
 class Fintracker:
 
     # user_id is none if the user chooses to go offline
-    def __init__(self, dpg, is_offline=False, user_id=None):
+    def __init__(self, dpg, is_offline=False, firebase_client=None):
         self.dpg = dpg
-        self.user_id = user_id
+        self.firebase_client = firebase_client
         self.view_trade = None  # stores reference to currently viewed trade
         self.sell_trade = None  # stores reference to currently selling trade
 
@@ -169,11 +169,11 @@ class Fintracker:
             self.dpg.add_table_column()
 
             # don't continue if there are no trades (placed here so at least it loads the column headers)
-            if firebase_conn.get_closed_trades_db(self.user_id, is_option) is None:
+            if self.firebase_client.get_closed_trades_db(is_option) is None:
                 return
 
             # retrieve the closed trades
-            closed_trades = firebase_conn.get_closed_trades_db(self.user_id, is_option)
+            closed_trades = self.firebase_client.get_closed_trades_db(is_option)
 
             # load data to the table
             for closed_trade_id in closed_trades:
@@ -181,7 +181,7 @@ class Fintracker:
                 self.num_closed_trade_rows += 1
 
                 # retrieve individual trade based on trade id
-                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, is_option)
+                closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, is_option)
 
                 # closed trade data
                 if not is_option:
@@ -311,17 +311,17 @@ class Fintracker:
             self.dpg.add_table_column()
 
             # return if there are no trades to retrieve
-            if firebase_conn.get_open_trades_db(self.user_id, is_option) is None:
+            if self.firebase_client.get_open_trades_db(is_option) is None:
                 return
 
             # retrieve open trades
-            open_trades = firebase_conn.get_open_trades_db(self.user_id, is_option)
+            open_trades = self.firebase_client.get_open_trades_db(is_option)
 
             for open_trade_id in open_trades:
                 self.num_open_trade_rows += 1
 
                 # retrieve open trade
-                open_trade = firebase_conn.get_open_trade_by_id(self.user_id, open_trade_id, is_option)
+                open_trade = self.firebase_client.get_open_trade_by_id(open_trade_id, is_option)
 
                 # open trade data
                 if not is_option:
@@ -392,8 +392,8 @@ class Fintracker:
                         with self.dpg.group(horizontal=True):
                             self.dpg.add_spacer(width=configs.FINTRACKER_OPEN_REMOVE_SPACERX)
                             remove_btn = self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
-                                                callback=self.open_trade_remove_callback,
-                                                user_data=(row_tag, is_option, open_trade_id))
+                                                             callback=self.open_trade_remove_callback,
+                                                             user_data=(row_tag, is_option, open_trade_id))
                             self.dpg.bind_item_theme(remove_btn, configs.RED_BTN_COLOR_THEME_ID)
 
     # used by other classes to add to the fintracker tables
@@ -415,7 +415,7 @@ class Fintracker:
             bought_price = round(bought_price, 2)
 
         # get the recent trade
-        open_trade_keys = firebase_conn.get_open_trades_keys(self.user_id, is_option)
+        open_trade_keys = self.firebase_client.get_open_trades_keys(is_option)
         open_trade_id = list(open_trade_keys)[-1]
 
         row_tag = configs.FINTRACKER_OPEN_TRADES_ROW_TEXT + str(self.num_open_trade_rows)
@@ -467,9 +467,10 @@ class Fintracker:
                 with self.dpg.group(horizontal=True):
                     self.dpg.add_spacer(width=configs.FINTRACKER_OPEN_REMOVE_SPACERX)
                     remove_btn = self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
-                                        callback=self.open_trade_remove_callback,
-                                        user_data=(row_tag, is_option, open_trade_id))
+                                                     callback=self.open_trade_remove_callback,
+                                                     user_data=(row_tag, is_option, open_trade_id))
 
+                    # give a red color to the remove button
                     self.dpg.bind_item_theme(remove_btn, configs.RED_BTN_COLOR_THEME_ID)
 
     # used by other classes to update the fintracker table
@@ -494,7 +495,7 @@ class Fintracker:
             bought_price = round(bought_price, 2)
 
         # get the recent trade that was added
-        closed_trade_keys = firebase_conn.get_closed_trades_keys(self.user_id, is_option)
+        closed_trade_keys = self.firebase_client.get_closed_trades_keys(is_option)
         closed_trade_id = list(closed_trade_keys)[-1]
 
         # table row
@@ -551,9 +552,10 @@ class Fintracker:
                 with self.dpg.group(horizontal=True):
                     self.dpg.add_spacer(width=configs.FINTRACKER_CLOSED_REMOVE_SPACERX)
                     remove_btn = self.dpg.add_button(label=configs.FINTRACKER_REMOVE_TEXT,
-                                        callback=self.closed_trade_remove_callback,
-                                        user_data=(row_tag, is_option, closed_trade_id))
+                                                     callback=self.closed_trade_remove_callback,
+                                                     user_data=(row_tag, is_option, closed_trade_id))
 
+                    # apply red color to remove button
                     self.dpg.bind_item_theme(remove_btn, configs.RED_BTN_COLOR_THEME_ID)
 
     # used by classes that update the values of a row from a given table
@@ -610,7 +612,7 @@ class Fintracker:
             self.dpg.focus_item(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
         else:
             # create a new trade input window
-            InputTrade(self.dpg, self.user_id, self)
+            InputTrade(self.dpg, self.firebase_client, self)
 
     # opens the sell trade window
     def sell_callback(self, sender, app_data, user_data):
@@ -648,7 +650,7 @@ class Fintracker:
         row_tag = user_data[0]
         is_option = user_data[1]
         open_trade_id = user_data[2]
-        firebase_conn.remove_open_trade_by_id(self.user_id, is_option, open_trade_id)
+        self.firebase_client.remove_open_trade_by_id(is_option, open_trade_id)
 
         self.dpg.delete_item(row_tag)
 
@@ -662,7 +664,7 @@ class Fintracker:
         is_option = user_data[1]
         close_trade_id = user_data[2]
 
-        print(firebase_conn.remove_closed_trade_by_id(self.user_id, is_option, close_trade_id))
+        self.firebase_client.remove_closed_trade_by_id(is_option, close_trade_id)
 
         # update the total profit and win-rate
         self.calculate_total_profit_win_rate_thread()
@@ -699,21 +701,21 @@ class Fintracker:
     # calculates the total profit
     def calculate_total_profit(self):
         # get all closed trades
-        closed_trades_crypto_stock = firebase_conn.get_closed_trades_db(self.user_id, False)
-        closed_trades_options = firebase_conn.get_closed_trades_db(self.user_id, True)
+        closed_trades_crypto_stock = self.firebase_client.get_closed_trades_db(False)
+        closed_trades_options = self.firebase_client.get_closed_trades_db(True)
 
         # sum the net profit column for crypto stock table
         total_profit = 0
         if closed_trades_crypto_stock is not None:
             for closed_trade_id in closed_trades_crypto_stock:
-                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, False)
+                closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, False)
 
                 total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT])
 
         # sum the net profit column for options table
         if closed_trades_options is not None:
             for closed_trade_id in closed_trades_options:
-                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
+                closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, True)
 
                 total_profit += float(closed_trade[configs.FIREBASE_NET_PROFIT] * 100)
 
@@ -723,8 +725,8 @@ class Fintracker:
     def calculate_win_rate(self):
 
         # get all closed trades
-        closed_trades_crypto_stock = firebase_conn.get_closed_trades_db(self.user_id, False)
-        closed_trades_options = firebase_conn.get_closed_trades_db(self.user_id, True)
+        closed_trades_crypto_stock = self.firebase_client.get_closed_trades_db(False)
+        closed_trades_options = self.firebase_client.get_closed_trades_db(True)
 
         # count the number of win and loss trades
         loss_trades = 0
@@ -734,7 +736,7 @@ class Fintracker:
         if closed_trades_crypto_stock is not None:
             for closed_trade_id in closed_trades_crypto_stock:
                 # gets stock or crypto trade
-                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, False)
+                closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, False)
 
                 # a trade is a win if the net profit is positive
                 if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
@@ -746,7 +748,7 @@ class Fintracker:
         if closed_trades_options is not None:
             for closed_trade_id in closed_trades_options:
                 # gets option trade
-                closed_trade = firebase_conn.get_closed_trade_by_id(self.user_id, closed_trade_id, True)
+                closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, True)
 
                 # a trade is a win if the net profit is positive
                 if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:

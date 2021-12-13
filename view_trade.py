@@ -17,12 +17,21 @@ class ViewTrade:
 
         # fintracker
         self.fintracker = fintracker
-        self.user_id = fintracker.user_id
+        self.firebase_client = fintracker.firebase_client
 
         # get the trade data from db based on the trade id
         self.trade_data = self.load_trade_data()
 
         self.create_view_trades_win()
+
+    # loads corresponding data from database
+    def load_trade_data(self):
+        # return closed trade info
+        if not self.for_open_table():
+            return self.firebase_client.get_closed_trade_by_id(self.trade_id, self.is_option)
+
+        # return open trade info
+        return self.firebase_client.get_open_trade_by_id(self.trade_id, self.is_option)
 
     def create_view_trades_win(self):
         # view trade window
@@ -105,8 +114,8 @@ class ViewTrade:
 
             # bought price value
             self.dpg.add_input_text(tag=configs.VIEW_TRADE_BOUGHT_PRICE_ID,
-                                     width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
-                                     default_value=bought_price)
+                                    width=configs.VIEW_TRADE_INPUT_FIELD_WIDTH,
+                                    default_value=bought_price)
 
             # if viewing closing trade display sold price
             if not self.for_open_table():
@@ -219,7 +228,7 @@ class ViewTrade:
             date_val = self.dpg.get_value(configs.VIEW_TRADE_DATE_ID)
             invest_type = self.dpg.get_value(configs.VIEW_TRADE_TYPE_ID)
             count = self.dpg.get_value(configs.VIEW_TRADE_COUNT_ID)
-            bought_price = round(self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID), 2)
+            bought_price = round(float(self.dpg.get_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID)), 2)
             reason = self.dpg.get_value(configs.VIEW_TRADE_REASON_ID)
 
             # editing closed trade
@@ -253,7 +262,6 @@ class ViewTrade:
                                 configs.FIREBASE_REASON: reason
                                 }
 
-                firebase_conn.update_closed_trade_by_id(self.user_id, self.trade_id, new_data, self.is_option)
                 self.fintracker.update_table_row(self.row_tag, new_data, self.is_option, False)
 
             # editing open trade
@@ -275,8 +283,9 @@ class ViewTrade:
                                 configs.FIREBASE_REASON: reason
                                 }
 
-                firebase_conn.update_open_trade_by_id(self.user_id, self.trade_id, new_data, self.is_option)
                 self.fintracker.update_table_row(self.row_tag, new_data, self.is_option, True)
+
+            self.firebase_client.update_open_trade_by_id(self.trade_id, new_data, self.is_option)
 
             # update the total profit and win rate from fintracker
             self.fintracker.calculate_total_profit_win_rate_thread()
@@ -390,15 +399,6 @@ class ViewTrade:
         self.dpg.set_value(configs.VIEW_TRADE_COUNT_ID, count)
         self.dpg.set_value(configs.VIEW_TRADE_BOUGHT_PRICE_ID, bought_price)
         self.dpg.set_value(configs.VIEW_TRADE_REASON_ID, reason)
-
-    # loads corresponding data from database
-    def load_trade_data(self):
-        # return closed trade info
-        if not self.for_open_table():
-            return firebase_conn.get_closed_trade_by_id(self.user_id, self.trade_id, self.is_option)
-
-        # return open trade info
-        return firebase_conn.get_open_trade_by_id(self.user_id, self.trade_id, self.is_option)
 
     # disable the items so that the user doesn't accidentally edit them
     def disable_items(self):
