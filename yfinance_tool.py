@@ -1,5 +1,6 @@
 import yfinance as yf
 import configs
+from requests.exceptions import ConnectionError
 
 
 # todo cleanup (current solution to slowdown in retrieving data from yfinance api)
@@ -23,10 +24,13 @@ def retrieve_info(ticker):
 
 # checks if ticker exists
 def validate_ticker(ticker):
-    stock = yf.Ticker(ticker)
+    try:
+        stock = yf.Ticker(ticker)
 
-    # if it doesn't have a regular market price then it is invalid (all stocks do)
-    return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is not None
+        # if it doesn't have a regular market price then it is invalid (all stocks do)
+        return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE] is not None
+    except ConnectionError:
+        return False
 
 
 def get_stock_name(ticker):
@@ -40,13 +44,18 @@ def get_stock_name(ticker):
 
 
 def get_stock_price(ticker):
-    stock = yf.Ticker(ticker)
+    try:
+        stock = yf.Ticker(ticker)
 
-    # stock doesn't exist
-    if stock is None:
-        return 0
+        # stock doesn't exist
+        if stock is None:
+            return 0
 
-    return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE]
+        return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE]
+
+    except ConnectionError:
+        print("Error")
+        return
 
 
 def get_options_date(ticker):

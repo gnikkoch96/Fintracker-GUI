@@ -23,7 +23,6 @@ def get_symbol(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
     return coin[configs.COINGECKO_SYMBOL].upper()
 
-
 # returns the full name of the coin (i.e. Bitcoin, Etherium)
 def get_name(ticker):
     coin = coin_gecko.get_coin_by_id(id=ticker)
@@ -44,9 +43,12 @@ def get_description(ticker):
 
 # returns the current market price the coin is going for
 def get_current_price(ticker):
-    coin = coin_gecko.get_coin_by_id(id=ticker.lower())
-    return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CURRENTPRICE][configs.COINGECKO_USD]
-
+    try:
+        coin = coin_gecko.get_coin_by_id(id=ticker.lower())
+        return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CURRENTPRICE][configs.COINGECKO_USD]
+    except ConnectionError:
+        print("Abort...Connection Error")
+        return
 
 # returns the number of coins currently in the pool
 def get_circulating_supply(ticker):
