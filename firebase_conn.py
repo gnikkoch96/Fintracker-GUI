@@ -36,8 +36,8 @@ class FirebaseConn:
     def __init__(self, user_info):
         # user
         self._user = user_info
-        self._user_id = self._user[configs.FIREBASE_LOCAL_ID]
-        self._token_id = self._user[configs.FIREBASE_TOKENID]
+        self._user_id = user_info[configs.FIREBASE_LOCAL_ID]
+        self._token_id = user_info[configs.FIREBASE_TOKENID]
 
         # thread that will refresh token (so that they are allowed to continue using our service)
         threading.Thread(target=self.refresh_token, daemon=True).start()
@@ -47,9 +47,6 @@ class FirebaseConn:
             # wait about an hour before refreshing the service token
             time.sleep(configs.HOUR_IN_SECONDS)
             firebase.auth().refresh(self._user[configs.FIREBASE_REFRESHTOKEN])
-
-    def get_user_id(self):
-        return self._user[configs.FIREBASE_LOCAL_ID]
 
     # adds a new trade to the db
     def add_open_trade_db(self, data, is_option):
