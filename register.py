@@ -89,22 +89,18 @@ class Register:
     def register_callback(self, sender, app_data, user_data):
         loading_win.show_load_win()
 
+        # success
         if self.validate_inputs():
             loading_win.hide_load_win()
 
             # success register dialog
             DialogWin(self.dpg, configs.REGISTER_SUCCESS_MSG_TEXT, self)
 
+            # resets the input fields
+            self.reset_fields()
+
             # returns use to login screen
             self.login_callback()
-        else:
-            loading_win.hide_load_win()
-
-            # error register dialog
-            DialogWin(self.dpg, configs.REGISTER_FAILED_MSG_TEXT, self)
-
-        # resets the input fields
-        self.reset_fields()
 
     def validate_inputs(self):
         email = self.dpg.get_value(configs.REGISTER_INPUT_EMAIL_ID)
@@ -115,9 +111,26 @@ class Register:
         valid_pass = password == confirm_pass
 
         # check if email is already being used
-        valid_email = firebase_conn.create_user_account(email, password)
+        create_acc_status = firebase_conn.create_user_account(email, password)
 
-        if not valid_pass or not valid_email:
+        if not valid_pass or create_acc_status == configs.HTTPERROR_TEXT or create_acc_status == configs.CONNECTIONERROR_TEXT:
+            # connection error
+            if create_acc_status == configs.CONNECTIONERROR_TEXT:
+                loading_win.hide_load_win()
+
+                # error register dialog
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+
+            # invalid register inputs
+            elif create_acc_status == configs.HTTPERROR_TEXT:
+                loading_win.hide_load_win()
+
+                # error register dialog
+                DialogWin(self.dpg, configs.REGISTER_FAILED_MSG_TEXT, self)
+
+                # resets the input fields
+                self.reset_fields()
+
             return False
 
         return True

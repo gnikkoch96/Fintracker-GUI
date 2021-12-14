@@ -22,6 +22,11 @@ class ViewTrade:
         # get the trade data from db based on the trade id
         self.trade_data = self.load_trade_data()
 
+        # connection loss
+        if self.trade_data == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
         self.create_view_trades_win()
 
     # loads corresponding data from database
@@ -285,15 +290,21 @@ class ViewTrade:
 
                 self.fintracker.update_table_row(self.row_tag, new_data, self.is_option, True)
 
-            self.firebase_client.update_open_trade_by_id(self.trade_id, new_data, self.is_option)
+            update_status = self.firebase_client.update_open_trade_by_id(self.trade_id, new_data, self.is_option)
 
-            # update the total profit and win rate from fintracker
-            self.fintracker.calculate_total_profit_win_rate_thread()
+            # success
+            if update_status:
+                # update the total profit and win rate from fintracker
+                self.fintracker.calculate_total_profit_win_rate_thread()
 
-            loading_win.hide_load_win()
+                loading_win.hide_load_win()
 
-            # success edit msg
-            DialogWin(self.dpg, configs.VIEW_TRADE_SUCCESS_EDIT_MSG_TEXT, self)
+                # success edit msg
+                DialogWin(self.dpg, configs.VIEW_TRADE_SUCCESS_EDIT_MSG_TEXT, self)
+
+            else:  # connection lost
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
 
     # create option window for the user to choose another option
     def change_contract_callback(self):

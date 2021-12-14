@@ -1,10 +1,7 @@
-import time
-
 import configs
 import loading_win
 import yfinance_tool as yft
 import cngko_tool as cgt
-import firebase_conn
 import threading
 import validations
 from search_options import Options
@@ -194,8 +191,13 @@ class InputTrade:
                         configs.FIREBASE_REASON: reason
                         }
 
-                self.firebase_client.add_open_trade_db(data, False)
-                self.update_to_open_table(data, False)
+                add_to_db_status = self.firebase_client.add_open_trade_db(data, False)
+
+                if add_to_db_status:
+                    self.update_to_open_table(data, False)
+                else:  # connection lost
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
 
             # options
             else:
@@ -215,8 +217,13 @@ class InputTrade:
                         configs.FIREBASE_REASON: reason
                         }
 
-                self.firebase_client.add_open_trade_db(data, True)
-                self.update_to_open_table(data, True)
+                add_to_db_status = self.firebase_client.add_open_trade_db(data, True)
+
+                if add_to_db_status:
+                    self.update_to_open_table(data, True)
+                else:  # connection lost
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
 
             loading_win.hide_load_win()
 

@@ -44,9 +44,6 @@ class Fintracker:
                              width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1],
                              no_resize=True):
-            # displays login success dialog
-            DialogWin(self.dpg, configs.LOGIN_SUCCESSFUL_MSG_TEXT, self)
-
             self.dpg.set_primary_window(configs.FINTRACKER_WINDOW_ID, True)
             self.create_fintracker_win_menu()
             self.create_fintracker_win_items()
@@ -168,12 +165,17 @@ class Fintracker:
             self.dpg.add_table_column(label=configs.FIREBASE_PROFIT_PERCENTAGE)
             self.dpg.add_table_column()
 
-            # don't continue if there are no trades (placed here so at least it loads the column headers)
-            if self.firebase_client.get_closed_trades_db(is_option) is None:
-                return
-
             # retrieve the closed trades
             closed_trades = self.firebase_client.get_closed_trades_db(is_option)
+
+            # connection loss
+            if closed_trades == configs.CONNECTIONERROR_TEXT:
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
+
+            # empty table (placed here so at least it loads the column headers)
+            if closed_trades is None:
+                return
 
             # load data to the table
             for closed_trade_id in closed_trades:
@@ -182,6 +184,11 @@ class Fintracker:
 
                 # retrieve individual trade based on trade id
                 closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, is_option)
+
+                # connection loss
+                if closed_trade == configs.CONNECTIONERROR_TEXT:
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
 
                 # closed trade data
                 if not is_option:
@@ -310,18 +317,28 @@ class Fintracker:
             self.dpg.add_table_column()
             self.dpg.add_table_column()
 
-            # return if there are no trades to retrieve
-            if self.firebase_client.get_open_trades_db(is_option) is None:
-                return
-
             # retrieve open trades
             open_trades = self.firebase_client.get_open_trades_db(is_option)
+
+            # connection loss
+            if open_trades == configs.CONNECTIONERROR_TEXT:
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
+
+            # return if there are no trades to retrieve
+            if open_trades is None:
+                return
 
             for open_trade_id in open_trades:
                 self.num_open_trade_rows += 1
 
                 # retrieve open trade
                 open_trade = self.firebase_client.get_open_trade_by_id(open_trade_id, is_option)
+
+                # connection loss
+                if open_trade == configs.CONNECTIONERROR_TEXT:
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
 
                 # open trade data
                 if not is_option:
@@ -416,6 +433,16 @@ class Fintracker:
 
         # get the recent trade
         open_trade_keys = self.firebase_client.get_open_trades_keys(is_option)
+
+        # connection loss
+        if open_trade_keys == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
+        # connection error
+        if open_trade_keys is None:
+            return
+
         open_trade_id = list(open_trade_keys)[-1]
 
         row_tag = configs.FINTRACKER_OPEN_TRADES_ROW_TEXT + str(self.num_open_trade_rows)
@@ -496,6 +523,16 @@ class Fintracker:
 
         # get the recent trade that was added
         closed_trade_keys = self.firebase_client.get_closed_trades_keys(is_option)
+
+        # connection loss
+        if closed_trade_keys == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
+        # connection error
+        if closed_trade_keys is None:
+            return
+
         closed_trade_id = list(closed_trade_keys)[-1]
 
         # table row
@@ -650,9 +687,13 @@ class Fintracker:
         row_tag = user_data[0]
         is_option = user_data[1]
         open_trade_id = user_data[2]
-        self.firebase_client.remove_open_trade_by_id(is_option, open_trade_id)
+        remove_status = self.firebase_client.remove_open_trade_by_id(is_option, open_trade_id)
 
-        self.dpg.delete_item(row_tag)
+        # handling connection error
+        if remove_status:
+            self.dpg.delete_item(row_tag)
+        else: # lost connection
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
 
     # removing a trade from closed table will affect the total profit and win-rate
     def closed_trade_remove_callback(self, sender, app_data, user_data):
@@ -664,12 +705,16 @@ class Fintracker:
         is_option = user_data[1]
         close_trade_id = user_data[2]
 
-        self.firebase_client.remove_closed_trade_by_id(is_option, close_trade_id)
+        remove_status = self.firebase_client.remove_closed_trade_by_id(is_option, close_trade_id)
 
         # update the total profit and win-rate
         self.calculate_total_profit_win_rate_thread()
 
-        self.dpg.delete_item(row_tag)
+        # handling connection error
+        if remove_status:
+            self.dpg.delete_item(row_tag)
+        else:  # lost connection
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
 
     # logs the user out
     def logout_menu_callback(self):
@@ -704,6 +749,12 @@ class Fintracker:
         closed_trades_crypto_stock = self.firebase_client.get_closed_trades_db(False)
         closed_trades_options = self.firebase_client.get_closed_trades_db(True)
 
+        # connection loss
+        if closed_trades_crypto_stock == configs.CONNECTIONERROR_TEXT or \
+                closed_trades_options == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
         # sum the net profit column for crypto stock table
         total_profit = 0
         if closed_trades_crypto_stock is not None:
@@ -728,6 +779,12 @@ class Fintracker:
         closed_trades_crypto_stock = self.firebase_client.get_closed_trades_db(False)
         closed_trades_options = self.firebase_client.get_closed_trades_db(True)
 
+        # connection loss
+        if closed_trades_crypto_stock == configs.CONNECTIONERROR_TEXT or \
+                closed_trades_options == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
         # count the number of win and loss trades
         loss_trades = 0
         win_trades = 0
@@ -737,6 +794,11 @@ class Fintracker:
             for closed_trade_id in closed_trades_crypto_stock:
                 # gets stock or crypto trade
                 closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, False)
+
+                # connection loss
+                if closed_trade == configs.CONNECTIONERROR_TEXT:
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
 
                 # a trade is a win if the net profit is positive
                 if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:
@@ -749,6 +811,11 @@ class Fintracker:
             for closed_trade_id in closed_trades_options:
                 # gets option trade
                 closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, True)
+
+                # connection loss
+                if closed_trade == configs.CONNECTIONERROR_TEXT:
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
 
                 # a trade is a win if the net profit is positive
                 if closed_trade[configs.FIREBASE_NET_PROFIT] > 0:

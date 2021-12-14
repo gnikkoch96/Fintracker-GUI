@@ -80,3 +80,5 @@ def is_contract_empty(contract, is_option):
             return False, configs.VALIDATE_ERROR_CONTRACT_MSG + "\n"
 
     return True, ""
+
+

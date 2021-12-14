@@ -69,6 +69,11 @@ class SellTrade:
             # retrieve the trade that we are selling
             trade = self.firebase_client.get_open_trade_by_id(self.trade_id, self.is_option)
 
+            # connection loss
+            if trade == configs.CONNECTIONERROR_TEXT:
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
+
             # data
             date_val = str(date.today())
             count = self.dpg.get_value(configs.SELL_TRADE_COUNT_ID)
@@ -108,19 +113,24 @@ class SellTrade:
                         configs.FIREBASE_REASON: reason
                         }
 
-            self.firebase_client.add_closed_trade_db(data, self.is_option)
-            self.update_closed_table(data)
-            self.update_open_trades(trade, data)
+            add_to_db_status = self.firebase_client.add_closed_trade_db(data, self.is_option)
 
-            loading_win.hide_load_win()
+            if add_to_db_status:
+                self.update_closed_table(data)
+                self.update_open_trades(trade, data)
 
-            # display success message
-            DialogWin(self.dpg, configs.SELL_TRADE_SOLD_SUCCESS_MSG_TEXT, self)
+                loading_win.hide_load_win()
 
-            # todo cleanup quick fix (user could still press the sell button which leads to an error)
-            time.sleep(0.1)
+                # display success message
+                DialogWin(self.dpg, configs.SELL_TRADE_SOLD_SUCCESS_MSG_TEXT, self)
 
-            self.dpg.enable_item(configs.SELL_TRADE_SELL_BTN_ID)
+                # todo cleanup quick fix (user could still press the sell button which leads to an error)
+                time.sleep(0.1)
+
+                self.dpg.enable_item(configs.SELL_TRADE_SELL_BTN_ID)
+            else:  # connection lost
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
 
     # delete window and cleanup_aliases alias
     def close_sell_trade_win(self):
@@ -134,11 +144,15 @@ class SellTrade:
 
         # update selling trade's count and remove if it is 0
         if sold_holdings >= current_holdings:
-            # remove trade from open table
-            self.dpg.delete_item(self.row_tag)
+            # attempt to update the firebase data
+            remove_status = self.firebase_client.remove_open_trade_by_id(self.is_option, self.trade_id)
 
-            # update the firebase data
-            self.firebase_client.remove_open_trade_by_id(self.is_option, self.trade_id)
+            # remove trade from open table
+            if remove_status:
+                self.dpg.delete_item(self.row_tag)
+            else:  # lost connection
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
 
         else:  # user is only selling a percentage of their holdings
             # update current holdings
@@ -150,9 +164,14 @@ class SellTrade:
             # update the count in the open table
             self.fintracker.update_table_row(self.row_tag, sold_data, self.is_option, True)
 
-            # update db
-            self.firebase_client.update_open_trade_by_id_key(self.trade_id, configs.FIREBASE_COUNT,
-                                                             current_holdings, self.is_option)
+            # attempt to update db
+            update_status = self.firebase_client.update_open_trade_by_id_key(self.trade_id, configs.FIREBASE_COUNT,
+                                                                             current_holdings, self.is_option)
+
+            # connection loss
+            if update_status == configs.CONNECTIONERROR_TEXT:
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
 
     # updates the closed trades table
     def update_closed_table(self, row_data):
@@ -168,6 +187,11 @@ class SellTrade:
     # todo cleanup (we have a validations class)
     def validate_input(self):
         trade = self.firebase_client.get_open_trade_by_id(self.trade_id, self.is_option)
+
+        # connection loss
+        if trade == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
 
         # has to be above the number of held positions
         valid_count = trade[configs.FIREBASE_COUNT] >= self.dpg.get_value(configs.SELL_TRADE_COUNT_ID) > 0

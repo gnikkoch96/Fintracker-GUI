@@ -136,6 +136,10 @@ DEFAULT_DATE = {'month': date.today().month - 1,
                 'year': date.today().year - 1900,
                 'month_day': date.today().day}
 
+LOST_CONNECTION_ERROR_MSG = "[Error] Lost Connection...Please Restart the App"
+HTTPERROR_TEXT = "HTTPError"
+CONNECTIONERROR_TEXT = "ConnectionError"
+
 # validations
 VALIDATE_ERROR_TYPE_MSG = "Invalid Bought Price (Can't be below 0)"
 VALIDATE_ERROR_COUNT_MSG = "Invalid Count (Can't be below 0)"
@@ -382,7 +386,7 @@ SELL_TRADE_SOLD_PRICE_TEXT = "Sold Price:     "
 SELL_TRADE_SELL_BTN_TEXT = "Sell Trade"
 SELL_TRADE_REASON_TEXT = "Reason:          "
 SELL_TRADE_SOLD_SUCCESS_MSG_TEXT = "[SUCCESS] Trade Sold Successfully"
-SELL_TRADE_INVALID_INPUT_MSG_TEXT = "[ERROR] Invalid Sold Count / Invalid Sold Price"
+SELL_TRADE_INVALID_INPUT_MSG_TEXT = "[ERROR] Invalid Sold Count / Invalid Sold Price/ Lost Connection"
 SELL_TRADE_SELL_BTN_SPACERX = SELL_TRADE_WINDOW_SIZE[0] / 3
 SELL_TRADE_SELL_BTN_SPACERY = 10
 SELL_TRADE_WINDOW_SPACERY = 10
@@ -430,7 +434,8 @@ REGISTER_HEADER_TEXT = "Fintracker | Register"
 REGISTER_INPUT_EMAIL_TEXT = "Enter E-Mail"
 REGISTER_INPUT_PASS_TEXT = "Enter Password"
 REGISTER_SUCCESS_MSG_TEXT = "[SUCCESS] Registered new account! Thank You."
-REGISTER_FAILED_MSG_TEXT = "[ERROR] E-Mail is currently being used and/or Confirm Password and Password are not the same."
+REGISTER_FAILED_MSG_TEXT = "[ERROR] E-Mail is currently being used and/or Confirm Password and Password are not the " \
+                           "same."
 REGISTER_BTN_TEXT = "Register"
 REGISTER_LOGIN_BTN_TEXT = "Sign-In"
 REGISTER_INPUT_CONFIRM_PASS_TEXT = "Confirm Password"

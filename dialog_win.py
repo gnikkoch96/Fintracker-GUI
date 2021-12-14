@@ -42,6 +42,10 @@ class DialogWin:
 
     # closes this dialog and attempts to close previous window
     def confirmation_callback(self):
+        # terminate app if lost connection
+        if self.message == configs.LOST_CONNECTION_ERROR_MSG:
+            self.dpg.stop_dearpygui()
+
         self.close_dialog_win()
         self.close_prev_win()
 
