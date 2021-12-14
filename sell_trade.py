@@ -77,7 +77,7 @@ class SellTrade:
             count = self.dpg.get_value(configs.SELL_TRADE_COUNT_ID)
             invest_type = trade[configs.FIREBASE_TYPE]
             bought_price = trade[configs.FIREBASE_BOUGHT_PRICE]
-            sold_price = self.dpg.get_value(configs.SELL_TRADE_SOLD_PRICE_ID)
+            sold_price = round(self.dpg.get_value(configs.SELL_TRADE_SOLD_PRICE_ID), 2)
             net_profit = round((sold_price - bought_price) * count, 2)
             profit_per = round((net_profit / (count * bought_price)) * 100, 2)
             reason = self.dpg.get_value(configs.SELL_TRADE_REASON_ID)

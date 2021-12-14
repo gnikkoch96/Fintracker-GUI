@@ -37,4 +37,4 @@ exe = EXE(pyz,
           disable_windowed_traceback=False,
           target_arch=None,
           codesign_identity=None,
-          entitlements_file=None , icon='D:\\Github\\Fintracker-GUI\\resources\\images\\icon.ico')
+          entitlements_file=None )

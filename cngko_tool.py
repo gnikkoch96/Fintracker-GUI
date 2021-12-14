@@ -18,7 +18,7 @@ def validate_coin(ticker):
 
     except ValueError:
         return False
-    
+
     except ConnectionError:
         return configs.CONNECTION_ERROR_TEXT
 
