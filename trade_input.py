@@ -146,10 +146,25 @@ class InputTrade:
                     DialogWin(self.dpg, configs.TRADE_INPUT_CURRENT_PRICE_FAIL_MSG, self)
 
             else:  # get crypto price
-                if cgt.validate_coin(ticker):
+                valid_coin = cgt.validate_coin(ticker)
+
+                # non-null values are true
+                if valid_coin and valid_coin != configs.CONNECTIONERROR_TEXT:
                     curr_price = cgt.get_current_price(ticker)
 
+                    # connection loss
+                    if curr_price == configs.CONNECTIONERROR_TEXT:
+                        DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                        return
+
                     loading_win.hide_load_win()
+
+                elif valid_coin == configs.CONNECTIONERROR_TEXT:  # connection lost
+                    loading_win.hide_load_win()
+
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
+
                 else:
                     loading_win.hide_load_win()
 
@@ -248,18 +263,29 @@ class InputTrade:
         ticker = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_TICKER_ID)
         loading_win.show_load_win()
 
-        # todo think about putting this in a separate method
+        # if a window already exists it will be replaced with a new one
+        if self.dpg.does_alias_exist(configs.TICKER_SEARCH_CRYPTO_STOCK_WINDOW_ID):
+            self.dpg.delete_item(configs.TICKER_SEARCH_CRYPTO_STOCK_WINDOW_ID)
+
         if not self.is_ticker_empty():
             if self.is_crypto():
-                if cgt.validate_coin(ticker.lower()):
+                valid_coin = cgt.validate_coin(ticker.lower())
+                if valid_coin and valid_coin != configs.CONNECTIONERROR_TEXT:
                     loading_win.hide_load_win()
 
                     CryptoStockInfo(self.dpg, ticker, True)
+
+                elif valid_coin == configs.CONNECTIONERROR_TEXT:
+                    # connection lost
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
+
                 else:
                     loading_win.hide_load_win()
 
                     # invalid token msg
                     DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_TOKEN_MSG_TEXT, self)
+
             elif self.is_stock():
                 if yft.validate_ticker(ticker):
                     loading_win.hide_load_win()

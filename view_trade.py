@@ -1,5 +1,4 @@
 import configs
-import firebase_conn
 import loading_win
 import validations
 from search_options import Options

@@ -1,6 +1,7 @@
 import configs
 import yfinance_tool as yft
 import cngko_tool as cgt
+from dialog_win import DialogWin
 
 
 # desc: creates the window that displays information about the stock or crypto
@@ -18,8 +19,7 @@ class CryptoStockInfo:
                              width=configs.TICKER_SEARCH_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.TICKER_SEARCH_WINDOW_VIEWPORT_SIZE[1],
                              pos=configs.TICKER_SEARCH_WINDOW_POS,
-                             on_close=self.cleanup_aliases,
-                             modal=True):
+                             on_close=self.cleanup_aliases):
 
             if self.is_crypto:  # loads crypto info
                 self.create_search_win_crypto_items()
@@ -33,14 +33,35 @@ class CryptoStockInfo:
         # display name + ticker + current price
         with self.dpg.group(horizontal=True):
             # ticker + symbol
+            token_symbol = cgt.get_symbol(lower_ticker)
+
+            # connection loss
+            if token_symbol == configs.CONNECTIONERROR_TEXT:
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
+
             self.dpg.add_text(
-                configs.TICKER_SEARCH_CRYPTO_NAME_TEXT + self.ticker.capitalize() + f"({cgt.get_symbol(lower_ticker)})")
+                configs.TICKER_SEARCH_CRYPTO_NAME_TEXT + self.ticker.capitalize() + f"({token_symbol})")
 
             # current price
-            self.dpg.add_text("$" + str(cgt.get_current_price(lower_ticker)))
+            current_price = cgt.get_current_price(lower_ticker)
+
+            # connection loss
+            if current_price == configs.CONNECTIONERROR_TEXT:
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
+
+            self.dpg.add_text("$" + str(current_price))
 
             # change % 24 hrs
-            change_per = round(cgt.get_price_change_percentage_24h(lower_ticker), 2)
+            change_24hr = cgt.get_price_change_percentage_24h(lower_ticker)
+
+            # connection loss
+            if change_24hr == configs.CONNECTIONERROR_TEXT:
+                DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                return
+
+            change_per = round(change_24hr, 2)
 
             change_per_text = self.dpg.add_text(str(change_per) + "%")
 
@@ -50,32 +71,62 @@ class CryptoStockInfo:
                 self.dpg.bind_item_theme(change_per_text, configs.RED_TEXT_COLOR_THEME_ID)
 
         # market cap
-        self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_MRKTCAPTEXT + str(cgt.get_market_cap(lower_ticker)))
+        market_cap = cgt.get_market_cap(lower_ticker)
+
+        # connection loss
+        if market_cap == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
+        self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_MRKTCAPTEXT + str(market_cap))
 
         # circulating supply
-        self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_CIRCSUPPLY_TEXT + str(cgt.get_circulating_supply(lower_ticker)))
+        circ_supply = cgt.get_circulating_supply(lower_ticker)
+
+        # connection loss
+        if circ_supply == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
+        self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_CIRCSUPPLY_TEXT + str(circ_supply))
 
         # total supply
-        self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_TOTSUPPLY_TEXT + str(cgt.get_total_supply(lower_ticker)))
+        total_supply = cgt.get_total_supply(lower_ticker)
+
+        # connection loss
+        if total_supply == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
+        self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_TOTSUPPLY_TEXT + str(total_supply))
 
         # hashing algo
-        if cgt.get_hashing_algorithm(lower_ticker) is not None:
-            hashing_algo = cgt.get_hashing_algorithm(lower_ticker)
-        else:
+        hashing_algo = cgt.get_hashing_algorithm(lower_ticker)
+
+        if hashing_algo is None:
             hashing_algo = configs.NOT_APPLICABLE_TEXT
+        else: # connection lost
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
 
         self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_HASHALGO_TEXT + hashing_algo)
 
         # description
+        desc = cgt.get_description(lower_ticker)
+
+        # connection loss
+        if desc == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
         self.dpg.add_spacer(height=configs.TICKER_SEARCH_DESC_SPACERY)
         self.dpg.add_text(configs.TICKER_SEARCH_CRYPTO_DESCRIPTION_TEXT)
-        self.dpg.add_text(default_value=cgt.get_description(lower_ticker),
+        self.dpg.add_text(default_value=desc,
                           wrap=configs.TICKERS_SEARCH_WRAP_COUNT)
 
     def create_search_win_stock_items(self):
         upper_ticker = self.ticker.upper()
 
-        # todo cleanup (quick fix to slow api pulls)
         stock_data = yft.retrieve_info(upper_ticker)
 
         name = stock_data[0]

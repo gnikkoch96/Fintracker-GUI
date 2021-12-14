@@ -1,5 +1,4 @@
 import configs
-import firebase_conn
 import threading
 from view_trade import ViewTrade
 from trade_input import InputTrade

@@ -48,6 +48,10 @@ def validate_ticker(ticker, invest_type):
     if invest_type == configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT:
         valid_ticker = cgt.validate_coin(ticker.lower())
 
+        # connection loss
+        if valid_ticker == configs.CONNECTIONERROR_TEXT:
+            return False, configs.LOST_CONNECTION_ERROR_MSG
+
         if not valid_ticker:  # invalid crypto ticker
             return False, configs.VALIDATE_ERROR_CRYPTO_TICKER_MSG + "\n"
 

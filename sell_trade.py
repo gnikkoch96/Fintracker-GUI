@@ -1,10 +1,7 @@
 import time
-
-import configs
-import firebase_conn
-from datetime import date
-
 import loading_win
+import configs
+from datetime import date
 from dialog_win import DialogWin
 
 
