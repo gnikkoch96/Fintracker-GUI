@@ -1,6 +1,7 @@
 import configs
 import yfinance_tool as yft
 import cngko_tool as cgt
+import loading_win
 from dialog_win import DialogWin
 
 
@@ -25,6 +26,8 @@ class CryptoStockInfo:
                 self.create_search_win_crypto_items()
             else:  # loads stock info
                 self.create_search_win_stock_items()
+
+            loading_win.hide_load_win()
 
     def create_search_win_crypto_items(self):
         # needs to be lowercase (coingecko api)

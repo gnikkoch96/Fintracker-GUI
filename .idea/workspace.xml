@@ -5,8 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ticker_search_info.py" beforeDir="false" afterPath="$PROJECT_DIR$/ticker_search_info.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/trade_input.py" beforeDir="false" afterPath="$PROJECT_DIR$/trade_input.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/validations.py" beforeDir="false" afterPath="$PROJECT_DIR$/validations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yfinance_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/yfinance_tool.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

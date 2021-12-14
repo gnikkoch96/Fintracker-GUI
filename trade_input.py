@@ -284,8 +284,6 @@ class InputTrade:
             if self.is_crypto():
                 valid_coin = cgt.validate_coin(ticker.lower())
                 if valid_coin and valid_coin != configs.CONNECTIONERROR_TEXT:
-                    loading_win.hide_load_win()
-
                     CryptoStockInfo(self.dpg, ticker, True)
 
                 elif valid_coin == configs.CONNECTIONERROR_TEXT:
