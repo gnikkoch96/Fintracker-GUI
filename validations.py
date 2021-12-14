@@ -58,6 +58,10 @@ def validate_ticker(ticker, invest_type):
     elif invest_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
         valid_ticker = yft.validate_ticker(ticker)
 
+        # connection loss
+        if valid_ticker == configs.CONNECTIONERROR_TEXT:
+            return False, configs.LOST_CONNECTION_ERROR_MSG
+        
         if not valid_ticker:  # invalid stock ticker
             return False, configs.VALIDATE_ERROR_STOCK_TICKER_MSG + "\n"
 

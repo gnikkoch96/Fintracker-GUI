@@ -129,6 +129,11 @@ class CryptoStockInfo:
 
         stock_data = yft.retrieve_info(upper_ticker)
 
+        # connection loss
+        if stock_data == configs.CONNECTIONERROR_TEXT:
+            DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+            return
+
         name = stock_data[0]
         price = stock_data[1]
         market_cap = stock_data[2]
@@ -144,7 +149,6 @@ class CryptoStockInfo:
 
             # name
             self.dpg.add_text(f"({name})")
-            # self.dpg.add_text(f"({yft.get_stock_name(upper_ticker)})")
 
             # current price
             self.dpg.add_text("$" + str(price))

@@ -136,8 +136,21 @@ class InputTrade:
 
             # get stock price
             if self.investment_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT:
-                if yft.validate_ticker(ticker):
+                valid_ticker = yft.validate_ticker(ticker)
+
+                # connection loss
+                if valid_ticker == configs.CONNECTIONERROR_TEXT:
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
+
+                if valid_ticker:
                     curr_price = yft.get_stock_price(ticker)
+
+                    # connection loss
+                    if curr_price == configs.CONNECTIONERROR_TEXT:
+                        DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                        return
+
                     loading_win.hide_load_win()
                 else:
                     loading_win.hide_load_win()
@@ -287,10 +300,18 @@ class InputTrade:
                     DialogWin(self.dpg, configs.TRADE_INPUT_INVALID_TOKEN_MSG_TEXT, self)
 
             elif self.is_stock():
-                if yft.validate_ticker(ticker):
+                valid_ticker = yft.validate_ticker(ticker)
+
+                if valid_ticker and valid_ticker != configs.CONNECTIONERROR_TEXT:
                     loading_win.hide_load_win()
 
                     CryptoStockInfo(self.dpg, ticker)
+
+                elif valid_ticker == configs.CONNECTIONERROR_TEXT:
+                    # connection lost
+                    DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
+                    return
+
                 else:
                     loading_win.hide_load_win()
 
