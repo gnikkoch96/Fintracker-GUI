@@ -196,6 +196,7 @@ class InputTrade:
         self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
 
         if self.validate_inputs():
+            print("valid")
 
             bought_price = float(self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID))
             count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
@@ -223,7 +224,10 @@ class InputTrade:
 
                 if add_to_db_status:
                     self.update_to_open_table(data, False)
+
                 else:  # connection lost
+                    loading_win.hide_load_win()
+
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                     return
 
@@ -250,6 +254,8 @@ class InputTrade:
                 if add_to_db_status:
                     self.update_to_open_table(data, True)
                 else:  # connection lost
+                    loading_win.hide_load_win()
+
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                     return
 
@@ -342,6 +348,7 @@ class InputTrade:
         check_count = validations.validate_count(count)
         check_bought_price = validations.validate_bought_price(bought_price)
 
+
         # 0 - True or False
         # 1 - Error Message
         if not check_ticker[0] or not check_contract_empty[0] or not check_count[0] or not check_bought_price[0]:
@@ -368,6 +375,7 @@ class InputTrade:
             # error message
             DialogWin(self.dpg, message, self)
             return False
+
         return True
 
     # defines the investment type depending on current radio button

@@ -62,8 +62,10 @@ class FirebaseConn:
                 else:
                     firebase_db.child(self._user_id).child(configs.FIREBASE_OPEN_TRADES).child(
                         configs.FIREBASE_STOCK_CRYPTO).push(data, self._token_id)
+
+                return True
         except ConnectionError:
-            return None
+            return False
 
     # removes a trade from the db with the corresponding trade_id
     def remove_open_trade_by_id(self, is_option, trade_id):
