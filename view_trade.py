@@ -30,12 +30,12 @@ class ViewTrade:
 
     # loads corresponding data from database
     def load_trade_data(self):
-        # return closed trade info
-        if not self.for_open_table():
-            return self.firebase_client.get_closed_trade_by_id(self.trade_id, self.is_option)
-
         # return open trade info
-        return self.firebase_client.get_open_trade_by_id(self.trade_id, self.is_option)
+        if self.for_open_table():
+            return self.firebase_client.get_open_trade_by_id(self.trade_id, self.is_option)
+
+        # return closed trade info
+        return self.firebase_client.get_closed_trade_by_id(self.trade_id, self.is_option)
 
     def create_view_trades_win(self):
         # view trade window

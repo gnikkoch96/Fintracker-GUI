@@ -10,7 +10,7 @@ from datetime import date
 from dialog_win import DialogWin
 
 
-# creates the gui that allows user to input their crypto/stock/option trade
+# desc: creates the gui that allows user to input their crypto/stock/option trade
 class InputTrade:
     def __init__(self, dpg, user_id, fintracker):
         self.dpg = dpg
@@ -40,8 +40,8 @@ class InputTrade:
                              pos=configs.TRADE_INPUT_WINDOW_POS_VALUE,
                              on_close=self.cleanup_alias,
                              no_resize=True):
-            self.create_trade_input_win_items()
             self.apply_theme()
+            self.create_trade_input_win_items()
 
     def apply_theme(self):
         self.dpg.bind_item_theme(configs.TRADE_INPUT_WINDOW_ID, configs.TRADE_INPUT_THEME_ID)
@@ -127,7 +127,7 @@ class InputTrade:
         self.hide_option_items()
 
     def current_price_callback(self):
-        self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
+        loading_win.show_load_win()
 
         if not self.is_ticker_empty():
 
@@ -196,8 +196,6 @@ class InputTrade:
         self.dpg.configure_item(configs.LOADING_WINDOW_ID, show=True)
 
         if self.validate_inputs():
-            print("valid")
-
             bought_price = float(self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_BOUGHT_PRICE_ID))
             count = self.dpg.get_value(configs.TRADE_INPUT_INFO_WINDOW_COUNT_ID)
             invest_type = self.investment_type.upper()

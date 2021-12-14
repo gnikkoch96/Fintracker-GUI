@@ -64,14 +64,16 @@ class CryptoStockInfo:
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                 return
 
-            change_per = round(change_24hr, 2)
+            # changes color of the 24hr change % if it is up or down
+            change_per_24h = round(change_24hr, 2)
+            change_per_24h_text = self.dpg.add_text(str(change_per_24h) + "%")
 
-            change_per_text = self.dpg.add_text(str(change_per) + "%")
-
-            if change_per > 0:
-                self.dpg.bind_item_theme(change_per_text, configs.GREEN_TEXT_COLOR_THEME_ID)
+            if change_per_24h > 0:
+                # apply green color
+                self.dpg.bind_item_theme(change_per_24h_text, configs.GREEN_TEXT_COLOR_THEME_ID)
             else:
-                self.dpg.bind_item_theme(change_per_text, configs.RED_TEXT_COLOR_THEME_ID)
+                # apply red color
+                self.dpg.bind_item_theme(change_per_24h_text, configs.RED_TEXT_COLOR_THEME_ID)
 
         # market cap
         market_cap = cgt.get_market_cap(lower_ticker)
@@ -108,6 +110,7 @@ class CryptoStockInfo:
 
         if hashing_algo is None:
             hashing_algo = configs.NOT_APPLICABLE_TEXT
+
         elif hashing_algo == configs.CONNECTIONERROR_TEXT:
             # connection lost
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
