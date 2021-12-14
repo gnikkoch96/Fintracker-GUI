@@ -267,6 +267,7 @@ class ViewTrade:
                                 }
 
                 self.fintracker.update_table_row(self.row_tag, new_data, self.is_option, False)
+                update_status = self.firebase_client.update_closed_trade_by_id(self.trade_id, new_data, self.is_option)
 
             # editing open trade
             else:
@@ -289,19 +290,21 @@ class ViewTrade:
 
                 self.fintracker.update_table_row(self.row_tag, new_data, self.is_option, True)
 
-            update_status = self.firebase_client.update_open_trade_by_id(self.trade_id, new_data, self.is_option)
+                update_status = self.firebase_client.update_open_trade_by_id(self.trade_id, new_data, self.is_option)
 
             # success
             if update_status:
+                loading_win.hide_load_win()
+
                 # update the total profit and win rate from fintracker
                 self.fintracker.calculate_total_profit_win_rate_thread()
-
-                loading_win.hide_load_win()
 
                 # success edit msg
                 DialogWin(self.dpg, configs.VIEW_TRADE_SUCCESS_EDIT_MSG_TEXT, self)
 
             else:  # connection lost
+                loading_win.hide_load_win()
+
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                 return
 

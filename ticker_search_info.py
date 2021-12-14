@@ -108,7 +108,8 @@ class CryptoStockInfo:
 
         if hashing_algo is None:
             hashing_algo = configs.NOT_APPLICABLE_TEXT
-        else: # connection lost
+        elif hashing_algo == configs.CONNECTIONERROR_TEXT:
+            # connection lost
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 

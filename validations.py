@@ -4,10 +4,12 @@ import cngko_tool as cgt
 
 
 def validate_type(trade_type):
+    trade_type = trade_type.lower()
+
     # has to be Crypto, Stock, or Option
-    valid_type = (trade_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT or
-                  trade_type == configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT or
-                  trade_type == configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT)
+    valid_type = (trade_type == configs.TRADE_INPUT_RADIO_BTN_STOCK_TEXT.lower() or
+                  trade_type == configs.TRADE_INPUT_RADIO_BTN_CRYPTO_TEXT.lower() or
+                  trade_type == configs.TRADE_INPUT_RADIO_BTN_OPTION_TEXT.lower())
 
     if not valid_type:
         return False, configs.VALIDATE_ERROR_TYPE_MSG + "\n"

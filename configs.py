@@ -141,7 +141,7 @@ HTTPERROR_TEXT = "HTTPError"
 CONNECTIONERROR_TEXT = "ConnectionError"
 
 # validations
-VALIDATE_ERROR_TYPE_MSG = "Invalid Bought Price (Can't be below 0)"
+VALIDATE_ERROR_TYPE_MSG = "Invalid Type, has to be Crypto/Stock/Option"
 VALIDATE_ERROR_COUNT_MSG = "Invalid Count (Can't be below 0)"
 VALIDATE_ERROR_BOUGHT_PRICE_MSG = "Invalid Bought Price (Can't be below 0)"
 VALIDATE_ERROR_INVALID_BOUGHT_PRICE_MSG = "Invalid Format (Valid: 4.53, 4.0, 3)"

@@ -126,8 +126,10 @@ class FirebaseConn:
             else:
                 firebase_db.child(self._user_id).child(configs.FIREBASE_OPEN_TRADES).child(
                     configs.FIREBASE_STOCK_CRYPTO).child(trade_id).update(new_data, self._token_id)
+
+            return True
         except ConnectionError:
-            return configs.CONNECTIONERROR_TEXT
+            return False
 
     # used when updating specific properties of a trade by keyword (i.e. count, ticker, etc...)
     def update_open_trade_by_id_key(self, trade_id, keyword, new_data, is_options):
@@ -214,5 +216,6 @@ class FirebaseConn:
             else:
                 firebase_db.child(self._user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
                     configs.FIREBASE_STOCK_CRYPTO).child(trade_id).update(new_data, self._token_id)
+            return True
         except ConnectionError:
-            return configs.CONNECTIONERROR_TEXT
+            return False

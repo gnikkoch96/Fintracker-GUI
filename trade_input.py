@@ -293,6 +293,7 @@ class InputTrade:
                     CryptoStockInfo(self.dpg, ticker, True)
 
                 elif valid_coin == configs.CONNECTIONERROR_TEXT:
+
                     # connection lost
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                     return
