@@ -13,6 +13,8 @@ class Fintracker:
     def __init__(self, dpg, is_offline=False, firebase_client=None):
         self.dpg = dpg
         self.firebase_client = firebase_client
+
+        # created to prevent duplicates
         self.view_trade = None  # stores reference to currently viewed trade
         self.sell_trade = None  # stores reference to currently selling trade
 
@@ -43,10 +45,10 @@ class Fintracker:
                              width=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[0],
                              height=configs.FINTRACKER_WINDOW_VIEWPORT_SIZE[1],
                              no_resize=True):
+            self.apply_theme()
             self.dpg.set_primary_window(configs.FINTRACKER_WINDOW_ID, True)
             self.create_fintracker_win_menu()
             self.create_fintracker_win_items()
-            self.apply_theme()
 
     def apply_theme(self):
         self.dpg.bind_item_theme(configs.FINTRACKER_WINDOW_ID, configs.FINTRACKER_THEME_ID)
@@ -96,6 +98,7 @@ class Fintracker:
                                 label=configs.FINTRACKER_ADD_BTN_TEXT,
                                 callback=self.add_callback)
 
+            # disables appropriate items (like the win rate and profit rate from being edited)
             self.disable_items()
 
         # closed and open trade windows group
@@ -438,10 +441,6 @@ class Fintracker:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 
-        # connection error
-        if open_trade_keys is None:
-            return
-
         open_trade_id = list(open_trade_keys)[-1]
 
         row_tag = configs.FINTRACKER_OPEN_TRADES_ROW_TEXT + str(self.num_open_trade_rows)
@@ -467,7 +466,7 @@ class Fintracker:
             with self.dpg.table_cell():
                 trade_ref = self.dpg.add_text(trade)
 
-                # make reading option contracts easier
+                # displays a tooltip for easier viewing of options
                 if is_option:
                     with self.dpg.tooltip(trade_ref):
                         self.dpg.add_text(trade)
@@ -526,10 +525,6 @@ class Fintracker:
         # connection loss
         if closed_trade_keys == configs.CONNECTIONERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
-            return
-
-        # connection error
-        if closed_trade_keys is None:
             return
 
         closed_trade_id = list(closed_trade_keys)[-1]
@@ -616,6 +611,8 @@ class Fintracker:
             new_profit_per = new_data[configs.FIREBASE_PROFIT_PERCENTAGE]
 
         counter = 0
+
+        # updates the children (i.e. components) that are within the row
         for row_col_id in row_cols:
             row_col_items = self.dpg.get_item_children(row_col_id, 1)
             for item_id in row_col_items:
@@ -691,7 +688,7 @@ class Fintracker:
         # handling connection error
         if remove_status:
             self.dpg.delete_item(row_tag)
-        else: # lost connection
+        else:  # lost connection
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
 
     # removing a trade from closed table will affect the total profit and win-rate

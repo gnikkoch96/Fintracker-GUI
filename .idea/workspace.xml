@@ -3,12 +3,14 @@
   <component name="ChangeListManager">
     <list default="true" id="ff56f13a-af49-4716-9548-457a8147bcdf" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cngko_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/cngko_tool.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dialog_win.py" beforeDir="false" afterPath="$PROJECT_DIR$/dialog_win.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/firebase_conn.py" beforeDir="false" afterPath="$PROJECT_DIR$/firebase_conn.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ticker_search_info.py" beforeDir="false" afterPath="$PROJECT_DIR$/ticker_search_info.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trade_input.py" beforeDir="false" afterPath="$PROJECT_DIR$/trade_input.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/validations.py" beforeDir="false" afterPath="$PROJECT_DIR$/validations.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/view_trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/view_trade.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/investment_tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/investment_tracker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/register.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/search_options.py" beforeDir="false" afterPath="$PROJECT_DIR$/search_options.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sell_trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/sell_trade.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -1,5 +1,3 @@
-import time
-
 import firebase_conn
 import configs
 import loading_win

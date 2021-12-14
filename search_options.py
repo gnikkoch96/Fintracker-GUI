@@ -23,9 +23,6 @@ class Options:
         # used for reference from other classes (i.e. using the getter method)
         self._contract = None
 
-        # search options thread (created to prevent waiting)
-        # self.search_options_thread = None
-
         self.create_options_win()
 
     @property

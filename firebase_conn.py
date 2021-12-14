@@ -35,7 +35,7 @@ def create_user_account(email, password):
         return configs.CONNECTIONERROR_TEXT
 
 
-# desc used to connect client to firebase
+# desc: used to connect client to firebase
 class FirebaseConn:
     def __init__(self, user_info):
         # user

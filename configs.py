@@ -1,5 +1,7 @@
 from datetime import date
 
+# desc: configs contains values that is referenced in other classes to prevent hardcode
+
 # firebase
 FIREBASE_CONFIG = {
     'apiKey': "AIzaSyCtotU0H3hBXwq-Z3-29HSUHKin2M-JdDA",

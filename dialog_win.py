@@ -5,7 +5,7 @@ import investment_tracker
 # desc: this class will be used to create dialogs throughout the program
 class DialogWin:
     # message will be displayed on the dialog
-    # prev_win refers to the window that created the dialog
+    # prev_win refers to the window that created the dialog (used for deleting windows and cleaning up aliases)
     def __init__(self, dpg, message, prev_win):
         self.dpg = dpg
         self.message = message
@@ -22,8 +22,8 @@ class DialogWin:
                              pos=configs.DIALOG_CENTER_WINDOW_POS,
                              no_resize=True,
                              no_title_bar=True):
-            self.create_dialog_win_items()
             self.apply_theme()
+            self.create_dialog_win_items()
 
     def apply_theme(self):
         self.dpg.bind_item_theme(configs.DIALOG_WINDOW_ID, configs.DIALOG_THEME_ID)
@@ -48,6 +48,10 @@ class DialogWin:
 
         self.close_dialog_win()
         self.close_prev_win()
+
+    def close_dialog_win(self):
+        self.dpg.delete_item(configs.DIALOG_WINDOW_ID)
+        self.cleanup_alias()
 
     # close previous window for success messages
     def close_prev_win(self):
@@ -75,10 +79,6 @@ class DialogWin:
         if self.dpg.does_alias_exist(configs.VIEW_TRADE_WINDOW_ID):
             self.dpg.delete_item(configs.VIEW_TRADE_WINDOW_ID)
             self.prev_win.cleanup_alias()
-
-    def close_dialog_win(self):
-        self.dpg.delete_item(configs.DIALOG_WINDOW_ID)
-        self.cleanup_alias()
 
     def cleanup_alias(self):
         if self.dpg.does_alias_exist(configs.DIALOG_WINDOW_ID):

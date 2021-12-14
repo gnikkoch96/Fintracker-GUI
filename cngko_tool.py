@@ -25,6 +25,7 @@ def get_symbol(ticker):
     try:
         coin = coin_gecko.get_coin_by_id(id=ticker)
         return coin[configs.COINGECKO_SYMBOL].upper()
+
     except ConnectionError:
         return configs.CONNECTIONERROR_TEXT
 
@@ -34,6 +35,7 @@ def get_name(ticker):
     try:
         coin = coin_gecko.get_coin_by_id(id=ticker)
         return coin[configs.COINGECKO_NAME].upper()
+
     except ConnectionError:
         return configs.CONNECTIONERROR_TEXT
 
@@ -43,6 +45,7 @@ def get_hashing_algorithm(ticker):
     try:
         coin = coin_gecko.get_coin_by_id(id=ticker)
         return coin[configs.COINGECKO_HASHINGALGO]
+
     except ConnectionError:
         return configs.CONNECTIONERROR_TEXT
 
@@ -52,6 +55,7 @@ def get_description(ticker):
     try:
         coin = coin_gecko.get_coin_by_id(id=ticker)
         return coin[configs.COINGECKO_DESC][configs.COINGECKO_ENGLISH]
+
     except ConnectionError:
         return configs.CONNECTIONERROR_TEXT
 
@@ -61,6 +65,7 @@ def get_current_price(ticker):
     try:
         coin = coin_gecko.get_coin_by_id(id=ticker.lower())
         return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CURRENTPRICE][configs.COINGECKO_USD]
+
     except ConnectionError:
         return configs.CONNECTIONERROR_TEXT
 
@@ -70,6 +75,7 @@ def get_circulating_supply(ticker):
     try:
         coin = coin_gecko.get_coin_by_id(id=ticker)
         return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_CIRCULATINGSUPPLY]
+
     except ConnectionError:
         return configs.CONNECTIONERROR_TEXT
 
@@ -79,6 +85,7 @@ def get_total_supply(ticker):
     try:
         coin = coin_gecko.get_coin_by_id(id=ticker)
         return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_TOTALSUPPLY]
+
     except ConnectionError:
         return configs.CONNECTIONERROR_TEXT
 
@@ -88,6 +95,7 @@ def get_market_cap(ticker):
     try:
         coin = coin_gecko.get_coin_by_id(id=ticker)
         return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_MARKETCAP][configs.COINGECKO_USD]
+
     except ConnectionError:
         return configs.CONNECTIONERROR_TEXT
 
@@ -97,5 +105,6 @@ def get_price_change_percentage_24h(ticker):
     try:
         coin = coin_gecko.get_coin_by_id(id=ticker)
         return coin[configs.COINGECKO_MARKETDATA][configs.COINGECKO_PRICECHANGEPERCENT24H]
+
     except ConnectionError:
         return configs.CONNECTIONERROR_TEXT
