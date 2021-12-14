@@ -22,7 +22,7 @@ def retrieve_info(ticker):
 
         return name, price, market_cap, shares_short, shares_short_prior_month, shares_short_per, bus_sum
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 # checks if ticker exists
@@ -57,7 +57,7 @@ def get_stock_price(ticker):
         return stock.get_info()[configs.YFINANCE_REGULARMARKETPRICE]
 
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 def get_options_date(ticker):
@@ -70,7 +70,7 @@ def get_options_date(ticker):
 
         return list(stock.options)
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 def get_options(ticker, contract_type, date):
@@ -89,7 +89,7 @@ def get_options(ticker, contract_type, date):
         else:  # returns put contracts
             return stock_options[1]
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 def get_long_business_summary(ticker):
@@ -97,7 +97,7 @@ def get_long_business_summary(ticker):
         stock = yf.Ticker(ticker)
         return stock.get_info()[configs.YFINANCE_LONGBUSINESSSUMMARY]
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 def get_shares_short(ticker):
@@ -105,7 +105,7 @@ def get_shares_short(ticker):
         stock = yf.Ticker(ticker)
         return str(stock.get_info()[configs.YFINANCE_SHARESHORT])
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 def get_shares_short_prior_month(ticker):
@@ -113,7 +113,7 @@ def get_shares_short_prior_month(ticker):
         stock = yf.Ticker(ticker)
         return str(stock.get_info()[configs.YFINANCE_SHARESHORTPRIORMONTH])
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 def get_short_percent_float(ticker):
@@ -121,7 +121,7 @@ def get_short_percent_float(ticker):
         stock = yf.Ticker(ticker)
         return str(stock.get_info()[configs.YFINANCE_SHORTPERCENTFLOAT])
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 def get_market_cap(ticker):
@@ -129,7 +129,7 @@ def get_market_cap(ticker):
         stock = yf.Ticker(ticker)
         return str(stock.get_info()[configs.YFINANCE_MARKETCAP])
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 # not used

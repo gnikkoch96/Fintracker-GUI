@@ -22,7 +22,7 @@ class ViewTrade:
         self.trade_data = self.load_trade_data()
 
         # connection loss
-        if self.trade_data == configs.CONNECTIONERROR_TEXT:
+        if self.trade_data == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 

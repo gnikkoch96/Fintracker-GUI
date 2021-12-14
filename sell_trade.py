@@ -68,7 +68,7 @@ class SellTrade:
             trade = self.firebase_client.get_open_trade_by_id(self.trade_id, self.is_option)
 
             # connection loss
-            if trade == configs.CONNECTIONERROR_TEXT:
+            if trade == configs.CONNECTION_ERROR_TEXT:
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                 return
 
@@ -163,7 +163,7 @@ class SellTrade:
                                                                              current_holdings, self.is_option)
 
             # connection loss
-            if update_status == configs.CONNECTIONERROR_TEXT:
+            if update_status == configs.CONNECTION_ERROR_TEXT:
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                 return
 
@@ -183,7 +183,7 @@ class SellTrade:
         trade = self.firebase_client.get_open_trade_by_id(self.trade_id, self.is_option)
 
         # connection loss
-        if trade == configs.CONNECTIONERROR_TEXT:
+        if trade == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 

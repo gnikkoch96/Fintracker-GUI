@@ -20,9 +20,9 @@ def authenticate_user_login(email, password):
     try:
         return firebase_auth.sign_in_with_email_and_password(email, password)
     except HTTPError:
-        return configs.HTTPERROR_TEXT
+        return configs.HTTP_ERROR_TEXT
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 # attempts to create an account using passed email and password
@@ -30,9 +30,9 @@ def create_user_account(email, password):
     try:
         return firebase_auth.create_user_with_email_and_password(email, password)
     except HTTPError:
-        return configs.HTTPERROR_TEXT
+        return configs.HTTP_ERROR_TEXT
     except ConnectionError:
-        return configs.CONNECTIONERROR_TEXT
+        return configs.CONNECTION_ERROR_TEXT
 
 
 # desc: used to connect client to firebase
@@ -91,7 +91,7 @@ class FirebaseConn:
                     return firebase_db.child(self._user_id).child(configs.FIREBASE_OPEN_TRADES).child(
                         configs.FIREBASE_STOCK_CRYPTO).get(self._token_id).val()
         except ConnectionError:
-            return configs.CONNECTIONERROR_TEXT
+            return configs.CONNECTION_ERROR_TEXT
 
     # retrieves open trade information corresponding to trade id
     def get_open_trade_by_id(self, trade_id, is_option):
@@ -103,7 +103,7 @@ class FirebaseConn:
                 return firebase_db.child(self._user_id).child(configs.FIREBASE_OPEN_TRADES).child(
                     configs.FIREBASE_STOCK_CRYPTO).child(trade_id).get(self._token_id).val()
         except ConnectionError:
-            return configs.CONNECTIONERROR_TEXT
+            return configs.CONNECTION_ERROR_TEXT
 
     # retrieves the ids for all open trades (used to retrieve recent trade)
     def get_open_trades_keys(self, is_option):
@@ -115,7 +115,7 @@ class FirebaseConn:
                 return firebase_db.child(self._user_id).child(configs.FIREBASE_OPEN_TRADES).child(
                     configs.FIREBASE_STOCK_CRYPTO).get(self._token_id).val().keys()
         except ConnectionError:
-            return configs.CONNECTIONERROR_TEXT
+            return configs.CONNECTION_ERROR_TEXT
 
     # updates an open trade by trade_id
     def update_open_trade_by_id(self, trade_id, new_data, is_options):
@@ -141,7 +141,7 @@ class FirebaseConn:
                 firebase_db.child(self._user_id).child(configs.FIREBASE_OPEN_TRADES).child(
                     configs.FIREBASE_STOCK_CRYPTO).child(trade_id).update({keyword: new_data}, self._token_id)
         except ConnectionError:
-            return configs.CONNECTIONERROR_TEXT
+            return configs.CONNECTION_ERROR_TEXT
 
     # add a trade to the closed trade category
     def add_closed_trade_db(self, data, is_option):
@@ -181,7 +181,7 @@ class FirebaseConn:
                     return firebase_db.child(self._user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
                         configs.FIREBASE_STOCK_CRYPTO).get(self._token_id).val()
         except ConnectionError:
-            return configs.CONNECTIONERROR_TEXT
+            return configs.CONNECTION_ERROR_TEXT
 
     # retrieves a closed trade corresponding to trade id
     def get_closed_trade_by_id(self, trade_id, is_option):
@@ -193,7 +193,7 @@ class FirebaseConn:
                 return firebase_db.child(self._user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
                     configs.FIREBASE_STOCK_CRYPTO).child(trade_id).get(self._token_id).val()
         except ConnectionError:
-            return configs.CONNECTIONERROR_TEXT
+            return configs.CONNECTION_ERROR_TEXT
 
     # retrieve closed trade ids (used to get the recent closed trade)
     def get_closed_trades_keys(self, is_option):
@@ -205,7 +205,7 @@ class FirebaseConn:
                 return firebase_db.child(self._user_id).child(configs.FIREBASE_CLOSE_TRADES).child(
                     configs.FIREBASE_STOCK_CRYPTO).get(self._token_id).val().keys()
         except ConnectionError:
-            return configs.CONNECTIONERROR_TEXT
+            return configs.CONNECTION_ERROR_TEXT
 
     # updates closed trade corresponding to trade id
     def update_closed_trade_by_id(self, trade_id, new_data, is_options=False):

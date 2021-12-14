@@ -139,8 +139,8 @@ DEFAULT_DATE = {'month': date.today().month - 1,
                 'month_day': date.today().day}
 
 LOST_CONNECTION_ERROR_MSG = "[Error] Lost Connection...Please Restart the App"
-HTTPERROR_TEXT = "HTTPError"
-CONNECTIONERROR_TEXT = "ConnectionError"
+HTTP_ERROR_TEXT = "HTTPError"
+CONNECTION_ERROR_TEXT = "ConnectionError"
 
 # validations
 VALIDATE_ERROR_TYPE_MSG = "Invalid Type, has to be Crypto/Stock/Option"

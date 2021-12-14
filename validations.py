@@ -51,7 +51,7 @@ def validate_ticker(ticker, invest_type):
         valid_ticker = cgt.validate_coin(ticker.lower())
 
         # connection loss
-        if valid_ticker == configs.CONNECTIONERROR_TEXT:
+        if valid_ticker == configs.CONNECTION_ERROR_TEXT:
             return False, configs.LOST_CONNECTION_ERROR_MSG
 
         if not valid_ticker:  # invalid crypto ticker
@@ -61,7 +61,7 @@ def validate_ticker(ticker, invest_type):
         valid_ticker = yft.validate_ticker(ticker)
 
         # connection loss
-        if valid_ticker == configs.CONNECTIONERROR_TEXT:
+        if valid_ticker == configs.CONNECTION_ERROR_TEXT:
             return False, configs.LOST_CONNECTION_ERROR_MSG
         
         if not valid_ticker:  # invalid stock ticker

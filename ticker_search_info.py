@@ -39,7 +39,7 @@ class CryptoStockInfo:
             token_symbol = cgt.get_symbol(lower_ticker)
 
             # connection loss
-            if token_symbol == configs.CONNECTIONERROR_TEXT:
+            if token_symbol == configs.CONNECTION_ERROR_TEXT:
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                 return
 
@@ -50,7 +50,7 @@ class CryptoStockInfo:
             current_price = cgt.get_current_price(lower_ticker)
 
             # connection loss
-            if current_price == configs.CONNECTIONERROR_TEXT:
+            if current_price == configs.CONNECTION_ERROR_TEXT:
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                 return
 
@@ -60,7 +60,7 @@ class CryptoStockInfo:
             change_24hr = cgt.get_price_change_percentage_24h(lower_ticker)
 
             # connection loss
-            if change_24hr == configs.CONNECTIONERROR_TEXT:
+            if change_24hr == configs.CONNECTION_ERROR_TEXT:
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                 return
 
@@ -79,7 +79,7 @@ class CryptoStockInfo:
         market_cap = cgt.get_market_cap(lower_ticker)
 
         # connection loss
-        if market_cap == configs.CONNECTIONERROR_TEXT:
+        if market_cap == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 
@@ -89,7 +89,7 @@ class CryptoStockInfo:
         circ_supply = cgt.get_circulating_supply(lower_ticker)
 
         # connection loss
-        if circ_supply == configs.CONNECTIONERROR_TEXT:
+        if circ_supply == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 
@@ -99,7 +99,7 @@ class CryptoStockInfo:
         total_supply = cgt.get_total_supply(lower_ticker)
 
         # connection loss
-        if total_supply == configs.CONNECTIONERROR_TEXT:
+        if total_supply == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 
@@ -111,7 +111,7 @@ class CryptoStockInfo:
         if hashing_algo is None:
             hashing_algo = configs.NOT_APPLICABLE_TEXT
 
-        elif hashing_algo == configs.CONNECTIONERROR_TEXT:
+        elif hashing_algo == configs.CONNECTION_ERROR_TEXT:
             # connection lost
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
@@ -122,7 +122,7 @@ class CryptoStockInfo:
         desc = cgt.get_description(lower_ticker)
 
         # connection loss
-        if desc == configs.CONNECTIONERROR_TEXT:
+        if desc == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 
@@ -137,7 +137,7 @@ class CryptoStockInfo:
         stock_data = yft.retrieve_info(upper_ticker)
 
         # connection loss
-        if stock_data == configs.CONNECTIONERROR_TEXT:
+        if stock_data == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 

@@ -171,7 +171,7 @@ class Fintracker:
             closed_trades = self.firebase_client.get_closed_trades_db(is_option)
 
             # connection loss
-            if closed_trades == configs.CONNECTIONERROR_TEXT:
+            if closed_trades == configs.CONNECTION_ERROR_TEXT:
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                 return
 
@@ -188,7 +188,7 @@ class Fintracker:
                 closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, is_option)
 
                 # connection loss
-                if closed_trade == configs.CONNECTIONERROR_TEXT:
+                if closed_trade == configs.CONNECTION_ERROR_TEXT:
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                     return
 
@@ -323,7 +323,7 @@ class Fintracker:
             open_trades = self.firebase_client.get_open_trades_db(is_option)
 
             # connection loss
-            if open_trades == configs.CONNECTIONERROR_TEXT:
+            if open_trades == configs.CONNECTION_ERROR_TEXT:
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                 return
 
@@ -338,7 +338,7 @@ class Fintracker:
                 open_trade = self.firebase_client.get_open_trade_by_id(open_trade_id, is_option)
 
                 # connection loss
-                if open_trade == configs.CONNECTIONERROR_TEXT:
+                if open_trade == configs.CONNECTION_ERROR_TEXT:
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                     return
 
@@ -437,7 +437,7 @@ class Fintracker:
         open_trade_keys = self.firebase_client.get_open_trades_keys(is_option)
 
         # connection loss
-        if open_trade_keys == configs.CONNECTIONERROR_TEXT:
+        if open_trade_keys == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 
@@ -523,7 +523,7 @@ class Fintracker:
         closed_trade_keys = self.firebase_client.get_closed_trades_keys(is_option)
 
         # connection loss
-        if closed_trade_keys == configs.CONNECTIONERROR_TEXT:
+        if closed_trade_keys == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 
@@ -746,8 +746,8 @@ class Fintracker:
         closed_trades_options = self.firebase_client.get_closed_trades_db(True)
 
         # connection loss
-        if closed_trades_crypto_stock == configs.CONNECTIONERROR_TEXT or \
-                closed_trades_options == configs.CONNECTIONERROR_TEXT:
+        if closed_trades_crypto_stock == configs.CONNECTION_ERROR_TEXT or \
+                closed_trades_options == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 
@@ -776,8 +776,8 @@ class Fintracker:
         closed_trades_options = self.firebase_client.get_closed_trades_db(True)
 
         # connection loss
-        if closed_trades_crypto_stock == configs.CONNECTIONERROR_TEXT or \
-                closed_trades_options == configs.CONNECTIONERROR_TEXT:
+        if closed_trades_crypto_stock == configs.CONNECTION_ERROR_TEXT or \
+                closed_trades_options == configs.CONNECTION_ERROR_TEXT:
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
             return
 
@@ -792,7 +792,7 @@ class Fintracker:
                 closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, False)
 
                 # connection loss
-                if closed_trade == configs.CONNECTIONERROR_TEXT:
+                if closed_trade == configs.CONNECTION_ERROR_TEXT:
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                     return
 
@@ -809,7 +809,7 @@ class Fintracker:
                 closed_trade = self.firebase_client.get_closed_trade_by_id(closed_trade_id, True)
 
                 # connection loss
-                if closed_trade == configs.CONNECTIONERROR_TEXT:
+                if closed_trade == configs.CONNECTION_ERROR_TEXT:
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                     return
 

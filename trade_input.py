@@ -139,7 +139,7 @@ class InputTrade:
                 valid_ticker = yft.validate_ticker(ticker)
 
                 # connection loss
-                if valid_ticker == configs.CONNECTIONERROR_TEXT:
+                if valid_ticker == configs.CONNECTION_ERROR_TEXT:
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                     return
 
@@ -147,7 +147,7 @@ class InputTrade:
                     curr_price = yft.get_stock_price(ticker)
 
                     # connection loss
-                    if curr_price == configs.CONNECTIONERROR_TEXT:
+                    if curr_price == configs.CONNECTION_ERROR_TEXT:
                         DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                         return
 
@@ -162,17 +162,17 @@ class InputTrade:
                 valid_coin = cgt.validate_coin(ticker)
 
                 # non-null values are true
-                if valid_coin and valid_coin != configs.CONNECTIONERROR_TEXT:
+                if valid_coin and valid_coin != configs.CONNECTION_ERROR_TEXT:
                     curr_price = cgt.get_current_price(ticker)
 
                     # connection loss
-                    if curr_price == configs.CONNECTIONERROR_TEXT:
+                    if curr_price == configs.CONNECTION_ERROR_TEXT:
                         DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                         return
 
                     loading_win.hide_load_win()
 
-                elif valid_coin == configs.CONNECTIONERROR_TEXT:  # connection lost
+                elif valid_coin == configs.CONNECTION_ERROR_TEXT:  # connection lost
                     loading_win.hide_load_win()
 
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
@@ -287,10 +287,10 @@ class InputTrade:
         if not self.is_ticker_empty():
             if self.is_crypto():
                 valid_coin = cgt.validate_coin(ticker.lower())
-                if valid_coin and valid_coin != configs.CONNECTIONERROR_TEXT:
+                if valid_coin and valid_coin != configs.CONNECTION_ERROR_TEXT:
                     CryptoStockInfo(self.dpg, ticker, True)
 
-                elif valid_coin == configs.CONNECTIONERROR_TEXT:
+                elif valid_coin == configs.CONNECTION_ERROR_TEXT:
 
                     # connection lost
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
@@ -305,12 +305,12 @@ class InputTrade:
             elif self.is_stock():
                 valid_ticker = yft.validate_ticker(ticker)
 
-                if valid_ticker and valid_ticker != configs.CONNECTIONERROR_TEXT:
+                if valid_ticker and valid_ticker != configs.CONNECTION_ERROR_TEXT:
                     loading_win.hide_load_win()
 
                     CryptoStockInfo(self.dpg, ticker)
 
-                elif valid_ticker == configs.CONNECTIONERROR_TEXT:
+                elif valid_ticker == configs.CONNECTION_ERROR_TEXT:
                     # connection lost
                     DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
                     return

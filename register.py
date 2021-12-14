@@ -111,16 +111,16 @@ class Register:
         # check if email is already being used
         create_acc_status = firebase_conn.create_user_account(email, password)
 
-        if not valid_pass or create_acc_status == configs.HTTPERROR_TEXT or create_acc_status == configs.CONNECTIONERROR_TEXT:
+        if not valid_pass or create_acc_status == configs.HTTP_ERROR_TEXT or create_acc_status == configs.CONNECTION_ERROR_TEXT:
             # connection error
-            if create_acc_status == configs.CONNECTIONERROR_TEXT:
+            if create_acc_status == configs.CONNECTION_ERROR_TEXT:
                 loading_win.hide_load_win()
 
                 # error register dialog
                 DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
 
             # invalid register inputs
-            elif create_acc_status == configs.HTTPERROR_TEXT:
+            elif create_acc_status == configs.HTTP_ERROR_TEXT:
                 loading_win.hide_load_win()
 
                 # error register dialog

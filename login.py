@@ -87,16 +87,16 @@ class Login:
         user_login = firebase_conn.authenticate_user_login(self.email, self.password)
 
         # success
-        if user_login != configs.HTTPERROR_TEXT and user_login != configs.CONNECTIONERROR_TEXT:
+        if user_login != configs.HTTP_ERROR_TEXT and user_login != configs.CONNECTION_ERROR_TEXT:
             self.firebase_conn = FirebaseConn(user_login)
             Fintracker(self.dpg, False, self.firebase_conn)
             self.dpg.hide_item(configs.LOGIN_WINDOW_ID)
 
-        elif user_login == configs.CONNECTIONERROR_TEXT:  # connection error
+        elif user_login == configs.CONNECTION_ERROR_TEXT:  # connection error
             loading_win.hide_load_win()
             DialogWin(self.dpg, configs.LOST_CONNECTION_ERROR_MSG, self)
 
-        elif user_login == configs.HTTPERROR_TEXT:  # invalid email + password
+        elif user_login == configs.HTTP_ERROR_TEXT:  # invalid email + password
             loading_win.hide_load_win()
 
             DialogWin(self.dpg, configs.LOGIN_FAILED_MSG_TEXT, self)
