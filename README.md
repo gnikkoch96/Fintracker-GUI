@@ -1,8 +1,9 @@
 
+
 <!--Introduction-->
 <h2>Fintracker</h2>
 <!-- 1. What is it used for? -->
-<p>This application is used to track your stock, crypto, and option trading.</p>
+<p>This application is used to track your stock, crypto, and option trading online. </p>
 
 <p> <b>Note:</b> For options, this app can only record naked calls and puts.</p>
 
@@ -10,7 +11,7 @@
 <h2>Requirements</h2>
 <ul>
     <li>Python 3.8+ (Haven't tested on earlier vers.)</li>
-    <li> <a href="https://github.com/hoffstadt/DearPyGui">Dearpygui Module (v1.1.1) </a> </li>
+    <li> <a href="https://github.com/hoffstadt/DearPyGui">Dearpygui Module (v1.1) </a> </li>
     <li><a href="https://github.com/ranaroussi/yfinance">yfinance Module</a></li>
     <li><a href="https://github.com/man-c/pycoingecko">pycoingecko Module</a></li>
     <li><a href="https://github.com/nhorvath/Pyrebase4"> pyrebase4 Module</a></li>
@@ -30,7 +31,7 @@
 <h3>Register</h3>
 <p>Feel free to enter a fake email and password as there is no validation</p>
 <div>
-    <img src="https://github.com/gnikkoch96/Fintracker-GUI/blob/main/resources/read_me%20stuff/login_demo.gif"
+    <img src="https://github.com/gnikkoch96/Fintracker-GUI/blob/main/resources/read_me%20stuff/register_demo.gif"
         alt="logging in"">
 </div>
 
@@ -78,4 +79,9 @@
         alt="edit trade"">
 </div>
 
+<!--Credit-->
+<h2>Credit</h2>
+<ul>
+    <li> <a href=" https://www.canva.com/">Canva (Used to Create Logo)</a></li>
+    </ul>
 
